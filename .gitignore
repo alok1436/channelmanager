@@ -1,0 +1,16 @@
+/node_modules
+/public/hot
+/public/storage
+/public/export
+public/create_csv
+public/courier_csv
+/storage/*.key
+/vendor
+/.idea
+/.vagrant
+Homestead.json
+Homestead.yaml
+.env
+storage
+public/upload
+public/export

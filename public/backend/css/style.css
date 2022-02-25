@@ -1,0 +1,254 @@
+.product_store_page .dz-preview.dz-processing.dz-image-preview.dz-success {
+    float: left;
+    width: 100%;
+    max-width: 115px;
+    margin-top: 40px;
+}
+.product_edit_page li.gallery {
+    float: left;
+    margin-bottom: 10px;
+}
+
+.product_edit_page button.delete_btn {
+    display: inherit;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.product_edit_page button.delete_btn>i {
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.product_edit_page img.image {
+    margin-bottom: 5px;
+    margin-left: 20px;
+}
+.dropzone1 {
+    background: white;
+    border-radius: 5px;
+    border: 2px dashed rgb(0, 135, 247);
+    border-image: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+.dropzone1 .dz-preview {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    margin: 16px;
+    min-height: 100px;
+}
+.dropzone1 .dz-preview.dz-image-preview {
+    background: white;
+}
+.dropzone1.dz-clickable * {
+    cursor: default;
+}
+.dropzone1 .dz-preview .dz-image {
+    border-radius: 20px;
+    overflow: hidden;
+    width: 120px;
+    height: 120px;
+    position: relative;
+    display: block;
+    z-index: 10;
+}
+.dropzone1 .dz-preview.dz-image-preview .dz-details {
+    -webkit-transition: opacity 0.2s linear;
+    -moz-transition: opacity 0.2s linear;
+    -ms-transition: opacity 0.2s linear;
+    -o-transition: opacity 0.2s linear;
+    transition: opacity 0.2s linear;
+}
+
+.dropzone1 .dz-preview .dz-details {
+    z-index: 20;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    font-size: 13px;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 2em 1em;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.9);
+    line-height: 150%;
+}
+.dropzone1 .dz-preview .dz-details .dz-size {
+    margin-bottom: 1em;
+    font-size: 16px;
+}
+.dropzone1.dz-clickable * {
+    cursor: default;
+}
+.dropzone1 .dz-preview .dz-details .dz-filename:not(:hover) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dropzone1 .dz-preview .dz-details .dz-filename {
+    white-space: nowrap;
+}
+.dropzone1 .dz-preview .dz-details .dz-filename span, .dropzone1 .dz-preview .dz-details .dz-size span {
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 0 0.4em;
+    border-radius: 3px;
+}
+.dropzone1.dz-clickable * {
+    cursor: default;
+}
+.dropzone1 .dz-preview.dz-complete .dz-progress {
+    opacity: 0;
+    -webkit-transition: opacity 0.4s ease-in;
+    -moz-transition: opacity 0.4s ease-in;
+    -ms-transition: opacity 0.4s ease-in;
+    -o-transition: opacity 0.4s ease-in;
+    transition: opacity 0.4s ease-in;
+}
+.dropzone1 .dz-preview.dz-processing .dz-progress {
+    opacity: 1;
+    -webkit-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    -ms-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+.dropzone1 .dz-preview .dz-progress {
+    opacity: 1;
+    z-index: 1000;
+    pointer-events: none;
+    position: absolute;
+    height: 16px;
+    left: 50%;
+    top: 50%;
+    margin-top: -8px;
+    width: 80px;
+    margin-left: -40px;
+    background: rgba(255, 255, 255, 0.9);
+    -webkit-transform: scale(1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.dropzone1 .dz-preview .dz-error-message {
+    pointer-events: none;
+    z-index: 1000;
+    position: absolute;
+    display: block;
+    display: none;
+    opacity: 0;
+    -webkit-transition: opacity 0.3s ease;
+    -moz-transition: opacity 0.3s ease;
+    -ms-transition: opacity 0.3s ease;
+    -o-transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+    font-size: 13px;
+    top: 130px;
+    left: -10px;
+    width: 140px;
+    background: #be2626;
+    background: linear-gradient(to bottom, #be2626, #a92222);
+    padding: 0.5em 1.2em;
+    color: white;
+}
+.dropzone1 .dz-preview.dz-success .dz-success-mark {
+    -webkit-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+    -moz-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+    -ms-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+    -o-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+    animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.dropzone1 .dz-preview .dz-success-mark, .dropzone1 .dz-preview .dz-error-mark {
+    pointer-events: none;
+    opacity: 0;
+    z-index: 500;
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    margin-left: -27px;
+    margin-top: -27px;
+}
+.dz-message.needsclick {
+    text-align: center;
+    margin: 2em 0;
+}
+.slimScrollDiv {
+    width: 100% !important;
+}
+.noti-scroll {
+    max-height: 230px;
+    min-height: 219px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+    color: #000 !important;
+}
+.slimscroll.noti-scroll .dropdown-item.active{
+    color: #323a46;
+    text-decoration: none;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #efefef;
+}
+.custformwrap {
+    text-align: left;
+}
+
+.custformwrap .sr-only12 {
+    display: block;
+    font-size: 13px;
+}
+.dropzone.dz-clickable {
+  cursor: pointer;
+}
+
+.dropzone {
+  border: 2px dashed #0087F7;
+  border-radius: 5px;
+  background: white;
+}
+.dropzone {
+  min-height: 150px;
+  border: 2px dotted rgba(0, 0, 0, 0.3) !important;
+  background: white;
+  padding: 54px 54px;
+}
+.btn-ct.dz-remove-btn button.del_img {
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 85px;
+    z-index: 9999;
+    right: 0;
+    cursor: pointer;
+    left: 49px;
+    font-size: 15px;
+}
+.star {
+    visibility:hidden;
+    font-size:30px;
+    cursor:pointer;
+}
+.star:before {
+   content: "\2606";
+   position: absolute;
+   visibility:visible;
+   color: gray;
+}
+.star:checked:before {
+  content: "\2605";
+  position: absolute;
+  color: #fec63e;
+}
+.error .select2-container {
+    border: 1px solid red;
+}
+li.dropdown-item.notify-item.active.list {
+    border-bottom: 1px solid #ccc;
+    background: #fff;
+}
+p.text-muted.mb-0.user-msg small {
+    color: #3c2626;
+}

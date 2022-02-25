@@ -1,0 +1,348 @@
+Array
+(
+    [OrderType] => StandardOrder
+    [BuyerEmail] => x5fr9bhmhgppmtg@marketplace.amazon.fr
+    [LastUpdateDate] => 2021-05-04T19:15:21.032Z
+    [NumberOfItemsShipped] => 0
+    [ShipServiceLevel] => Std FR Dom_3
+    [SalesChannel] => Amazon.fr
+    [ShippedByAmazonTFM] => false
+    [IsBusinessOrder] => false
+    [LatestDeliveryDate] => 2021-05-20T21:59:59Z
+    [PaymentMethodDetails] => Array
+        (
+            [PaymentMethodDetail] => Standard
+        )
+
+    [IsGlobalExpressEnabled] => false
+    [EarliestShipDate] => 2021-05-04T22:00:00Z
+    [FulfillmentChannel] => MFN
+    [PaymentMethod] => Other
+    [IsPrime] => false
+    [LatestShipDate] => 2021-05-06T21:59:59Z
+    [PurchaseDate] => 2021-05-04T18:45:45.549Z
+    [AmazonOrderId] => 404-3850225-6341126
+    [IsReplacementOrder] => false
+    [OrderStatus] => Unshipped
+    [NumberOfItemsUnshipped] => 1
+    [IsSoldByAB] => false
+    [EarliestDeliveryDate] => 2021-05-11T22:00:00Z
+    [IsPremiumOrder] => false
+    [OrderTotal] => Array
+        (
+            [Amount] => 107.89
+            [CurrencyCode] => EUR
+        )
+
+    [MarketplaceId] => A13V1IB3VIYZZH
+    [DefaultShipFromLocationAddress] => Array
+        (
+            [City] => Essen
+            [PostalCode] => 45219
+            [isAddressSharingConfidential] => false
+            [Phone] => 07 80 39 65 15
+            [CountryCode] => DE
+            [Name] => Ship-From
+            [AddressLine1] => Mintarder Weg 51-55
+            [AddressLine2] => Confidence Europe GmbH
+        )
+
+    [ShippingAddress] => Array
+        (
+            [City] => Salon de Provence
+            [PostalCode] => 13300
+            [isAddressSharingConfidential] => false
+            [CountryCode] => FR
+        )
+
+    [IsISPU] => false
+    [ShipmentServiceLevelCategory] => Standard
+)
+Array
+(
+    [0] => Array
+        (
+            [QuantityOrdered] => 1
+            [Title] => DynaSun Art Jumbo - Horloge murale en forme d'avion en métal, 143 x 20 x 46 cm, vintage, style rétro, effet vieilli, décoration maison, salon, cuisine
+            [ShippingTax] => Array
+                (
+                    [Amount] => 1.32
+                    [CurrencyCode] => EUR
+                )
+
+            [PromotionDiscount] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+            [ConditionId] => New
+            [IsGift] => false
+            [ASIN] => B07K8G2G3T
+            [SellerSKU] => 89010 D129-3
+            [OrderItemId] => 24355639524043
+            [ShippingDiscountTax] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+            [IsTransparency] => false
+            [ProductInfo] => Array
+                (
+                    [NumberOfItems] => 1
+                )
+
+            [QuantityShipped] => 0
+            [ShippingPrice] => Array
+                (
+                    [Amount] => 7.90
+                    [CurrencyCode] => EUR
+                )
+
+            [ConditionSubtypeId] => New
+            [ItemPrice] => Array
+                (
+                    [Amount] => 99.99
+                    [CurrencyCode] => EUR
+                )
+
+            [ItemTax] => Array
+                (
+                    [Amount] => 16.67
+                    [CurrencyCode] => EUR
+                )
+
+            [ShippingDiscount] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+            [PromotionDiscountTax] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+        )
+
+)
+Array
+(
+    [OrderType] => StandardOrder
+    [BuyerEmail] => yw3tcz5yx43flz0@marketplace.amazon.de
+    [LastUpdateDate] => 2021-05-04T10:25:02.471Z
+    [NumberOfItemsShipped] => 0
+    [ShipServiceLevel] => Std DE Dom_6
+    [SalesChannel] => Amazon.de
+    [ShippedByAmazonTFM] => false
+    [IsBusinessOrder] => false
+    [LatestDeliveryDate] => 2021-05-07T21:59:59Z
+    [PaymentMethodDetails] => Array
+        (
+            [PaymentMethodDetail] => Invoice
+        )
+
+    [IsGlobalExpressEnabled] => false
+    [EarliestShipDate] => 2021-05-04T22:00:00Z
+    [FulfillmentChannel] => MFN
+    [PaymentMethod] => Other
+    [IsPrime] => false
+    [LatestShipDate] => 2021-05-06T21:59:59Z
+    [PurchaseDate] => 2021-05-04T10:16:00.295Z
+    [AmazonOrderId] => 303-0110296-7993970
+    [IsReplacementOrder] => false
+    [OrderStatus] => Unshipped
+    [NumberOfItemsUnshipped] => 1
+    [IsSoldByAB] => false
+    [EarliestDeliveryDate] => 2021-05-05T22:00:00Z
+    [IsPremiumOrder] => false
+    [OrderTotal] => Array
+        (
+            [Amount] => 106.89
+            [CurrencyCode] => EUR
+        )
+
+    [MarketplaceId] => A1PA6795UKMFR9
+    [DefaultShipFromLocationAddress] => Array
+        (
+            [City] => Essen
+            [PostalCode] => 45219
+            [isAddressSharingConfidential] => false
+            [Phone] => 0162 4624527
+            [CountryCode] => DE
+            [Name] => Ship-From
+            [AddressLine1] => Mintarder Weg 51-55
+            [AddressLine2] => Confidence Europe GmbH
+        )
+
+    [ShippingAddress] => Array
+        (
+            [City] => Bochum
+            [PostalCode] => 44791
+            [isAddressSharingConfidential] => false
+            [CountryCode] => DE
+        )
+
+    [IsISPU] => false
+    [ShipmentServiceLevelCategory] => Standard
+)
+Array
+(
+    [0] => Array
+        (
+            [QuantityOrdered] => 1
+            [Title] => DYNASUN Profi Kit H2258W957 Reflektorhalter Teleskoparm mit Hintergrund Falthintergrund 2in1 faltbar RE2010BG 150x200cm XXL Blau Grün mit Stativ W957
+            [ShippingTax] => Array
+                (
+                    [Amount] => 1.10
+                    [CurrencyCode] => EUR
+                )
+
+            [PromotionDiscount] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+            [ConditionId] => New
+            [IsGift] => false
+            [ASIN] => B00LW56RTA
+            [SellerSKU] => 12357 RE2010BG+H2258+W957
+            [OrderItemId] => 01494729299907
+            [ShippingDiscountTax] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+            [IsTransparency] => false
+            [ProductInfo] => Array
+                (
+                    [NumberOfItems] => 1
+                )
+
+            [QuantityShipped] => 0
+            [ShippingPrice] => Array
+                (
+                    [Amount] => 6.90
+                    [CurrencyCode] => EUR
+                )
+
+            [ConditionSubtypeId] => New
+            [ItemPrice] => Array
+                (
+                    [Amount] => 99.99
+                    [CurrencyCode] => EUR
+                )
+
+            [ItemTax] => Array
+                (
+                    [Amount] => 15.96
+                    [CurrencyCode] => EUR
+                )
+
+            [ShippingDiscount] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+            [PromotionDiscountTax] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => EUR
+                )
+
+        )
+
+)
+Array
+(
+    [OrderType] => StandardOrder
+    [BuyerEmail] => yms8k88xsczrp5b@marketplace.amazon.co.uk
+    [LastUpdateDate] => 2021-05-04T14:10:24.094Z
+    [NumberOfItemsShipped] => 0
+    [ShipServiceLevel] => Std UK Dom_3
+    [SalesChannel] => Amazon.co.uk
+    [ShippedByAmazonTFM] => false
+    [IsBusinessOrder] => false
+    [LatestDeliveryDate] => 2021-05-14T22:59:59Z
+    [PaymentMethodDetails] => Array
+        (
+            [PaymentMethodDetail] => Standard
+        )
+
+    [IsGlobalExpressEnabled] => false
+    [EarliestShipDate] => 2021-05-04T23:00:00Z
+    [FulfillmentChannel] => MFN
+    [PaymentMethod] => Other
+    [IsPrime] => false
+    [LatestShipDate] => 2021-05-06T22:59:59Z
+    [PurchaseDate] => 2021-05-04T13:40:10.506Z
+    [AmazonOrderId] => 202-9653378-6961164
+    [IsReplacementOrder] => false
+    [OrderStatus] => Unshipped
+    [NumberOfItemsUnshipped] => 2
+    [IsSoldByAB] => false
+    [EarliestDeliveryDate] => 2021-05-10T23:00:00Z
+    [IsPremiumOrder] => false
+    [OrderTotal] => Array
+        (
+            [Amount] => 79.97
+            [CurrencyCode] => GBP
+        )
+
+    [MarketplaceId] => A1F83G8C2ARO7P
+    [DefaultShipFromLocationAddress] => Array
+        (
+            [City] => Essen
+            [PostalCode] => 45219
+            [isAddressSharingConfidential] => false
+            [Phone] => 07968 828 221
+            [CountryCode] => DE
+            [Name] => Ship-From
+            [AddressLine1] => Mintarder Weg 51-55
+            [AddressLine2] => Confidence Europe GmbH
+        )
+
+    [ShippingAddress] => Array
+        (
+            [City] => Bushey
+            [PostalCode] => WD23 3NH
+            [isAddressSharingConfidential] => false
+            [StateOrRegion] => Herts
+            [CountryCode] => GB
+        )
+
+    [IsISPU] => false
+    [ShipmentServiceLevelCategory] => Standard
+)
+Array
+(
+    [0] => Array
+        (
+            [QuantityOrdered] => 2
+            [Title] => DynaSun 16" Pedestal Oscillating Pedestal Fan Tower RD40BC Black Remote Control
+            [ShippingTax] => Array
+                (
+                    [Amount] => 1.66
+                    [CurrencyCode] => GBP
+                )
+
+            [PromotionDiscount] => Array
+                (
+                    [Amount] => 0.00
+                    [CurrencyCode] => GBP
+                )
+
+            [ConditionId] => New
+            [IsGift] => false
+            [ASIN] => B07FMVXN5Y
+            [SellerSKU] => 20191 RD40BC BLACK
+            [OrderItemId] => 60892303034571
+            [ShippingDiscountTax] => Array
+                (
+                    [Amount] => 0.00
+                    [Curr…

@@ -1,0 +1,5 @@
+{
+    "require": {
+        "mcs/amazon-mws": "^0.1.26"
+    }
+}
