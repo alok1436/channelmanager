@@ -56,9 +56,15 @@
                     <td style="text-align: right;width:30%">
                         <table  style="width: 100%; color: black; font-size: 15px;">
                             <tr><td style="color: black; font-size: 15px;text-align:right"><b><b>Date:</b></td><td>{{$orders->datee}}</td></tr>
-                            <tr><td style="color: black; font-size: 15px;text-align:right"><b>Invoice Number:</b></td><td>{{$orders->num_invoice}}</td></tr>
-                            <tr><td style="color: black; font-size: 15px;text-align:right"><b>Code univ:</b></td><td>{{$orders->cod_univ}}</td></tr>
-                            <tr><td style="color: black; font-size: 15px;text-align:right"><b>Pec:</b></td><td>{{$orders->pec}}</td></tr>
+                            @if($orders->num_invoice)
+                                <tr><td style="color: black; font-size: 15px;text-align:right"><b>Invoice Number:</b></td><td>{{$orders->num_invoice}}</td></tr>
+                            @endif
+                            @if($orders->cod_univ)
+                                <tr><td style="color: black; font-size: 15px;text-align:right"><b>Code univ:</b></td><td>{{$orders->cod_univ}}</td></tr>
+                            @endif
+                            @if($orders->pec)
+                                <tr><td style="color: black; font-size: 15px;text-align:right"><b>Pec:</b></td><td>{{$orders->pec}}</td></tr>
+                            @endif
                         </table>
                     </td>
                 </tr>
@@ -140,8 +146,8 @@
                     <td style="text-align: left; border: 1px solid grey; border-collapse: collapse; height: 20px;"><strong>Shipping</strong></td>
                     <td style="border: 1px solid grey; border-collapse: collapse;"></td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse;"></td>
-                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ $order->orderInvoice->shipping }}</td>
-                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ $order->orderInvoice->vat }}</td>
+                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ number_format($order->orderInvoice->shipping, 2) }}</td>
+                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ number_format($order->orderInvoice->vat, 2) }}</td>
                 </tr>
                 <tr>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;"></td>
@@ -149,7 +155,7 @@
                     <td style="border: 1px solid grey; border-collapse: collapse;"></td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse;"></td>
                     <?php $dff = $order->sum - ($total+$order->orderInvoice->shipping);  ?>
-                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ $dff > 0 ? $dff : 0 }}</td>
+                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ $dff > 0 ? number_format($dff, 2) : 0 }}</td>
                     <td style="text-align: right; height: 20px;"></td>
                 </tr>
                 <?php 
@@ -171,14 +177,14 @@
                     <td style="text-align: right; height: 20px;"></td>
                     <td style="text-align: right; height: 20px;"></td>
                     <td style="border: 1px solid grey; border-collapse: collapse; text-align: center; height: 20px;">Total</td>
-                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$orders->sum}}</td>
+                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ number_format($orders->sum, 2)}}</td>
                     <td style="text-align: right; height: 20px;"></td>
                 </tr>
             </table>
         </div>
         
         <p>Payment: {{$orders->idpayment}}</p>
-        <p>Platform:{{$order->channel->shortname ?? '' }}</p><br/>
+        <p>Platform:{{$order->channel->shortname ?? '' }}</p>
         <p>Reference order: {{$orders->referenceorder}}</p>
         <div style="width: 100%; position: absolute; bottom: 10px;">
             <p style="text-align: center;">{!! $orders->companyNote !!}</p>
