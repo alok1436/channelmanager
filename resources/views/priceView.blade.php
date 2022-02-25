@@ -795,9 +795,9 @@
             function getOnlinePrice() {
                 var channelforcheckprice = document.getElementById("channelforcheckprice").value;
                 if(channelforcheckprice == 5) {
-                    window.open('/newchannelmanager/api/cdiscountprice.php', '_blank');
+                    window.open('api/cdiscountprice.php', '_blank');
                 } else {
-                    window.open('/newchannelmanager/api/price.php?channelforcheckprice='+channelforcheckprice, '_blank');
+                    window.open('api/price.php?channelforcheckprice='+channelforcheckprice, '_blank');
                 }
             }
 
@@ -808,14 +808,14 @@
             function getOnlineQuantity() {
                 var channelforcheckprice = document.getElementById("channelforcheckprice").value;
                 if(channelforcheckprice == 5) {
-                    window.open('/newchannelmanager/api/cdiscountprice.php', '_blank');
+                    window.open('api/cdiscountprice.php', '_blank');
                 } else {
-                    window.open('/newchannelmanager/api/quantity.php?channelforcheckprice='+channelforcheckprice, '_blank');
+                    window.open('api/quantity.php?channelforcheckprice='+channelforcheckprice, '_blank');
                 }
             }
 
             function sendpriceandquantitytoplatform(productId) {
-                window.open('/newchannelmanager/api/sendpriceandquantitytoplatform.php?productId='+productId, '_blank');
+                window.open('api/sendpriceandquantitytoplatform.php?productId='+productId, '_blank');
             }
 
             function importProducts() {

@@ -308,6 +308,31 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            Check  first if there are item to be delivered to Amazon FBA by clicking here :
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <a href="{{ url('FBAontheway') }}" target="_blank" class="btn btn-info">FBA ON THE WAY</a>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            Download the actual level of the items in Amazon Warehouses :
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <a href="{{ url('api/fbaQuantity.php') }}" target="_blank" class="btn btn-info">CHECK VIA API ACTUAL QUANTITY</a>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            Maybe you can also check the FBA list in the database :
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <a href="{{ url('api/fbaProduct.php') }}" target="_blank" class="btn btn-info">CHECK VIA API Integrity FBA</a>
+                                        </div>
+                                    </div>
+                                    <?php /* ?>
                                     <div class="col-sm-3">
                                         <input type="button" class="btn btn-info btn-block send_courier" data-toggle="modal" data-target="#myModalNew" value="Download actual level" name="">
                                         <div class="modal fade" id="myModalNew" role="dialog">
@@ -399,13 +424,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
-                                        <a href="/newchannelmanager/api/fbaQuantity.php" target="_blank" class="btn btn-info btn-block send_courier">Check via API actual quantity</a>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <a href="/newchannelmanager/api/fbaProduct.php" target="_blank" class="btn btn-info btn-block send_courier">Check via API Integrity FBA</a>
-                                    </div>
-                                    
+                                    <?php */ ?>
+                                    <div class="row mb-2">
                                     <div class="col-xs-12 table-responsive">
                                         <style>
                                             th {
@@ -489,6 +509,15 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                    </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-4">
+                                            After you check the quantity to ship, click here :
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <a href="createExcel" class="btn btn-info">Send quantites to FBA</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

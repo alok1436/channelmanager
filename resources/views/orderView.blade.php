@@ -1050,7 +1050,7 @@ input[type=checkbox], input[type=radio] {
             
                             //     type: "GET",
             
-                            //     url: "/newchannelmanager/api/updateOrder.php",
+                            //     url: "api/updateOrder.php",
             
                             //     data: data,
             
@@ -1072,7 +1072,7 @@ input[type=checkbox], input[type=radio] {
             
                             // });
             
-                            window.location.href = '/newchannelmanager/api/updateOrder.php?orderId='+deleid;
+                            window.location.href = 'api/updateOrder.php?orderId='+deleid;
             
                             return true;
             
@@ -1088,7 +1088,7 @@ input[type=checkbox], input[type=radio] {
             
             function getAmazonOrders() {
             
-                window.open('/newchannelmanager/api/orders.php', '_blank');
+                window.open('api/orders.php', '_blank');
             
             }
             
@@ -1096,7 +1096,7 @@ input[type=checkbox], input[type=radio] {
             
             function getEbayOrders() {
             
-                window.open('/newchannelmanager/api/ebayOrders.php', '_blank');
+                window.open('api/ebayOrders.php', '_blank');
             
             }
             
@@ -1112,7 +1112,7 @@ input[type=checkbox], input[type=radio] {
             
             function getCdiscountOrders() {
             
-                window.open('/newchannelmanager/api/cdiscountorder.php', '_blank');
+                window.open('api/cdiscountorder.php', '_blank');
             
             }
             

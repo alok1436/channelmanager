@@ -1352,7 +1352,7 @@
 
             function getNewAmazonProducts() {
                 var channelforchecknewprouducts = document.getElementById("channelforchecknewprouducts").value;
-                window.open('/newchannelmanager/api/product.php?channelforchecknewprouducts='+channelforchecknewprouducts, '_blank');
+                window.open('api/product.php?channelforchecknewprouducts='+channelforchecknewprouducts, '_blank');
             }
 
             function importProducts() {

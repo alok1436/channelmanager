@@ -4,6 +4,7 @@
 /public/export
 public/create_csv
 public/courier_csv
+public/api/config.php
 /storage/*.key
 /vendor
 /.idea
