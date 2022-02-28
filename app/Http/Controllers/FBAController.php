@@ -379,20 +379,20 @@ class FBAController extends Controller {
                         $drawing->setWorksheet($spreadsheet->getActiveSheet());
                         $worksheet->getRowDimension($num)->setRowHeight(90);
                         $worksheet->getStyle('A'.$num)->getAlignment()->setIndent(1);
-                        
-                        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                        $drawing->setPath(public_path('assets/images/DynaSun_Logo_quadrat.jpg')); // put your path and image here   
-                        $drawing->setCoordinates('B'.$num);
-                        $drawing->setOffsetX(1); 
-                        $drawing->setOffsetY(27); 
-                        $drawing->setWidth(72);
-                        $drawing->setWorksheet($spreadsheet->getActiveSheet());
+                        $worksheet->getCell('A'.($num))->setValue($product->sku);
+                        // $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                        // $drawing->setPath(public_path('assets/images/DynaSun_Logo_quadrat.jpg')); // put your path and image here   
+                        // $drawing->setCoordinates('B'.$num);
+                        // $drawing->setOffsetX(1); 
+                        // $drawing->setOffsetY(27); 
+                        // $drawing->setWidth(72);
+                        // $drawing->setWorksheet($spreadsheet->getActiveSheet());
 
                         $num++;
-                            $worksheet->getCell('A'.($num))->setValue($product->sku);
-                        $num++;
-                            $worksheet->getCell('A'.($num))->setValue('');
-                        $num++;
+                        //     $worksheet->getCell('A'.($num))->setValue($product->sku);
+                        // $num++;
+                        //     $worksheet->getCell('A'.($num))->setValue('');
+                        // $num++;
                     }
 
                     DB::table('fba_shipped')
