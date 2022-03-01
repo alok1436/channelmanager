@@ -5370,15 +5370,15 @@ class OrderController extends Controller
 
                 $idorder = $arr->idorder;
 
-                // DB::table('orderitem')
+                DB::table('orderitem')
 
-                //     ->where('idorder',          '=', $idorder)
+                    ->where('idorder',          '=', $idorder)
 
-                //     ->update([
+                    ->update([
 
-                //         'printedshippingok'    => 1
+                        'printedshippingok'    => 1
 
-                //     ]);
+                    ]);
 
                 
 
@@ -5424,15 +5424,15 @@ class OrderController extends Controller
 
                 foreach($multiOrders as $order) {
 
-                    // DB::table('orderitem')
+                    DB::table('orderitem')
 
-                    //     ->where('idorder',          '=', $order->idorder)
+                        ->where('idorder',          '=', $order->idorder)
 
-                    //     ->update([
+                        ->update([
 
-                    //        'printedshippingok'    => 1
+                           'printedshippingok'    => 1
 
-                    //     ]);
+                        ]);
 
 
 
@@ -5490,11 +5490,7 @@ class OrderController extends Controller
         $excelFile = $destinationPath.'/'.'order_'.time().'.xlsx';
 
         Excel::store(new PrintOrderExport($orders, $idwarehouse), 'orders_'.time().'.xls', 'order_pdf');
-//dd($excelFile);
-        // $files = array();
-        // $files[] = $pdffile;
-        // $files[] = $excelFile;
-
+ 
         $zip        = new ZipArchive;
         $fileName   = time()."_order.zip";
 
