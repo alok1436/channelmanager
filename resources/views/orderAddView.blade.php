@@ -132,7 +132,7 @@
                                     <select class="form-control" name="productid" id="productid">
                                         <option value="">Select Product</option>
                                         @foreach ($products as $key => $row)
-                                        <option value="{{$row->productid}}">{{$row->nameshort}}</option>
+                                        <option value="{{$row->productid}}">{{$row->sku}}</option>
                                         @endforeach
                                     </select>    
                                 </div>
