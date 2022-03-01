@@ -201,19 +201,19 @@
                                     </td>
                                     <td class="text-center">{{$order->product->modelcode ?? ''}}</td>
                                     <td class="td-field price text-right">
-                                         <span  class="field-value">{{$order->inv_price ? $order->inv_price : ''}}</span>
+                                         <span  class="field-value">{{$order->inv_price ? number_format($order->inv_price, 2) : ''}}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control priceInp" placeholder="" data-action="orderpriceupdate" value="{{$order->inv_price}}" data-id="{{$order->idorder}}" data-field="inv_price">
                                         </div>
                                     </td>
                                     <td class="td-field total text-right">
-                                         <span  class="field-value">{{ $total }}</span>
+                                         <span  class="field-value">{{ number_format($total,2) }}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control totalInp" placeholder="" value="{{ $order->inv_price*$order->quantity }}" data-id="{{$order->idorder}}" data-field="inv_total">
                                         </div>
                                     </td>
                                     <td class="td-field text-center">
-                                         <span  class="field-value">{{$order->inv_vat !='' ? $order->inv_vat : $order->channel->vat }}</span>
+                                         <span  class="field-value">{{$order->inv_vat !='' ? number_format($order->inv_vat, 2) : number_format($order->channel->vat,2) }}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control vatInp" placeholder="" data-action="orderpriceupdate" value="{{$order->inv_vat !='' ? $order->inv_vat : $order->channel->vat }}" data-id="{{ $order->idorder }}" data-field="inv_vat">
                                         </div>
@@ -252,19 +252,19 @@
                                     </td>
                                     <td class="text-center">{{$item->product->modelcode ?? ''}}</td>
                                     <td class="td-field price text-right">
-                                         <span  class="field-value">{{$item->inv_price ? $item->inv_price : 0}}</span>
+                                         <span  class="field-value">{{$item->inv_price ? number_format($item->inv_price, 2) : 0}}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control priceInp" placeholder="" data-action="orderpriceupdate" value="{{$item->inv_price}}" data-id="{{$item->idorder}}" data-field="inv_price">
                                         </div>
                                     </td>
                                     <td class="td-field total text-right">
-                                         <span  class="field-value">{{ $item->inv_price*$item->quantity }}</span>
+                                         <span  class="field-value">{{ number_format($item->inv_price*$item->quantity, 2) }}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control totalInp" placeholder="" value="{{$item->inv_price*$item->quantity}}" data-id="{{$item->idorder}}" data-field="inv_total">
                                         </div>
                                     </td>
                                     <td class="td-field text-center">
-                                         <span  class="field-value">{{$item->inv_vat !='' ? $item->inv_vat : $item->channel->vat }}</span>
+                                         <span  class="field-value">{{$item->inv_vat !='' ?  number_format($item->inv_vat, 2) : number_format($item->channel->vat ,2)}}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control vatInp" placeholder="" data-action="orderpriceupdate" value="{{$item->inv_vat !='' ? $item->inv_vat : $item->channel->vat }}" data-id="{{ $item->idorder }}" data-field="inv_vat">
                                         </div>
@@ -278,13 +278,13 @@
                                     <td style="text-align: right;"></td>
                                     <td style=""></td>
                                     <td class="td-field text-right">
-                                         <span  class="field-value">{{ $order->orderInvoice->shipping }}</span>
+                                         <span  class="field-value">{{ number_format( $order->orderInvoice->shipping, 2) }}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control shippingInp" placeholder="" data-action="orderinvoice" value="{{ $order->orderInvoice->shipping }}" data-id="{{$order->idorder}}" data-field="shipping">
                                         </div>
                                     </td>
                                     <td class="td-field text-center">
-                                         <span  class="field-value">{{ $order->orderInvoice->vat }}</span>
+                                         <span  class="field-value">{{ number_format($order->orderInvoice->vat, 2) }}</span>
                                         <div class="field-edit">
                                             <input type="text" class="form-control shippingVat" placeholder=""  data-action="orderinvoice"  value="{{ $order->orderInvoice->vat }}" data-id="{{$order->idorder}}" data-field="vat">
                                         </div>
@@ -302,7 +302,7 @@
                                     <td style="text-align: right;"></td>
                                     <td style=""></td>
                                     <?php $dff = $order->sum - ($total+$order->orderInvoice->shipping);  ?>
-                                    <td style="" class="diff text-right">{{ $dff > 0 ? $dff : 0 }}</td>
+                                    <td style="" class="diff text-right">{{ $dff > 0 ? number_format($dff,2) : 0 }}</td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right;"></td>
