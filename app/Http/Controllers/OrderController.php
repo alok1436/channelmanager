@@ -26,6 +26,8 @@ use PDF;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\SimpleXLSX;
 use DNS1D; 
+use App\Exports\PrintOrderExport;
+
 use Codexshaper\WooCommerce\Facades\Order; 
 
 class OrderController extends Controller
@@ -5334,7 +5336,7 @@ class OrderController extends Controller
 
         if($idwarehouse != ""){
 
-            $orders = DB::table('orderitem')
+            $orders = OrderItem::query()
 
                     ->leftjoin('companyinfo', 'companyinfo.idcompany', '=', 'orderitem.idcompany')
 
@@ -5362,21 +5364,21 @@ class OrderController extends Controller
 
             $j      = 0;
 
-          
+       //  dd($orders);
 
             foreach($orders as $arr) {
 
                 $idorder = $arr->idorder;
 
-                DB::table('orderitem')
+                // DB::table('orderitem')
 
-                    ->where('idorder',          '=', $idorder)
+                //     ->where('idorder',          '=', $idorder)
 
-                    ->update([
+                //     ->update([
 
-                        'printedshippingok'    => 1
+                //         'printedshippingok'    => 1
 
-                    ]);
+                //     ]);
 
                 
 
@@ -5422,15 +5424,15 @@ class OrderController extends Controller
 
                 foreach($multiOrders as $order) {
 
-                    DB::table('orderitem')
+                    // DB::table('orderitem')
 
-                        ->where('idorder',          '=', $order->idorder)
+                    //     ->where('idorder',          '=', $order->idorder)
 
-                        ->update([
+                    //     ->update([
 
-                           'printedshippingok'    => 1
+                    //        'printedshippingok'    => 1
 
-                        ]);
+                    //     ]);
 
 
 
@@ -5471,17 +5473,50 @@ class OrderController extends Controller
             
 
         }
-
-        //dd($orders);
-
+ 
         $customPaper    = array(0,0,1000.00,650.00);
 
         $pdf            = PDF::loadView('pdf', compact('orders'))->setPaper($customPaper, 'portrait');
 
         //return $pdf->stream();
+        
+        $destinationPath = public_path('order_pdf');
+        if (! File::exists( $destinationPath ) ) {
+            File::makeDirectory( $destinationPath );
+        }
+        $pdffile = $destinationPath.'/'.'order_'.time().uniqid().'.pdf';
+        $pdf->save($pdffile);
 
-        return $pdf->download(time().'.pdf');
+        $excelFile = $destinationPath.'/'.'order_'.time().'.xlsx';
 
+        Excel::store(new PrintOrderExport($orders, $idwarehouse), 'orders_'.time().'.xls', 'order_pdf');
+//dd($excelFile);
+        // $files = array();
+        // $files[] = $pdffile;
+        // $files[] = $excelFile;
+
+        $zip        = new ZipArchive;
+        $fileName   = time()."_order.zip";
+
+        if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
+            $files = File::files(public_path()."/order_pdf/");
+            foreach ($files as $key => $value) {
+                $file = basename($value);
+                if(pathinfo($file, PATHINFO_EXTENSION) !='png'){
+                    $zip->addFile($value, $file);
+                }
+            }
+            $zip->close();
+        }
+
+        $files = File::files(public_path()."/order_pdf/");
+        foreach ($files as $key => $value) {
+            $file = basename($value);
+            File::delete(public_path()."/order_pdf/".$file);
+        }
+       // Session::flash('download.in.the.next.request', $fileName);
+       // return Redirect::to('orderView');
+        return response()->download(public_path($fileName));
     }
 
 

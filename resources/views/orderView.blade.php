@@ -967,7 +967,7 @@ input[type=checkbox], input[type=radio] {
                 
             
                 $("#printDocument").on('click', function() {
-            
+                    $("#documentModal").modal('hide');
                     var idwarehouse      = $("#idwarehouse").val();
             
                     window.location.href = 'printDocuments?idwarehouse='+idwarehouse;
