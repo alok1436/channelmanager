@@ -24,7 +24,7 @@
                 <tr>
                     <td>
                     @if($orders->linklogo != "" && $orders->linklogo != null)
-                        <img src="assets/{{$orders->linklogo}}" style="width: 100px;" alt="">
+                        <img src="assets/{{$orders->linklogo}}" style="width: 150px;" alt="">
                     @endif
                     </td>
                     <td style="text-align: right;">
@@ -90,15 +90,16 @@
                     <th style="width:10%; background: green; color: white; border: 1px solid grey; border-collapse: collapse;">Vat(%)</th>
                 </tr>
                 <tr>
-                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$orders->quantity}}</td>
+                    <td style="text-align: center; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$orders->quantity}}</td>
                     <td style="border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$orders->sku}}</td>
                     <td style="border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$orders->modelcode}}</td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$orders->inv_price}}</td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ number_format($total, 2)}}</td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$order->inv_vat !='' ? $order->inv_vat : $order->channel->vat }}</td>
                 </tr>
-                @if(isset($orders->multiOrders))
-                @foreach($orders->multiOrders as $item)
+                <?php $multi_orders = \App\Models\OrderItem::where('multiorder',$order->referenceorder)->get(); ?>
+                @if(isset($multi_orders))
+                @foreach($multi_orders as $item)
                  <?php 
                     $total += $item->inv_price*$item->quantity;
                     $itemVat = $item->inv_vat !='' ? $item->inv_vat : $order->channel->vat;
@@ -109,9 +110,9 @@
                     }
                  ?>
                 <tr>
-                    <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->quantity}}</td>
-                    <td style="border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->sku}}</td>
-                    <td style="border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->modelcode}}</td>
+                    <td style="text-align: center; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->quantity}}</td>
+                    <td style="border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->product->sku ?? ''}}</td>
+                    <td style="border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->product->modelcode ?? ''}}</td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->inv_price}}</td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{ number_format($item->inv_price*$item->quantity,2) }}</td>
                     <td style="text-align: right; border: 1px solid grey; border-collapse: collapse; height: 20px;">{{$item->inv_vat !='' ? $item->inv_vat : $item->channel->vat }}</td>

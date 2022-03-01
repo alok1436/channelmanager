@@ -12,7 +12,7 @@
                                 <tr>
                                     <td>
                                     @if($order->company && $order->company->linklogo)
-                                        <img src="{{ url('assets/'.$order->company->linklogo) }}" style="width: 100px;" alt="">
+                                        <img src="{{ url('assets/'.$order->company->linklogo) }}" style="width: 220px;" alt="">
                                     @endif
                                     </td>
                                     <td style="text-align: right;">
@@ -317,7 +317,7 @@
                                     <td style="text-align: right;"></td>
                                     <td style="text-align: right;"></td>
                                     <td style=""><strong>Total</strong></td>
-                                    <td style="" class="total text-right">{{$order->sum}}<input type="hidden" id="grandtotal" value="{{$order->sum}}" /></td>
+                                    <td style="" class="total text-right">{{ number_format($order->sum,2)}}<input type="hidden" id="grandtotal" value="{{$order->sum}}" /></td>
                                 </tr>
                             </table>
                         </div>

@@ -409,7 +409,7 @@ class OrderController extends Controller
             $order->save();
             
             $countqty = $request->totaladdrow;
-            
+           
             if($countqty > 0){
                 
                 for($i=0; $i< $countqty; $i++){
@@ -464,7 +464,7 @@ class OrderController extends Controller
                     
                 }
             }
-            
+         
             return response()->json([
                     'success'       =>  true,
                     'data'          => [],
