@@ -52,7 +52,7 @@
             $fromDate = new DateTime($date);
             
             $orders = $client->ListOrders($fromDate);
-            echo '<pre>'; print_r($orders); echo '</pre>'; exit();
+          //  echo '<pre>'; print_r($orders); echo '</pre>'; exit();
             if(isset($orders['NextToken'])) {
                 $nextToken = $orders['NextToken'];
                 $orders    = $orders['ListOrders'];
@@ -304,7 +304,7 @@
             }else{
                 echo 'Not any orders found '.$row->shortname.' in last week</br>';
             }
-            
+
             while($nextTokenFlag) {
                 $orders = $client->ListOrdersByNextToken($nextToken);
                 if(isset($orders['NextToken'])) {
