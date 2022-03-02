@@ -61,8 +61,9 @@
                 $nextToken = '';
                 $nextTokenFlag = false;
             }
+            // echo '<pre>'; print_r($orders); echo '</pre>';
             foreach ($orders as $order) {
-                //echo '<pre>'; print_r($order); exit();
+               
                 set_time_limit(0);
                 if(isset($order['BuyerEmail'])) {
                     $BuyerEmail                  = $order['BuyerEmail'];
@@ -444,6 +445,8 @@
                                 $sql = "INSERT INTO orderitem (idorderplatform, registeredtolagerstandok, multiorder, productid, referenceorder, sync, idcompany, referencechannel, weeksell, datee, quantity, sum, idpayment, idwarehouse, platformname, referencechannelname, country, email, currency, plz, city, region, order_item_id,inv_vat, email1, plz1, ship_service_level, transactionId, registeredtosolddayok, courierinformedok, trackinguploadedok, carriername, printedshippingok)
                                         VALUES ( '".$id."', ".$registeredtolagerstandok.", '".$multiorder."', '".$productId."', '".$id."','Synch with Amazon','".$idcompany."','".$idchannel."','".$dateweek."','".$newcdateform."','".$quantity."' ,'".$sum."','".$idpayment."','".$warehouse."','".$platform."','".$shortname."','".$countryname."','".$BuyerEmail."','".$currency."','".$PostalCode."','".$City."','".$StateOrRegion."','".$orderItemId."','".$vat."','".$BuyerEmail."','".$PostalCode."','".$shippingser."','".$transactionId."'  , ".$registeredtosolddayok."  , ".$courierinformedok."  , ".$trackinguploadedok." , '".$carref."' , ". $print_shipping.")";
                                 mysqli_query($conn, $sql);  
+
+                                echo $sql .'<br>';
                             } else {
                                 // if( $fullstatus =='AFN') {
                                 //     $carref = "FBA";
@@ -453,6 +456,7 @@
                                 // }
                                 $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', carriername = '".$carref."', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
                                 mysqli_query($conn, $sql);
+                                echo $sql .'<br>';
                             }
                         } else {
                             $currdate           = date("Y-m-d");
@@ -493,6 +497,7 @@
                                 $sql = "INSERT INTO orderitem (idorderplatform, tracking, registeredtolagerstandok, productid, referenceorder, sync, idcompany, referencechannel, weeksell, datee, quantity, sum, idpayment, idwarehouse, platformname, referencechannelname, country, email, currency, plz, city, region, order_item_id,inv_vat, email1, plz1, ship_service_level, transactionId, registeredtosolddayok, courierinformedok, trackinguploadedok, carriername, printedshippingok)
                                         VALUES ( '".$id."', '".$tracking."', ".$registeredtolagerstandok.", '".$productId."', '".$id."','Synch with Amazon','".$idcompany."','".$idchannel."','".$dateweek."','".$newcdateform."','".$quantity."' ,'".$sum."','Amazon','".$warehouse."','".$platform."','".$shortname."','".$countryname."','".$BuyerEmail."','".$currency."','".$PostalCode."','".$City."','".$StateOrRegion."','".$orderItemId."','".$vat."','".$BuyerEmail."','".$PostalCode."','".$shippingser."','".$transactionId."'  , ".$registeredtosolddayok."  , ".$courierinformedok."  , ".$trackinguploadedok." , '".$carref."' , ". $print_shipping.")";
                                 mysqli_query($conn, $sql);    
+                                echo $sql .'<br>';
                             }
                             /* ##wtd end */
                             $arrListOrderItemsPayload = array('AmazonOrderId' => "$id");

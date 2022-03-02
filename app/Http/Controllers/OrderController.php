@@ -5760,17 +5760,15 @@ class OrderController extends Controller
 
 
 
-                        $orderExist = DB::table("orderitem")
-
+                        $orderExist = DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
                                         ->where('referenceorder', '=', $id)
-
                                         ->first();
 
 
 
                         if(!empty($orderExist)) {
 
-                            $itemExist = DB::table("orderitem")
+                            $itemExist = DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
 
                                             ->where('referenceorder',   '=', $id)
 
@@ -5782,7 +5780,7 @@ class OrderController extends Controller
 
                             if(!empty($itemExist)) {
 
-                                DB::table("orderitem")
+                                DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
 
                                     ->where('referenceorder',   '=', $id)
 
@@ -5839,213 +5837,110 @@ class OrderController extends Controller
                                     ]);
 
                             } else {
-
-                                DB::table("orderitem")
-
+                                DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
                                     ->insert([
-
                                         'idorderplatform'           => $id,
-
                                         'registeredtolagerstandok'  => $registeredtolagerstandok, 
-
                                         'multiorder'                => $id,
-
                                         'referenceorder'            => $id,
-
                                         'sync'                      => 'Synch with Woocommerce', 
-
                                         'idcompany'                 => $idcompany,
-
                                         'referencechannel'          => $idchannel,
-
                                         'productid'                 => $productId,
-
                                         'weeksell'                  => $dateweek, 
-
                                         'datee'                     => $newcdateform,
-
                                         'delivery_Instructions'     => $customer_note,
-
                                         'quantity'                  => $quantity,
-
                                         'sum'                       => $sum, 
-
                                         'carriername'               => $carref, 
-
                                         'tracking'                  => $tracking,
-
                                         'idpayment'                 => $idpayment,
-
                                         'idwarehouse'               => $warehouse,
-
                                         'platformname'              => $platform, 
-
                                         'referencechannelname'      => $shortname,
-
                                         'customer'                  => $customer,
-
                                         'address1'                  => $address_1,
-
                                         'address2'                  => $address_2,
-
                                         'country'                   => $country,
-
                                         'currency'                  => $currency,
-
                                         'plz'                       => $PostalCode,
-
                                         'city'                      => $city, 
-
                                         'region'                    => $region,
-
                                         'inv_customer'              => $inv_customer,
-
                                         'inv_address1'              => $inv_address1,
-
                                         'inv_address2'              => $inv_address2,
-
                                         'country1'                  => $country1,
-
                                         'plz1'                      => $plz1,
-
                                         'city1'                     => $city1, 
-
                                         'telefon1'                  => $phone1,
-
                                         'region1'                   => $region1,
-
                                         'order_item_id'             => $orderItemId,
-
                                         'transactionId'             => $transactionId,
-
                                         'registeredtosolddayok'     => $registeredtosolddayok,
-
                                         'courierinformedok'         => $courierinformedok, 
-
                                         'trackinguploadedok'        => $trackinguploadedok,
-
                                         'printedshippingok'         => $print_shipping
-
                                     ]);
-
                             }
 
                         } else {
-
-                            DB::table("orderitem")
-
+                            DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
                                 ->insert([
-
                                     'idorderplatform'           => $id,
-
                                     'registeredtolagerstandok'  => $registeredtolagerstandok, 
-
                                     'referenceorder'            => $id,
-
-                                    'sync'                      => 'Synch with Woocommerce', 
-
+                                    'sync'                      => 'Synch with Woocommerce',
                                     'idcompany'                 => $idcompany,
-
                                     'referencechannel'          => $idchannel,
-
                                     'productid'                 => $productId,
-
                                     'weeksell'                  => $dateweek, 
-
                                     'datee'                     => $newcdateform,
-
                                     'quantity'                  => $quantity,
-
                                     'inv_customer'              => $inv_customer,
-
                                     'inv_address1'              => $inv_address1,
-
                                     'inv_address2'              => $inv_address2,
-
                                     'country1'                  => $country1,
-
                                     'delivery_Instructions'     => $customer_note,
-
                                     'plz1'                      => $plz1,
-
                                     'city1'                     => $city1, 
-
                                     'telefon1'                  => $phone1,
-
                                     'region1'                   => $region1,
-
                                     'sum'                       => $sum, 
-
                                     'idpayment'                 => $idpayment,
-
                                     'idwarehouse'               => $warehouse,
-
                                     'platformname'              => $platform, 
-
                                     'referencechannelname'      => $shortname,
-
                                     'country'                   => $country,
-
                                     'currency'                  => $currency,
-
                                     'plz'                       => $PostalCode,
-
                                     'city'                      => $city,
-
                                     'carriername'               => $carref, 
-
                                     'inv_customer'              => $inv_customer,
-
                                     'inv_address1'              => $inv_address1,
-
                                     'inv_address2'              => $inv_address2,
-
                                     'country1'                  => $country1,
-
                                     'plz1'                      => $plz1,
-
                                     'city1'                     => $city1, 
-
                                     'telefon1'                  => $phone1,
-
                                     'region1'                   => $region1,
-
                                     'tracking'                  => $tracking, 
-
                                     'customer'                  => $customer,
-
                                     'address1'                  => $address_1,
-
                                     'address2'                  => $address_2,
-
                                     'region'                    => $region,
-
                                     'order_item_id'             => $orderItemId,
-
                                     'transactionId'             => $transactionId,
-
                                     'registeredtosolddayok'     => $registeredtosolddayok,
-
                                     'courierinformedok'         => $courierinformedok, 
-
                                     'trackinguploadedok'        => $trackinguploadedok, 
-
                                     'printedshippingok'         => $print_shipping
 
                                 ]);
-
                         }             
-
                     }
-
                 }
-
-
-
                 if(count($noneProducts) > 0) {
-
                     Session::put('noneProducts', $noneProducts);
-
                 }
 
             }
