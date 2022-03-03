@@ -1,5 +1,5 @@
 <?php 
-     ini_set('max_execution_time', 1500000);
+   //  ini_set('max_execution_time', 1500000);
      ini_set('memory_limit', -1);
     // ini_set('mysql.connect_timeout', 1500000);
     // ini_set('default_socket_timeout', 1500000);
@@ -421,9 +421,9 @@
                                                         $result = mysqli_query($conn, $sql);
                                                         if ($result->num_rows > 0) {
                                                             $sql    = "UPDATE prices SET itemId = '".$itemID."', ebayActive=1, online_price = ".$online_price.", country='".$country."', shipping = ".$online_shipping.", online_shipping = ".$online_shipping.", online_quentity ='".$quantity."', last_update_shipping='".date('Y-m-d H:i:s')."', last_update_qty_date='".date('Y-m-d H:i:s')."', last_update_date='".date('Y-m-d H:i:s')."', updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
-                                                            if($product_data->productid == 21) {
+                                                            //if($product_data->productid == 21) {
                                                                 echo $sql."<br>";
-                                                            }
+                                                            //}
                                                             mysqli_query($conn, $sql);
                                                         } else {
                                                             if($product_data->virtualkit == "Yes") {
