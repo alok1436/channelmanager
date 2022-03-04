@@ -16,6 +16,7 @@
 */
 
 Route::get('/',                                 'DashboardController@index')->name('home');
+Route::get('amazon/orders',                     'OrderController@amazonOrders')->name('amazonOrders');
 Route::get('/dashboard',                        'DashboardController@index')->name('dashboard');
 Route::get('/fixWarning/{id}',                  'DashboardController@fixWarning')->name('fixWarning');
 

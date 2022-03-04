@@ -51,8 +51,8 @@
             $date     = date("Y-m-d", strtotime("-1 week"));
             $fromDate = new DateTime($date);
             
-            $orders = $client->ListOrders($fromDate);
-            ///echo '<pre>'; print_r($orders); echo '</pre>'; exit();
+            $orders = $client->ListOrders($fromDate, $allMarketplaces = true, $states = ['Shipped','Unshipped']);
+           // echo '<pre>'; print_r($orders); echo '</pre>'; exit();
             if(isset($orders['NextToken'])) {
                 $nextToken = $orders['NextToken'];
                 $orders    = $orders['ListOrders'];

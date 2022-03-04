@@ -27,11 +27,26 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use App\SimpleXLSX;
 use DNS1D; 
 use App\Exports\PrintOrderExport;
+use MCS\MWSClient;
 
 use Codexshaper\WooCommerce\Facades\Order; 
 
 class OrderController extends Controller
 {
+    public function amazonOrders(Request $request) {
+        $client = new MWSClient([
+                'Marketplace_Id'    => 'A13V1IB3VIYZZH',
+                'Seller_Id'         => 'A1MYXZTPY3MSOT',
+                'Access_Key_ID'     => 'AKIAJV7MBCTERNQSHBIA',
+                'Secret_Access_Key' => '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',
+                'MWSAuthToken'      => 'amzn.mws.86b8f7b5-4e0f-5488-484d-e89c8e491acf' // Optional. Only use this key if you are a third party user/developer
+            ]);
+        $date     = date("Y-m-d", strtotime("-1 week"));
+        $fromDate = new \DateTime($date);
+        $orders = $client->ListOrders($fromDate, $allMarketplaces = false, $states = [
+        'Shipped', 'PartiallyShipped']);
+       echo '<pre>'; print_r($orders); echo '</pre>'; exit();
+    }
     public function orderInvoiceCreate(Request $request, $id) {
         $order = OrderItem::findOrFail($id);
 
