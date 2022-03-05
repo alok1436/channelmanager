@@ -25,7 +25,8 @@
     //echo '<pre>'; print_r($row=mysqli_fetch_object($data)); echo '</pre>'; exit();
     $noneExistingProduct = array();
     while ($row=mysqli_fetch_object($data)) {
-        echo 'Getting orders for '.$row->shortname.'</br>';
+        try{
+        
         if($row->aws_acc_key_id != NULL || $row->aws_secret_key_id != NULL || $row->merchant_id != NULL || $row->market_place_id != NULL || $row->mws_auth_token != NULL) {  
             $aws_acc_key_id     = $row->aws_acc_key_id;  // these prod keys are different from sandbox keys
             $aws_secret_key_id  = $row->aws_secret_key_id;  // these prod keys are different from sandbox keys
@@ -61,7 +62,7 @@
                 $nextToken = '';
                 $nextTokenFlag = false;
             }
-           
+           echo 'Getting orders for '.$row->shortname.'</br>';
             foreach ($orders as $order) {
                 echo 'order id:'. $order['AmazonOrderId'].'</br>';
                  // echo '<pre>'; print_r($orders); echo '</pre>';
@@ -510,6 +511,9 @@
         }
         
         echo 'orders synced for '.$row->shortname.'</br>';
+        }catch(Exception $e){
+            echo $e->getMessage().$row->shortname.'</br>';
+        }
     }
 
     //$noneExistingProduct['idchannel'] = !empty($sqlFetchAssoc) ? $sqlFetchAssoc['idchannel'] : '';

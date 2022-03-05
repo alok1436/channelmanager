@@ -197,6 +197,7 @@
                             <span class="field-value">{{$row->company ? $row->company->shortname : ''}}</span>
                             <div class="field-edit">
                                 <select name="idcompany" class="form-control" data-id="{{$row->idorder}}" data-field="idcompany">
+                                <option value="">Select</option>
                                 @foreach ($companies as $key => $comp)
                                 <option value="{{$comp->idcompany}}"
                                 @if ($comp->idcompany==$row->idcompany)
@@ -215,6 +216,7 @@
                                 <span class="field-value">{{$row->channel ? $row->channel->shortname : ''}}</span>
                                 <div class="field-edit">
                                     <select name="referencechannel" class="form-control" data-id="{{$row->idorder}}" data-field="referencechannel">
+                                    <option value="">Select</option>
                                     @foreach ($channels as $key => $channel)
                                     <option value="{{$channel->idchannel}}"
                                     @if($channel->idchannel==$row->referencechannel)
@@ -297,6 +299,7 @@
                                 <span class="field-value">{{$row->idpayment}}</span>
                                 <div class="field-edit">
                                     <select name="idpayment" class="form-control" data-id="{{$row->idorder}}" data-field="idpayment">
+                                    <option value="">Select</option>
                                     @foreach ($payments as $key => $payment)
                                     <option value="{{$payment->shortname}}"
                                     @if ($payment->shortname==$row->idpayment)
@@ -377,6 +380,7 @@
                                     <span  class="field-value">{{$row->country}}</span>
                                     <div class="field-edit">
                                         <select name="country" class="form-control" data-id="{{$row->idorder}}" data-field="country">
+                                        <option value="">Select</option>
                                         @foreach ($countries as $key => $country)
                                         <option value="{{$country->shortname}}"
                                         @if ($country->shortname==$row->currency)
@@ -430,6 +434,7 @@
                         <span  class="field-value">{{$row->warehouse->shortname}}</span>
                         <div class="field-edit">
                             <select name="idwarehouse" class="form-control w-100" data-id="{{$row->idorder}}" data-field="idwarehouse">
+                            <option value="">Select</option>
                             @foreach ($warehouses as $key => $ware)
                             <option value="{{$ware->idwarehouse}}"
                             @if ($ware->idwarehouse==$row->idwarehouse)
@@ -457,6 +462,7 @@
                                 <span class="field-value">{{$row->carriername}}</span>
                                 <div class="field-edit">
                                     <select name="carriername" class="form-control w-100" data-id="{{$row->idorder}}" data-field="carriername">
+                                    <option value="">Select</option>
                                     @foreach ($carriers as $key => $carrier)
                                     <option value="{{$carrier->shortname}}" @if ($carrier->shortname==$row->carriername) selected="" @endif >
                                     {{$carrier->shortname}}

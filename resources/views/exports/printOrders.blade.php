@@ -2,6 +2,7 @@
     <thead>
     <tr>
         <th>Quantity</th>
+        <th>Sku</th>
         <th>Item</th>
         <th>Hall</th>
         <th>Area</th>
@@ -14,6 +15,7 @@
         <tr>
             <td>{{ $row->quantity }}</td>
             <td>{{ $row->product ? $row->product->namelong : '' }}</td>
+            <td>{{ $row->product ? $row->product->sku : '' }}</td>
             <?php $legerstand = $row->product ? $row->product->lagerStand()->where('idwarehouse', $idwarehouse)->first() : '' ?>
             <td>{{ $legerstand ? $legerstand->hall : '' }}</td>
             <td>{{ $legerstand ? $legerstand->area : '' }}</td>
