@@ -287,9 +287,6 @@
                         <li><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">FBA </span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="FBAView">FBA </a></li>
-                                <li><a href="FBAontheway">FBA ontheway</a></li>
-                                <li><a href="#">FBA Premium</a></li>
-                                <li><a href="#">Dropshipping </a></li>
                             </ul>
                         </li>
                         <li><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Vendor </span></a>
