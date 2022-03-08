@@ -107,6 +107,10 @@
                 display: block;
                 display: none;
             }
+            div.dataTables_wrapper div.dataTables_processing {
+                position: absolute;
+                top: 53px !important;
+            }
         </style>
     </head>
 
@@ -300,7 +304,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xs-12 table-responsive">
-                                        <table id="myTable" class="table table-striped table-bordered" style="width: 100%;">
+                                        <table id="finanzstatus-table" class="table table-striped table-bordered" style="width: 100%;">
                                             <thead>
                                                 <tr>
                                                     <th>Sort</th>
@@ -326,6 +330,7 @@
                                                     <th>Selling Range (is related to frequency of delivery from Manufacturer)</th>                                           
                                                 </tr>
                                             </thead>
+                                            <?php /* ?>
                                             <tbody>
                                                 @foreach($products as $row)
                                                 <tr>
@@ -422,8 +427,9 @@
                                                 </tr>
                                                 @endforeach
                                             </tbody>
+                                            <?php */ ?>
                                         </table>
-                                        {{$products->links()}}
+                                     
                                     </div>
                                 </div>
                             </div>
@@ -437,6 +443,84 @@
         </div>
 
         <script>
+            
+            $(function() {
+            var t = $('#finanzstatus-table').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 100,
+                dom: 'lpftrip',
+                "order": [[ 1, "asc" ]],
+                "lengthMenu": [[100, 200, 500], [100, 200, 500]],
+                "language": { processing: '<i class="fa fa-spinner fa-spin fa-4x fa-fw"></i><span class="sr-only">Loading...</span> '},
+                ajax: "{{ route('ajax.finanzstatus') }}",
+                columns: [
+                    { data: 'sort',             name: 'sort' },
+                    { data: 'modelcode',        name: 'modelcode' },
+                    { data: 'nameshort',        name: 'nameshort' },
+                    { data: 'subcat',           name: 'subcat' },
+                    { data: 'active',           name: 'active' },
+                    { data: 'virtualkit',       name: 'virtualkit' },
+                    @foreach($warehouses as $res)
+                    { data: '{{$res->shortname}}',  name: '{{$res->shortname}}' },
+                    @endforeach
+                    { data: 'total_qty',        name: 'total_qty' },
+                    { data: 'price',            name: 'price' },
+                    { data: 'dateprice',        name: 'dateprice' },
+                    { data: 'total',            name: 'total' },
+                    { data: 'itemsinpaket1',    name: 'itemsinpaket1' },
+                    { data: 'itemsinpaket2',    name: 'itemsinpaket2' },
+                    { data: 'itemsinpaket3',    name: 'itemsinpaket3' },
+                    { data: 'manufacturer_area',     name: 'manufacturer_area' },
+                    { data: 'codemanu',         name: 'codemanu' },
+                    { data: 'content',          name: 'content' },
+                    { data: 'ordertime',        name: 'ordertime' },
+                    { data: 'orderrangetime',   name: 'orderrangetime' },
+                ],
+                createdRow: function(row, data, index) {
+                    $('th', row).eq(0).addClass('sort_head');
+                    $('td', row).eq(5).addClass('td-field'); // 6 is index of column
+                    $('td', row).eq(6).addClass('td-field');
+                    $('td', row).eq(7).addClass('td-field'); 
+                    $('td', row).eq(8).addClass('td-field'); 
+                    $('td', row).eq(9).addClass('td-field'); 
+                    $('td', row).eq(10).addClass('td-field'); 
+                    $('td', row).eq(11).addClass('td-field'); 
+                    $('td', row).eq(12).addClass('td-field');
+                    $('td', row).eq(13).addClass('td-field');
+                    $('td', row).eq(14).addClass('td-field');
+                    $('td', row).eq(15).addClass('td-field');
+                    $('td', row).eq(16).addClass('td-field');
+                    $('td', row).eq(17).addClass('td-field');
+                    $('td', row).eq(18).addClass('td-field');
+                    $('td', row).eq(19).addClass('td-field');
+                },
+                
+            });
+            
+            t.on( 'order.dt search.dt page.dt', function (data) {
+                
+                $(".sort_head").each(function(){ console.log('hello');
+                    var that = $(this);
+                    // console.log('sdfsdfsdfd', that.attr('aria-sort'));
+                    // that.addClass('hellllo');
+                    if(that.hasClass('sorting_asc')){
+                        $("#orderByColumn").val(that.attr('data-colmun'));
+                        $("#orderByValue").val('asc');
+                    }
+                    
+                    if(that.hasClass('sorting_desc')){
+                        $("#orderByColumn").val(that.attr('data-colmun'));
+                        $("#orderByValue").val('desc');
+                    }
+                    
+                });
+                
+                // t.column(0, {search:'applied', order:'applied', page: 'applied'}).nodes().each( function (cell, i) {
+                //     cell.innerHTML = i+1;
+                // } );
+            } );
+        });   
             $(document).ready(function() {
                 $(document).on("click",".td-field,.dtr-data",function(event) {
                     $(".field-value").show();
@@ -445,7 +529,7 @@
                     $(this).find('.field-edit').show();
                 });
                 
-                $('.field-edit .form-control').change(function(event) {
+                $(document).on('change','.field-edit .form-control', function(event) {
                     $('.field-edit').hide();
                     var label=$(this).parents(".field-edit").siblings('.field-value');
                     if($(this)[0].nodeName=='SELECT'){

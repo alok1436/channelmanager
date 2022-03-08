@@ -163,6 +163,7 @@ Route::get('/soldweeklyView',                   'SoldweeklyController@soldweekly
 
 Route::get('/finanzstatusView',                 'FinanzstatusController@index')->name('finanzstatusView');
 Route::get('/finanzstatusUpdate',               'FinanzstatusController@finanzstatusUpdate')->name('finanzstatusUpdate');
+Route::get('ajax/finanzstatus/get',              'FinanzstatusController@ajaxFinanzstatus')->name('ajax.finanzstatus');
 
 Route::get('/FBAView',                          'FBAController@index')->name('FBAView');
 Route::post('/importFBAFile',                   'FBAController@importFBAFile')->name('importFBAFile');
