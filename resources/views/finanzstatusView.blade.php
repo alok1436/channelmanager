@@ -107,9 +107,15 @@
                 display: block;
                 display: none;
             }
-            div.dataTables_wrapper div.dataTables_processing {
+            /*div.dataTables_wrapper div.dataTables_processing {
                 position: absolute;
                 top: 53px !important;
+            }*/
+            /* Ensure that the demo table scrolls */
+            th, td { white-space: nowrap; }
+            div.dataTables_wrapper {
+                /*width: 800px;
+                margin: 0 auto;*/
             }
         </style>
     </head>
@@ -450,6 +456,13 @@
                 serverSide: true,
                 pageLength: 100,
                 dom: 'lpftrip',
+                scrollY:"600px",
+                scrollX:true,
+                scrollCollapse: true,
+                // fixedColumns:   {
+                //     left:3,
+                //     right: 1
+                // },
                 "order": [[ 1, "asc" ]],
                 "lengthMenu": [[100, 200, 500], [100, 200, 500]],
                 "language": { processing: '<i class="fa fa-spinner fa-spin fa-4x fa-fw"></i><span class="sr-only">Loading...</span> '},

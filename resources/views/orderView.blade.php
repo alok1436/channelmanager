@@ -127,6 +127,9 @@
                                          <div class="mr-3">
                                             <a href="orderView?show_deleted_orders=1&is_search=1" class="btn btn-warning">Show deleted orders</a>
                                         </div>
+                                        <div class="mr-3">
+                                            <a href="{{ route('order.documents') }}" class="btn btn-success">Get files</a>
+                                        </div>
                                     </div>
                                     
 

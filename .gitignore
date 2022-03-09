@@ -6,6 +6,7 @@ public/create_csv
 public/courier_csv
 public/api/config.php
 public/api/vendor
+/public/documents/
 public/api/ebay/vendor
 /storage/*.key
 /vendor

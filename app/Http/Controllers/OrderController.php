@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Channel;
 use App\Models\OrderItem;
+use App\Models\Document;
 use App\Models\OrderToPay;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -200,8 +201,31 @@ class OrderController extends Controller
 
         return View::make('orderView', $params);
     }
+
+
+    public function reportDocuments(Request $request){
+        $documents = Document::orderBy('id','desc')->paginate(50);
+        return View::make('order_report_documents', compact('documents'));
+    }
     
-     public function getInvoiceForm(Request $request) {
+    public function reportDocumentsDownload(Request $request){
+        $id = $request->id;
+        if($id > 0){
+            try{
+                $document = Document::find($id);
+                if($document){
+                    $file = public_path($document->file);
+                    return response()->download($file);
+                }
+            }catch(\Throwable  $e){
+                return redirect()->back()->with('error','Sorry, This file doesn\'t exist!');
+            }
+        }else{
+            return redirect()->back()->with('error','Invalid request');
+        }
+    }
+
+    public function getInvoiceForm(Request $request) {
         $idorder        = $request->id;
         $row = OrderItem::find($idorder);
         $countries  = DB::table("country")->get();
@@ -214,7 +238,6 @@ class OrderController extends Controller
            
             $idorder        = $request->id;
             $fieldValue     = $request->value; 
-            
             $product = Product::where('sku', $fieldValue)->first();
             
             if(!$product){
@@ -5139,9 +5162,12 @@ class OrderController extends Controller
 
         $zip        = new ZipArchive;
 
-        $fileName   = time()."_csv.zip";
+        $destinationPath = public_path('documents');
+        if (! File::exists( $destinationPath ) ) {
+            File::makeDirectory( $destinationPath );
+        }
 
-
+        $fileName   = 'documents/'.time()."_csv.zip";
 
         if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
 
@@ -5161,15 +5187,17 @@ class OrderController extends Controller
 
         }
 
-
-
+        $document = new Document();
+        $document->file = $fileName;
+        $document->type = 'courier';
+        $document->save();
         return response()->download(public_path($fileName));
 
     }
 
 
 
-    public function sendToPlatform()
+    public function documents()
 
     {
 
@@ -5507,7 +5535,12 @@ class OrderController extends Controller
         Excel::store(new PrintOrderExport($orders, $idwarehouse), 'orders_'.time().'.xls', 'order_pdf');
  
         $zip        = new ZipArchive;
-        $fileName   = time()."_order.zip";
+        $fileName   = 'documents/'.time()."_order.zip";
+
+        $destinationPath = public_path('documents');
+        if (! File::exists( $destinationPath ) ) {
+            File::makeDirectory( $destinationPath );
+        }
 
         if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
             $files = File::files(public_path()."/order_pdf/");
@@ -5519,6 +5552,11 @@ class OrderController extends Controller
             }
             $zip->close();
         }
+
+        $document = new Document();
+        $document->file = $fileName;
+        $document->type = 'print';
+        $document->save();
 
         $files = File::files(public_path()."/order_pdf/");
         foreach ($files as $key => $value) {

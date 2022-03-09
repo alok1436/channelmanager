@@ -158,6 +158,8 @@ Route::get('/getWoocommerceOrders',             'OrderController@getWoocommerceO
 Route::get('/createOrderInvoice',               'OrderController@createOrderInvoice')->name('createOrderInvoice');
 Route::post('/editInvoiceData',                 'OrderController@editInvoiceData')->name('editInvoiceData');
 Route::get('order/invoice/create/{id}',         'OrderController@orderInvoiceCreate')->name('orderInvoiceCreate');
+Route::get('order/documents',         			'OrderController@reportDocuments')->name('order.documents');
+Route::get('order/documents/download',         	'OrderController@reportDocumentsDownload')->name('order.documents.download');
 
 Route::get('/soldweeklyView',                   'SoldweeklyController@soldweeklyView')->name('soldweeklyView');
 
