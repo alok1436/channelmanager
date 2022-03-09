@@ -279,11 +279,11 @@
                                 <span class="hide-menu">Dashboard </span>
                             </a>
                         </li>
-                        <li><a href="productView"><i class="mdi mdi-basket-fill"></i><span class="hide-menu">Products</span></a></li>   
-                        <li><a href="offlineProductsView"><i class="mdi mdi-basket-fill"></i><span class="hide-menu">Check Offline products</span></a></li>    
-                        <li><a href="blacklistView"><i class="mdi mdi-basket-fill"></i><span class="hide-menu">Black list</span></a></li>      
-                        <li><a href="createKit"><i class="mdi mdi-stocking"></i>Create Kit</a></li>
-                        <li><a href="orderView"><i class="mdi mdi-stocking"></i>Orders</a></li>
+                        <li><a href="{{ url('productView') }}"><i class="mdi mdi-basket-fill"></i><span class="hide-menu">Products</span></a></li>   
+                        <li><a href="{{ url('offlineProductsView') }}"><i class="mdi mdi-basket-fill"></i><span class="hide-menu">Check Offline products</span></a></li>    
+                        <li><a href="{{ url('blacklistView') }}"><i class="mdi mdi-basket-fill"></i><span class="hide-menu">Black list</span></a></li>      
+                        <li><a href="{{ url('createKit') }}"><i class="mdi mdi-stocking"></i>Create Kit</a></li>
+                        <li><a href="{{ url('orderView') }}"><i class="mdi mdi-stocking"></i>Orders</a></li>
                         <li><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">FBA </span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="FBAView">FBA </a></li>
@@ -291,57 +291,57 @@
                         </li>
                         <li><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Vendor </span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="vendorView">Vendor </a></li>
-                                <li><a href="vendorBlackList">BlackList</a></li>
+                                <li><a href="{{ url('vendorView') }}">Vendor </a></li>
+                                <li><a href="{{ url('vendorBlackList') }}">BlackList</a></li>
                             </ul>
                         </li>
-                        <li><a href="priceView"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Price </span></a></li>
-                        <li><a href="modelView"><i class="mdi mdi-format-list-bulleted"></i>Models</a></li>
+                        <li><a href="{{ url('priceView') }}"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Price </span></a></li>
+                        <li><a href="{{ url('modelView') }}"><i class="mdi mdi-format-list-bulleted"></i>Models</a></li>
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-airplay"></i><span class="hide-menu">Forecast</span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="trendView">Trend</a></li>
-                                <li><a href="calculate">Calculate</a></li>
-                                <li><a href="forcastOutput">Show Forecast Output </a></li>
+                                <li><a href="{{ url('trendView') }}">Trend</a></li>
+                                <li><a href="{{ url('calculate') }}">Calculate</a></li>
+                                <li><a href="{{ url('forcastOutput') }}">Show Forecast Output </a></li>
                             </ul>
                         </li>
                         <li> 
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-credit-card-multiple"></i><span class="hide-menu">Manufacturer orders</span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="manufacturerorderView">New order items</a></li>
-                                <li><a href="containerconfirmView">Confirm arrival</a></li>
-                                <li><a href="warehouseTransferFirstView">Internal transfer</a></li>
-                                <li><a href="warehouseconfirmView">Confirm internal</a></li>
+                                <li><a href="{{ url('manufacturerorderView') }}">New order items</a></li>
+                                <li><a href="{{ url('containerconfirmView') }}">Confirm arrival</a></li>
+                                <li><a href="{{ url('warehouseTransferFirstView') }}">Internal transfer</a></li>
+                                <li><a href="{{ url('warehouseconfirmView') }}">Confirm internal</a></li>
                             </ul>
                         </li>
                         <li> 
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Settings </span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a class="" href="manufacturer">Manufacturer</a></li>
-                                <li><a class="" href="warehouseView">Warehouse</a></li>
-                                <li><a class="" href="channelView">Channel</a></li>
-                                <li><a class="" href="channelCountry">Channel country</a></li>
-                                <li><a class="" href="paymentView">Payment</a></li>
-                                <li><a class="" href="userView">Users</a></li>
-                                <li><a href="platformView">Platform </a></li>
-                                <li><a href="countryView">Country </a></li>
-                                <li><a href="currencyView">Currency</a></li>
-                                <li><a href="companyView">Company Info </a></li>
-                                <li><a href="courierView">Courier</a></li>
-                                <li><a href="vendordepotView">Vendordepot</a></li>
-                                <li><a href="generalSettingView">General</a></li>
+                                <li><a class="" href="{{ url('manufacturer') }}">Manufacturer</a></li>
+                                <li><a class="" href="{{ url('warehouseView') }}">Warehouse</a></li>
+                                <li><a class="" href="{{ url('channelView') }}">Channel</a></li>
+                                <li><a class="" href="{{ url('channelCountry') }}">Channel country</a></li>
+                                <li><a class="" href="{{ url('paymentView') }}">Payment</a></li>
+                                <li><a class="" href="{{ url('userView') }}">Users</a></li>
+                                <li><a href="{{ url('platformView') }}">Platform </a></li>
+                                <li><a href="{{ url('countryView') }}">Country </a></li>
+                                <li><a href="{{ url('currencyView') }}">Currency</a></li>
+                                <li><a href="{{ url('companyView') }}">Company Info </a></li>
+                                <li><a href="{{ url('courierView') }}">Courier</a></li>
+                                <li><a href="{{ url('vendordepotView') }}">Vendordepot</a></li>
+                                <li><a href="{{ url('generalSettingView') }}">General</a></li>
                                 <li> 
                                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><span class="hide-menu">Category</span></a>
                                     <ul aria-expanded="false" class="collapse">
-                                        <li><a href="categoryView">Main</a></li>
-                                        <li><a href="subcategoryView">Subcategory</a></li>
+                                        <li><a href="{{ url('categoryView') }}">Main</a></li>
+                                        <li><a href="{{ url('subcategoryView') }}">Subcategory</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
-                        <li><a href="finanzstatusView"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Finance</span></a></li>
-                        <li><a href="inventoryView"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">InventoryView </span></a></li>
-                        <li><a href="soldweeklyView"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Soldweekly </span></a></li>                        
+                        <li><a href="{{ url('finanzstatusView') }}"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Finance</span></a></li>
+                        <li><a href="{{ url('inventoryView') }}"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">InventoryView </span></a></li>
+                        <li><a href="{{ url('soldweeklyView') }}"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Soldweekly </span></a></li>                        
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
