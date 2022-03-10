@@ -45,11 +45,11 @@
                                                 </div>
                                                 <div class="form-group ml-2" id="fromDateDiv" style="display: {{ !request()->filled('fromDate') ? 'none' : 'block'  }}">
                                                     <label for="" class="w-100">From Date</label>
-                                                    <input type="date" class="form-control" value="{{ request()->fromDate }}" id="fromDate">
+                                                    <input type="date" class="form-control" value="{{ request()->fromDate }}" name="fromDate" id="fromDate">
                                                 </div>
                                                 <div class="form-group ml-2"  id="toDateDiv" style="display:{{ !request()->filled('toDate') ? 'none' : 'block'  }}">
                                                     <label for= class="w-100">To Date</label>
-                                                    <input type="date" class="form-control" value="{{ request()->toDate }}" id="toDate">
+                                                    <input type="date" class="form-control" value="{{ request()->toDate }}" name="toDate" id="toDate">
                                                 </div>
                                                 <div class="form-group ml-2">
                                                     <label class="w-100">Keyword</label>

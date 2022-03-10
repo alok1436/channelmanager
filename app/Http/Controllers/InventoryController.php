@@ -40,7 +40,7 @@ class InventoryController extends Controller
                     ->where('product.virtualkit', "=", "Yes")
                     ->get();
     }
-    
+         
     
     public function ajaxInventory(){
         
@@ -51,15 +51,82 @@ class InventoryController extends Controller
                     ->get();
         $warehouses = DB::table('warehouse')
                         ->get();
-                        
-        foreach($products as $key=>$product){
-            $arrr = [];
-            foreach($warehouses as $house){
-                $arrr[$house->idwarehouse] = $product->getTotalQuantity($house);
+
+        $manufacturers = DB::table('manufacturer')
+                        ->get();
+        
+         $kitProducts = DB::table('product')
+                        ->leftjoin('manufacturer', 'product.manufacturerid', '=', 'manufacturer.manufacturerid')
+                        ->where('product.virtualkit', "=", "Yes")
+                        ->get();
+
+        foreach($products as $product) {
+            $total_qty = 0;
+            foreach($warehouses as $warehouse) {            
+                $qty    = DB::table('lagerstand')
+                        ->where('productid',    '=', $product->productid)
+                        ->where('idwarehouse',  '=', $warehouse->idwarehouse)
+                        ->selectRaw(DB::raw("COALESCE(sum(quantity),0) as total_qty"))
+                        ->get();
+                    
+                $total_qty += intval($qty[0]->total_qty); 
+                $product->{$warehouse->idwarehouse} = intval($qty[0]->total_qty);
+
+                $record = $product->lagerStand()->where('idwarehouse', $warehouse->idwarehouse)->first();
+
+                $product->{"hall"} = $record ? $record->hall : '';
+                $product->{"area"} = $record ? $record->area : '';
+                $product->{"rack"} = $record ? $record->rack : '';
             }
             
-            $products[$key]->warehouse_quantity = $arrr;
+            $product->total_qty = $total_qty;
         }
+
+        foreach($kitProducts as $kitProduct) {
+            $total_qty = 0;
+            foreach($warehouses as $warehouse) {                
+                $qty    = DB::table('lagerstand')
+                        ->where('productid',    '=', $kitProduct->productid)
+                        ->where('idwarehouse',  '=', $warehouse->idwarehouse)
+                        ->selectRaw(DB::raw("COALESCE(sum(quantity),0) as total_qty"))
+                        ->get();
+                    
+                $total_qty += intval($qty[0]->total_qty); 
+                $kitProduct->{$warehouse->idwarehouse} = intval($qty[0]->total_qty);
+            }
+            
+            $kitProduct->total_qty = $total_qty;
+        }
+
+        foreach($products as $product) {
+            $total_qty = 0;
+
+            if($product->virtualkit != "Yes") {
+                foreach($kitProducts as $kitProduct) {
+                    for($i=1; $i<10; $i++) {
+                        $item = "pcs".$i;
+                        $itemProductId = "productid".$i;
+
+                        
+                        if($kitProduct->$itemProductId == $product->modelcode) {
+                            foreach($warehouses as $warehouse) { 
+                                $product->{$warehouse->idwarehouse} = intval($product->{$warehouse->idwarehouse}) + intval($kitProduct->{$warehouse->idwarehouse})*intval($kitProduct->$item);
+                                $product->total_qty = $product->total_qty+intval(intval($kitProduct->{$warehouse->idwarehouse})*intval($kitProduct->$item));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // foreach($products as $key=>$product){
+        //     $arrr = [];
+        //     foreach($warehouses as $house){
+        //         $arrr[$house->idwarehouse] = 0;
+        //     }
+            
+        //     $products[$key]->warehouse_quantity = $arrr;
+        // }
                         
         $datatable = Datatables::of($products);
         $rawColumns = ['price'];
@@ -69,7 +136,7 @@ class InventoryController extends Controller
             $rawColumns[] = 'area_'.$house->shortname;
             $rawColumns[] = 'rack_'.$house->shortname;
             $datatable->addColumn( $house->shortname, function($row) use ($house){
-                $record = $row->warehouse_quantity[$house->idwarehouse];
+                $record = $row->{$house->idwarehouse} ;
                 return '<span  class="field-value">'.$record.'</span>
                 <div class="field-edit">
                     <input type="text" name="warehouse" class="form-control" value="'.$record.'" data-old="'.$record.'" data-action="update_warehouse" data-id="'.$row->productid.'" data-warehouse="'.$house->idwarehouse.'" data-field="'.$house->idwarehouse.'">
@@ -78,8 +145,7 @@ class InventoryController extends Controller
             });
 
             $datatable->addColumn( 'hall_'.$house->shortname, function($row) use ($house){
-                $record = $row->lagerStand()->where('idwarehouse', $house->idwarehouse)->first();
-                $record = $record  ? $record->hall : '';
+                $record = $row->hall;
                 return '<span  class="field-value">'.$record.'</span>
                 <div class="field-edit">
                     <input type="text" name="warehouse" class="form-control" value="'.$record.'" data-action="update_hac" data-id="'.$row->productid.'" data-old="'.$house->idwarehouse.'" data-field="hall">
@@ -88,8 +154,8 @@ class InventoryController extends Controller
             });
 
             $datatable->addColumn( 'area_'.$house->shortname, function($row) use ($house){
-                $record = $row->lagerStand()->where('idwarehouse', $house->idwarehouse)->first();
-                $record = $record  ? $record->area : '';
+                
+                $record = $row->area;
                 return '<span  class="field-value">'.$record.'</span>
                 <div class="field-edit">
                     <input type="text" name="warehouse" class="form-control" value="'.$record.'" data-action="update_hac" data-id="'.$row->productid.'" data-old="'.$house->idwarehouse.'" data-field="area">
@@ -98,8 +164,7 @@ class InventoryController extends Controller
             });
 
             $datatable->addColumn( 'rack_'.$house->shortname, function($row) use ($house){
-                $record = $row->lagerStand()->where('idwarehouse', $house->idwarehouse)->first();
-                $record = $record  ? $record->rack : '';
+                $record = $row->rack;
                 return '<span  class="field-value">'.$record.'</span>
                 <div class="field-edit">
                     <input type="text" name="warehouse" class="form-control" value="'.$record.'" data-action="update_hac" data-id="'.$row->productid.'" data-old="'.$house->idwarehouse.'" data-field="rack">
@@ -108,8 +173,7 @@ class InventoryController extends Controller
             });
         }
         $datatable->addColumn('total_qty', function($row) {
-            $total = array_sum(array_values($row->warehouse_quantity));
-            return $total;
+            return $row->total_qty;
         });
 
         $datatable->editColumn('price', function ($row) {  

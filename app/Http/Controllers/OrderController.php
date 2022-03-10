@@ -59,7 +59,7 @@ class OrderController extends Controller
         return View::make('ajax.invoice_page', compact('order','countries'));
     }
     
-    public function orderView(Request $request) {        
+    public function orderView(Request $request) {  //dd($request->all());      
         if(!Session::has('userID')) {
             return redirect()->route('login');
         }
