@@ -914,7 +914,7 @@ class OrderController extends Controller
 
             for($i=1; $i<$totalrows; $i++) {
 
-                $row    = explode("\t", $file[2]);
+                $row    = explode("\t", $file[$i]);
  
                 if(isset($row[5])) {                    
 
