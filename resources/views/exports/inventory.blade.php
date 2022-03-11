@@ -21,7 +21,7 @@
             <td>{{ $row->nameshort }}</td>
             @foreach ($warehouses as $key => $w)
             <?php $record = $row->lagerStand()->where('idwarehouse', $w->idwarehouse)->first(); ?>
-            <td><?php echo $record  ? $record->quantity : 0; ?></td>
+            <td><?php echo $row->{$w->idwarehouse} ; ?></td>
             <td><?php echo $record  ? $record->hall : ''; ?></td>
             <td><?php echo $record  ? $record->area : ''; ?></td>
             <td><?php echo $record  ? $record->rack : ''; ?></td>

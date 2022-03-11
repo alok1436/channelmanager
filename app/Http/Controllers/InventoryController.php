@@ -48,6 +48,7 @@ class InventoryController extends Controller
         
         $products   = Product::leftjoin('manufacturer', 'product.manufacturerid', '=', 'manufacturer.manufacturerid')
                     ->where('product.virtualkit', "=", "No")
+                    //->where('product.productId', "=", 86)
                     ->get();
         $warehouses = DB::table('warehouse')
                         ->get();
@@ -58,8 +59,9 @@ class InventoryController extends Controller
          $kitProducts = DB::table('product')
                         ->leftjoin('manufacturer', 'product.manufacturerid', '=', 'manufacturer.manufacturerid')
                         ->where('product.virtualkit', "=", "Yes")
+                        //->whereIn('modelcode',[10129, 10130, 10131, 10132])
                         ->get();
-
+ 
         foreach($products as $product) {
             $total_qty = 0;
             foreach($warehouses as $warehouse) {            
@@ -67,18 +69,10 @@ class InventoryController extends Controller
                         ->where('productid',    '=', $product->productid)
                         ->where('idwarehouse',  '=', $warehouse->idwarehouse)
                         ->selectRaw(DB::raw("COALESCE(sum(quantity),0) as total_qty"))
-                        ->get();
-                    
-                $total_qty += intval($qty[0]->total_qty); 
-                $product->{$warehouse->idwarehouse} = intval($qty[0]->total_qty);
-
-                $record = $product->lagerStand()->where('idwarehouse', $warehouse->idwarehouse)->first();
-
-                $product->{"hall"} = $record ? $record->hall : '';
-                $product->{"area"} = $record ? $record->area : '';
-                $product->{"rack"} = $record ? $record->rack : '';
+                        ->first();
+                $total_qty += intval($qty->total_qty); 
+                $product->{$warehouse->idwarehouse} = intval($qty->total_qty);
             }
-            
             $product->total_qty = $total_qty;
         }
 
@@ -89,28 +83,27 @@ class InventoryController extends Controller
                         ->where('productid',    '=', $kitProduct->productid)
                         ->where('idwarehouse',  '=', $warehouse->idwarehouse)
                         ->selectRaw(DB::raw("COALESCE(sum(quantity),0) as total_qty"))
-                        ->get();
-                    
-                $total_qty += intval($qty[0]->total_qty); 
-                $kitProduct->{$warehouse->idwarehouse} = intval($qty[0]->total_qty);
+                        ->first();
+                $total_qty += intval($qty->total_qty); 
+                $kitProduct->{$warehouse->idwarehouse} = intval($qty->total_qty);
             }
             
             $kitProduct->total_qty = $total_qty;
         }
-
+ //dd($kitProducts->toArray());
         foreach($products as $product) {
-            $total_qty = 0;
+        //    $total_qty = 0;
 
             if($product->virtualkit != "Yes") {
                 foreach($kitProducts as $kitProduct) {
                     for($i=1; $i<10; $i++) {
                         $item = "pcs".$i;
                         $itemProductId = "productid".$i;
-
-                        
+                        //$kit = Product::where([$itemProductId=>$product->modelcode])->first(); dd($kit);
                         if($kitProduct->$itemProductId == $product->modelcode) {
-                            foreach($warehouses as $warehouse) { 
+                            foreach($warehouses as $warehouse) { //dd($kitProduct);
                                 $product->{$warehouse->idwarehouse} = intval($product->{$warehouse->idwarehouse}) + intval($kitProduct->{$warehouse->idwarehouse})*intval($kitProduct->$item);
+                               
                                 $product->total_qty = $product->total_qty+intval(intval($kitProduct->{$warehouse->idwarehouse})*intval($kitProduct->$item));
                             }
                         }
@@ -118,7 +111,7 @@ class InventoryController extends Controller
                 }
             }
         }
-
+//dd($products->toArray());
         // foreach($products as $key=>$product){
         //     $arrr = [];
         //     foreach($warehouses as $house){
