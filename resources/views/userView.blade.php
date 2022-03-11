@@ -192,12 +192,7 @@
                             <li><a href="blacklistView"><i class="mdi mdi-basket-fill"></i><span class="hide-menu">Black list</span></a></li>      
                             <li><a href="createKit"><i class="mdi mdi-stocking"></i>Create Kit</a></li>
                             <li><a href="orderView"><i class="mdi mdi-stocking"></i>Orders</a></li>
-                            <li><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">FBA </span></a>
-                                <ul aria-expanded="false" class="collapse">
-                                    <li><a href="FBAView">FBA </a></li>
-
-                                </ul>
-                            </li>
+                            <li><a href="FBAView"><i class="mdi mdi-group"></i>FBA</a></li>
                             <li><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Vendor </span></a>
                                 <ul aria-expanded="false" class="collapse">
                                     <li><a href="vendorView">Vendor </a></li>
