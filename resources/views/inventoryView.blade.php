@@ -351,6 +351,7 @@
                                                     <!--<th>Delivery Time (Time production+time delivery)</th>-->
                                                     <!--<th>Selling Range (is related to frequency of delivery from Manufacturer)</th>                                           --->
                                                 </tr>
+                                                
                                             </thead>
                                             
                                         </table>
