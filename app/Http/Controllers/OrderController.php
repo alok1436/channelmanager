@@ -1008,7 +1008,7 @@ class OrderController extends Controller
 
                                 'country1'          => $country1,
 
-                                'delivery_Instructions'  => $delivery_Instructions,
+                                'delivery_Instructions'  => $delivery_instruction,
 
                             ]);
 
