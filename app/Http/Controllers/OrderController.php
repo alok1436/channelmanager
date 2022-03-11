@@ -5480,9 +5480,11 @@ class OrderController extends Controller
 
 
                     if($order->ean != $order->sku) {
-
-                        $order->barcode = '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($order->ean, 'EAN13') . '" alt="barcode"   /><br>';
-
+                        if(is_numeric($order->ean)){
+                            $order->barcode = '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($order->ean, 'EAN13') . '" alt="barcode"   /><br>';
+                        }else{
+                            $order->barcode = $order->ean;
+                        }
                     } else {
 
                         $order->barcode = "";
@@ -5492,9 +5494,11 @@ class OrderController extends Controller
                 }
 
                 if($arr->ean != $arr->sku) {
-
-                    $arr->barcode = '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($arr->ean, 'EAN13') . '" alt="barcode"   /><br>';
-
+                    if(is_numeric($arr->ean)){
+                        $arr->barcode = '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($arr->ean, 'EAN13') . '" alt="barcode"   /><br>';
+                    }else{
+                        $arr->barcode = $arr->ean;
+                    }
                 } else {
 
                     $arr->barcode = "";
