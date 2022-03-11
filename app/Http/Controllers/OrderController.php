@@ -906,7 +906,7 @@ class OrderController extends Controller
 
             $file       = explode("\n", $file); // this is your array of words
 
-            
+        
 
             
 
@@ -914,8 +914,8 @@ class OrderController extends Controller
 
             for($i=1; $i<$totalrows; $i++) {
 
-                $row    = explode("\t", $file[$i]);
-
+                $row    = explode("\t", $file[2]);
+    dd($row);
                 if(isset($row[5])) {                    
 
                     $orderId            = $row[0];
@@ -934,11 +934,11 @@ class OrderController extends Controller
 
                     $region             = $row[21];
 
-                    $telefon            = $row[9];
+                    $telefon            = $row[24];
 
                     $plz                = $row[22];
 
-                    $inv_customer       = $row[8];
+                    $inv_customer       = $row[16];
 
                     $inv_customerextra  = $row[19];
 
@@ -953,6 +953,8 @@ class OrderController extends Controller
                     $region1            = $row[21];
 
                     $country1           = $row[23];
+
+                    $delivery_instruction  = $row[32];
 
                     
 
@@ -1004,7 +1006,9 @@ class OrderController extends Controller
 
                                 'region1'           => $region1,
 
-                                'country1'          => $country1
+                                'country1'          => $country1,
+
+                                'delivery_Instructions'  => $delivery_Instructions,
 
                             ]);
 
@@ -1015,11 +1019,7 @@ class OrderController extends Controller
             }
 
         }
-
-
-
        return redirect()->route('orderView');
-
     }
 
 
