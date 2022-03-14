@@ -46,7 +46,11 @@ class PriceServiceController extends Controller {
                 Session::put("WOOCOMMERCE_STORE_URL",       $channel->woo_store_url);
                 Session::put("WOOCOMMERCE_CONSUMER_KEY",    $channel->woo_consumer_key);
                 Session::put("WOOCOMMERCE_CONSUMER_SECRET", $channel->woo_consumer_secret);
-
+                config([
+                    'woocommerce.store_url' => $channel->woo_store_url,
+                    'woocommerce.consumer_key' => $channel->woo_consumer_key,
+                    'woocommerce.consumer_secret' => $channel->woo_consumer_secret
+                ]);
                 if($request->item_id > 0){
                     try{
                         
