@@ -48,6 +48,25 @@ class OrderController extends Controller
         'Shipped', 'PartiallyShipped']);
        echo '<pre>'; print_r($orders); echo '</pre>'; exit();
     }
+    
+    public function markPaid(Request $request, $id) {
+        $orderunpaid = OrderToPay::findOrFail($id);
+        if($orderunpaid){
+            $array = $orderunpaid->toArray();
+            $order = new OrderItem();
+            foreach ($array as $key => $value) {
+                if($key !='idorder')
+                $order->$key = $value;
+            }        
+
+            $order->save();
+            $orderunpaid->delete();
+            return redirect()->back()->with('success', 'Order marked as paid successfully');
+        }else{
+            return redirect()->back()->with('error', 'Something went wrong.');
+        }
+    }
+
     public function orderInvoiceCreate(Request $request, $id) {
         $order = OrderItem::findOrFail($id);
 

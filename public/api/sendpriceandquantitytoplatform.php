@@ -23,7 +23,7 @@
         $result = mysqli_query($conn, $sql);
         if($result->num_rows > 0) {
             while($price  = mysqli_fetch_object($result)) {
-                
+                //echo '<pre>'; print_r($price); echo '</pre>'; exit();
                 $price->indicated_quantity = 0;
                 $price->warehouse_quantity = 0;
                 $price->can_sell_online = 0;
@@ -282,12 +282,12 @@
                         $online['online_price'] = $price->price;
                         $str .= 'Price="'.$price->price.'"';
                     }
-                    
+                    $newquantity  = 1;
                     if($newquantity >= 0){
                         $str .= ' Stock="'.$newquantity.'"';
                         $online['online_quentity'] = $newquantity;
                     }
-                    
+                   
                     if($str){
                         $newOffer = '<OfferPackage Name="Nom fichier offres" PurgeAndReplace="false" PackageType="StockAndPrice" xmlns="clr-namespace:Cdiscount.Service.OfferIntegration.Pivot;assembly=Cdiscount.Service.OfferIntegration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">';
                         $newOffer .= '    <OfferPackage.Offers>';
@@ -351,7 +351,7 @@
                         CURLOPT_FOLLOWLOCATION => true,
                         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                         CURLOPT_CUSTOMREQUEST => 'POST',
-                        CURLOPT_POSTFIELDS =>'"http://channelister.com/newchannelmanager/api/cDiscount.zip"',
+                        CURLOPT_POSTFIELDS =>'"http://channelister.com/newchannelmanager/public/api/cDiscount.zip"',
                         CURLOPT_HTTPHEADER => array(
                             'Content-Type: application/json-patch+json',
                             'Cache-Control: no-cache',
@@ -371,6 +371,7 @@
                         echo '</br>';
                         echo 'Cdiscount response: '.'</br>';
                         print_r($response);
+
                         //update the table data
                         if(count($online) > 0){
                             update_data(array('price_id'=>$price->price_id), $online, 'prices',  $conn);

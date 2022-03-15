@@ -316,6 +316,13 @@
                                 </div>
                             </td>
                         </tr>
+                        @if(request()->search == 'idpayment')
+                        <tr>
+                            <td class="td-field">
+                                <a href="{{ url('order/mark/paid/'.$row->idorder) }}" class="btn btn-primary">Mark as paid</a>
+                            </td>
+                        </tr>
+                        @endif
                         </table>
                     </td>
                    
