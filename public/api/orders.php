@@ -65,7 +65,7 @@
            echo 'Getting orders for '.$row->shortname.'</br>';
             foreach ($orders as $order) {
                 echo 'order id:'. $order['AmazonOrderId'].'</br>';
-                 // echo '<pre>'; print_r($orders); echo '</pre>';
+                // echo '<pre>'; print_r($orders); echo '</pre>';
                 set_time_limit(0);
                 if(isset($order['BuyerEmail'])) {
                     $BuyerEmail                  = $order['BuyerEmail'];
@@ -175,9 +175,10 @@
                     $idpayment = "Amazon";
                     if($result->num_rows > 0) {
                         $dts            = mysqli_fetch_object($result);
-                        $prodid         = $dts->productid;  
+                        $prodid         = $dts->productid;
+                        $orderItemId1   = $dts->productid;
                         $idpayment      = $dts->idpayment;  
-                        $quantity       = $dts->quantity;  
+                        $quantity       = $item['QuantityOrdered'];
                         $country        = $dts->country;  
                         $sum            = $dts->sum; 
                         $idwarehouse    = $dts->idwarehouse; 
@@ -215,14 +216,18 @@
                                     $trackinguploadedok         = 0;
                                 }
                             }
-                            
+                            $asin           = $item['ASIN'];
+                            $sku            = $item['SellerSKU'];
+                            $orderItemId    = $item['OrderItemId'];
+                            $quantity       = $item['QuantityOrdered'];
+                            $modelcode      = explode(" ", $sku)[0];
                             $sql = "INSERT INTO orderitem (idorderplatform, registeredtolagerstandok, multiorder, productid, referenceorder, sync, idcompany, referencechannel, weeksell, datee, quantity, sum, idpayment, idwarehouse, platformname, referencechannelname, country, email, currency, plz, city, region, order_item_id,inv_vat, email1, plz1, ship_service_level, transactionId, registeredtosolddayok, courierinformedok, trackinguploadedok, carriername, printedshippingok)
                                     VALUES ( '".$id."', ".$registeredtolagerstandok.", '".$multiorder."', '".$productId."', '".$id."','Synch with Amazon','".$idcompany."','".$idchannel."','".$dateweek."','".$newcdateform."','".$quantity."' ,'".$sum."','".$idpayment."','".$warehouse."','".$platform."','".$shortname."','".$countryname."','".$BuyerEmail."','".$currency."','".$PostalCode."','".$City."','".$StateOrRegion."','".$orderItemId."','".$vat."','".$BuyerEmail."','".$PostalCode."','".$shippingser."','".$transactionId."'  , ".$registeredtosolddayok."  , ".$courierinformedok."  , ".$trackinguploadedok." , '".$carref."' , ".$print_shipping.")";
                             
                             if($id == "408-1482479-5488308") {
                                 echo $city."-----------1";
                             }
-                            echo $sql.'<br>';
+                            echo $sql.' hello<br>';
                             mysqli_query($conn, $sql);  
                         } else {
                             if($sum == 0 || $quantity == 0) {
@@ -248,7 +253,7 @@
                                 }
                             }
 
-                            $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', carriername = '".$carref."', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
+                            $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', quantity = '".$quantity."' , carriername = '".$carref."', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
                             if($id == "408-1482479-5488308") {
                                 echo $sql."-----------2";
                             }
@@ -294,7 +299,7 @@
                         if($id == "408-1482479-5488308") {
                             echo $sql."-----------3";
                         }
-                        echo $sql.'<br>';
+                        echo $sql.' world<br>';
                         mysqli_query($conn, $sql);
                         /* ##wtd end */
                         $arrListOrderItemsPayload = array('AmazonOrderId' => "$id");
