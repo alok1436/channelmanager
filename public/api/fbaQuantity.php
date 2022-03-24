@@ -56,7 +56,13 @@
                 if(isset($reportRequestStatus['GetReportListResult'])) {
                     if(isset($reportRequestStatus['GetReportListResult']['ReportInfo'])) {
                         $reportIds = $reportRequestStatus['GetReportListResult']['ReportInfo'];
-                        foreach($reportIds as $item) {
+                         $reportArray = [];
+                        if(!isset($reportIds[0])){
+                            $reportArray[] = $reportIds;
+                        }else{
+                            $reportArray = $reportIds;
+                        }
+                        foreach($reportArray as $item) {
                             $reportId = $item['ReportRequestId'];
                             
                             try { 
