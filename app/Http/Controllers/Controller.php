@@ -586,7 +586,7 @@ class Controller extends BaseController
             }
         }
     }
-    
+
     public function sda_csv_old(){
         //query the database
         $select2 = DB::table('orderitem')->where('carriername', '=', 'SDA')->where('courierinformedok', '=', 0)->where('idpayment', '!=', '')
@@ -864,6 +864,434 @@ class Controller extends BaseController
                         $rows->telefon,
                         '','','','','','','',
                         '','','','','','','',
+                        '','','',
+                        $rows->country,
+                        '','','','','',
+                        $rows->productid,'',
+                        '','','','','','','','',
+                    );
+
+                    if($rows->multiorder == '0') {
+                        fputcsv($file, $row);
+                    }
+
+                    DB::table('orderitem')
+                        ->where('idorder', '=', $idorder)
+                        ->update([
+                            "courierinformedok"     =>1,
+                            "printedshippingok"     => 0,
+                            "registeredtosolddayok" =>0
+                        ]);
+
+                    $rowssss = DB::table('product')
+                            ->where('productid', '=', $rows->productid)
+                            ->first();
+
+                    $rowlager = DB::table('lagerstand')
+                            ->where('productid', '=', $rows->productid)
+                            ->where('idwarehouse', '=', $waerhouse)
+                            ->first();
+                    /* ADD LAGERSTAND RECORD */ 
+
+                    if(empty($rowlager)){
+                        $reslager = DB::table('lagerstand')
+                                ->insert([
+                                    "productid"     => $rows->productid,
+                                    "idwarehouse"   => $waerhouse,
+                                    "quantity"      => (-1)*$quentiti
+                                ]);
+                    }else{
+                        $quan = $rowlager->quantity - $quentiti;
+                        DB::table('lagerstand')
+                            ->where('productid',    '=', $rows->productid)
+                            ->where('idwarehouse',  '=', $waerhouse)
+                            ->update(['quantity'=>$quan]);
+                    }
+
+                    $existedCheck = DB::table('soldweekly')
+                        ->where('productid',    '=', $rows->productid)
+                        ->where('idwarehouse',  '=', $waerhouse)
+                        ->where('weeksell',     '=', $rows->weeksell)
+                        ->first();
+                    if(empty($existedCheck)) {
+                        DB::table('soldweekly')
+                            ->insert([
+                                'idwarehouse'   => $waerhouse,
+                                'productid'     => $rows->productid,
+                                'weeksell'      => $rows->weeksell,
+                                'quantity'      => $quentiti,
+                                'country'       => $rows->country,
+                                'year'          => date('Y')
+                            ]);
+                    } else {
+                        DB::table('soldweekly')
+                            ->where('productid',    '=', $rows->productid)
+                            ->where('idwarehouse',  '=', $waerhouse)
+                            ->increment('quantity', $quentiti);
+                    }
+
+                    //get multiorders
+                    // $multiOrders = DB::table('orderitem')
+                    //     ->where('multiorder', '=', $rows->referenceorder)
+                    //     ->get();
+                    
+                    // foreach($multiOrders as $order) {
+                    //     $quentiti   = $order->quantity;
+                    //     $idorder    = $order->idorder;
+                    //     $multiorder = $order->multiorder;
+                    //     $waerhouse  = $order->idwarehouse;
+
+                    //     $row = array(
+                    //         '','','','','',
+                    //         $order->customer,'',
+                    //         $order->address1,
+                    //         $order->address2,'',
+                    //         $order->plz,
+                    //         $order->city,
+                    //         $order->telefon,
+                    //         '','','','','','','',
+                    //         '','','','','','','',
+                    //         '','','',
+                    //         $order->country,
+                    //         '','','','','',
+                    //         $order->productid,'',
+                    //         '','','','','','','','',
+                    //     );
+                        
+                    //     if($order->multiorder == "0") {
+                    //         fputcsv($file, $row);
+                    //     }
+
+                    //     DB::table('orderitem')
+                    //         ->where('idorder', '=', $idorder)
+                    //         ->update([
+                    //             "courierinformedok"     =>1,
+                    //             "printedshippingok"     => 0,
+                    //             "registeredtosolddayok" =>0
+                    //         ]);
+
+                    //     $rowssss = DB::table('product')
+                    //             ->where('productid', '=', $order->productid)
+                    //             ->first();
+
+                    //     $rowlager = DB::table('lagerstand')
+                    //             ->where('productid', '=', $order->productid)
+                    //             ->where('idwarehouse', '=', $waerhouse)
+                    //             ->first();
+                    //     /* ADD LAGERSTAND RECORD */ 
+
+                    //     if (empty($rowlager)){
+                    //         if($order->productid != "" && $order->productid != 0 && $order->productid != null) {
+                    //             $reslager = DB::table('lagerstand')
+                    //                     ->insert([
+                    //                         "productid"     => $order->productid,
+                    //                         "idwarehouse"   => $waerhouse,
+                    //                         "quantity"      => 0
+                    //                     ]);
+                    //         }
+                    //     }
+                    //     /* ADD LAGERSTAND RECORD */
+                        
+                    //     DB::table('lagerstand')
+                    //         ->where('productid',    '=', $order->productid)
+                    //         ->where('idwarehouse',  '=', $waerhouse)
+                    //         ->decrement('quantity', $quentiti);
+
+                    //     $existedCheck = DB::table('soldweekly')
+                    //         ->where('productid',    '=', $order->productid)
+                    //         ->where('idwarehouse',  '=', $waerhouse)
+                    //         ->where('weeksell',     '=', $order->weeksell)
+                    //         ->first();
+                    //     if(empty($existedCheck)) {
+                    //         DB::table('soldweekly')
+                    //             ->insert([
+                    //                 'idwarehouse'   => $waerhouse,
+                    //                 'productid'     => $order->productid,
+                    //                 'weeksell'      => $order->weeksell,
+                    //                 'quantity'      => $quentiti,
+                    //                 'country'       => $order->country
+                    //             ]);
+                    //     } else {
+                    //         DB::table('soldweekly')
+                    //             ->where('productid',    '=', $order->productid)
+                    //             ->where('idwarehouse',  '=', $waerhouse)
+                    //             ->increment('quantity', $quentiti);
+                    //     }
+                    // }
+                }
+            }
+        }
+
+        $fileNames = array('create_csv/DHL.csv','create_csv/SDA.csv','create_csv/DPD.csv');
+        $datafetch = DB::table('shippingmodel')
+                    ->where('type', '=', 0)
+                    ->get();
+
+        if(count($datafetch) > 0) {
+            foreach($datafetch as $data) { 
+                $couriername    = $data->shortname;
+                $filename       = $couriername.".csv";
+                $fileNames[]    = "create_csv/".$filename;
+                $file           = fopen('courier_csv/'.$filename,'w');
+                
+                // send the column headers
+                fputcsv($file, array('Kundennummer', 'EbayName', 'Versandart', 'Versandkosten','Zahlart','Firma','Anrede','Name','Strasse','Land','PLZ','Ort','Telefon','fax','email','auktionsgruppe','Lieferanschrift','LFirma','Lname','Lstrasse','Lplz','Lort','LLand','Gruppensumme','Zahlartenaufschlag','Versandgruppe','Gewicht','ReNr','EbayVersand','Zinfo','ISOLLand','ISOLand','EKNummer','Anschrift2','Lanschrift2','Logistikerversandart','Artikelnummer','Artikelname','EAN','MengeEAN','Bundesland','LBundesland','Memo','MarkierungsID','MengeProduktID','LTelefon'));
+                //query the database
+
+                $select3 = DB::table('orderitem')
+                        ->where('carriername', '=', $couriername)
+                        ->where('courierinformedok', '=', 0)
+                        ->where('idpayment', '!=', '')
+                        ->where('idpayment', '!=', 'Not Paid')
+                        ->get();
+
+                if (count($select3) > 0){
+                    // loop over the rows, outputting them
+                    foreach($select3 as $rows3) {
+                        if($rows3->address1 != "" && $rows3->address1 != null) {
+                            $idorder3   = $rows3->idorder;
+                            $multiorder = $rows3->multiorder;
+                            $quentiti   = $rows3->quantity;
+                            $waerhouse  = $rows3->idwarehouse;
+
+                            if(strlen($rows3->plz) == 3) {
+                                $rows3->plz = "00".$rows3->plz;
+                            } else if(strlen($rows3->plz) == 4) {
+                                $rows3->plz = "0".$rows3->plz;
+                            } else if(strlen($rows3->plz) == 2) {
+                                $rows3->plz = "000".$rows3->plz;
+                            }
+
+                            $row3 = array(
+                                '','','','','',
+                                $rows3->customer,'',
+                                $rows3->address1,
+                                $rows3->address2,'',
+                                $rows3->plz,
+                                $rows3->city,
+                                $rows3->telefon,
+                                '','','','','','','',
+                                '','','','','','','',
+                                '','','',
+                                $rows3->country,
+                                '','','','','',
+                                $rows3->productid,'',
+                                '','','','','','','','',
+                            );
+                            
+                            //if($rows3->multiorder == "0") {
+                                fputcsv($file, $row3);
+                            //}
+                            //putt_data($rows3);
+
+                            DB::table('orderitem')
+                                ->where('idorder', '=', $idorder3)
+                                ->update([
+                                    "courierinformedok"     => 1,
+                                    "printedshippingok"     => 0,
+                                    "registeredtosolddayok" => 0
+                                ]);
+                            
+                            // wtd-> 19-10-2020 $selects =$mysqliiii->query("select * from product where modelcode ='".$rows3['productid']."'");
+                            $selects = DB::table('product')
+                                    ->where('productid', '=', $rows3->productid)
+                                    ->get();   
+                            
+                            if(count($selects) > 0) {
+                                $rowsss = $selects[0];
+                            }
+
+                            /* ADD LAGERSTAND RECORD */ 
+                            $lager  = DB::table('lagerstand')
+                                    ->where('productid',   '=', $rows3->productid)
+                                    ->where('idwarehouse', '=', $waerhouse)
+                                    ->get();
+                            
+                            
+                            if (empty($lager)){
+                                if($rows3->productid != "" && $rows3->productid != 0 && $rows3->productid != null) {
+                                    DB::table('lagerstand')
+                                        ->insert([
+                                            "productid"     => $rows3->productid,
+                                            "idwarehouse"   => $waerhouse,
+                                            "quantity"      => 0
+                                        ]);
+                                }
+                            }
+                            /* ADD LAGERSTAND RECORD */
+
+                            DB::table('lagerstand')
+                                ->where('productid',    '=', $rows3->productid)
+                                ->where('idwarehouse',  '=', $waerhouse)
+                                ->decrement('quantity', $quentiti);
+
+                            $existedCheck = DB::table('soldweekly')
+                                ->where('productid',    '=', $rows3->productid)
+                                ->where('idwarehouse',  '=', $waerhouse)
+                                ->where('weeksell',     '=', $rows3->weeksell)
+                                ->first();
+                            if(empty($existedCheck)) {
+                                DB::table('soldweekly')
+                                    ->insert([
+                                        'idwarehouse'   => $waerhouse,
+                                        'productid'     => $rows3->productid,
+                                        'weeksell'      => $rows3->weeksell,
+                                        'quantity'      => $quentiti,
+                                        'country'       => $rows3->country,
+                                        'year'          => date('Y')
+                                    ]);
+                            } else {
+                                DB::table('soldweekly')
+                                    ->where('productid',    '=', $rows3->productid)
+                                    ->where('idwarehouse',  '=', $waerhouse)
+                                    ->increment('quantity', $quentiti);
+                            }
+
+                            //get multiorders
+                            // $multiOrders = DB::table('orderitem')
+                            //     ->where('multiorder', '=', $rows3->referenceorder)
+                            //     ->get();
+
+                            // foreach($multiOrders as $order) {
+                            //     $idorder3   = $order->idorder;
+                            //     $multiorder = $order->multiorder;
+                            //     $quentiti   = $order->quantity;
+                            //     $waerhouse  = $order->idwarehouse;
+                            //     $row3 = array(
+                            //         '','','','','',
+                            //         $order->customer,'',
+                            //         $order->address1,
+                            //         $order->address2,'',
+                            //         $order->plz,
+                            //         $order->city,
+                            //         $order->telefon,
+                            //         '','','','','','','',
+                            //         '','','','','','','',
+                            //         '','','',
+                            //         $order->country,
+                            //         '','','','','',
+                            //         $order->productid,'',
+                            //         '','','','','','','','',
+                            //     );
+                                
+                            //     if($order->multiorder == "0") {
+                            //         fputcsv($file, $row3);
+                            //     }
+
+                            //     DB::table('orderitem')
+                            //         ->where('idorder', '=', $idorder3)
+                            //         ->update([
+                            //             "courierinformedok"     => 1,
+                            //             "printedshippingok"     => 0,
+                            //             "registeredtosolddayok" => 0
+                            //         ]);
+
+                                
+                            //     $selects = DB::table('product')
+                            //             ->where('productid', '=', $order->productid)
+                            //             ->get();   
+
+                            //     if(count($selects) > 0) {
+                            //         $rowsss = $selects[0];
+                            //     }
+
+                            //     /* ADD LAGERSTAND RECORD */ 
+                            //     $lager  = DB::table('lagerstand')
+                            //             ->where('productid',   '=', $order->productid)
+                            //             ->where('idwarehouse', '=', $waerhouse)
+                            //             ->get();
+                                
+                                
+                            //     if (empty($lager)){
+                            //         if($order->productid != "" && $order->productid != 0 && $order->productid != null) {
+                            //             DB::table('lagerstand')
+                            //                 ->insert([
+                            //                     "productid"     => $order->productid,
+                            //                     "idwarehouse"   => $waerhouse,
+                            //                     "quantity"      => 0
+                            //                 ]);
+                            //         }
+                            //     }
+                            //     /* ADD LAGERSTAND RECORD */
+
+                            //     DB::table('lagerstand')
+                            //         ->where('productid',    '=', $order->productid)
+                            //         ->where('idwarehouse',  '=', $waerhouse)
+                            //         ->decrement('quantity', $quentiti);
+
+                            //     $existedCheck = DB::table('soldweekly')
+                            //         ->where('productid',    '=', $order->productid)
+                            //         ->where('idwarehouse',  '=', $waerhouse)
+                            //         ->where('weeksell',     '=', $order->weeksell)
+                            //         ->first();
+                            //     if(empty($existedCheck)) {
+                            //         DB::table('soldweekly')
+                            //             ->insert([
+                            //                 'idwarehouse'   => $waerhouse,
+                            //                 'productid'     => $order->productid,
+                            //                 'weeksell'      => $order->weeksell,
+                            //                 'quantity'      => $quentiti,
+                            //                 'country'       => $order->country
+                            //             ]);
+                            //     } else {
+                            //         DB::table('soldweekly')
+                            //             ->where('productid',    '=', $order->productid)
+                            //             ->where('idwarehouse',  '=', $waerhouse)
+                            //             ->increment('quantity', $quentiti);
+                            //     }
+                            // }
+                        }
+                    }
+                }
+
+                fclose($file);
+            } // end of foreach
+        }
+    }
+    
+    public function gls_csv(){
+        $file = fopen ('courier_csv/GLS.csv','w');
+        // send the column headers
+        fputcsv($file, array('Kundennummer', 'EbayName', 'Versandart', 'Versandkosten','Zahlart','Firma','Anrede','Name','Strasse','Land','PLZ','Ort','Telefon','fax','email','auktionsgruppe',
+                                'Lieferanschrift','LFirma','Lname','Lstrasse','Lplz','Lort','LLand','Gruppensumme','Zahlartenaufschlag','Versandgruppe','Gewicht','ReNr','EbayVersand','Zinfo','ISOLLand','ISOLand',
+                                'EKNummer','Anschrift2','Lanschrift2','Logistikerversandart','Artikelnummer','Artikelname','EAN','MengeEAN','Bundesland','LBundesland','Memo','MarkierungsID','MengeProduktID','LTelefon')
+                );
+        
+        $select = DB::table('orderitem')
+                ->where('carriername', '=', 'GLS')
+                ->where('courierinformedok', '=', 0)
+                ->where('idpayment', '!=', '')
+                ->where('multiorder', '=', '0')
+                ->where('idpayment', '!=', 'Not Paid')
+                ->get();
+        
+        if (count($select) > 0){
+            // loop over the rows, outputting them
+            foreach($select as $rows) {
+                if($rows->address1 != "" && $rows->address1 != null) {
+                    $quentiti   = $rows->quantity;
+                    $idorder    = $rows->idorder;
+                    $multiorder = $rows->multiorder;
+                    $waerhouse  = $rows->idwarehouse;
+
+                    if(strlen($rows->plz) == 3) {
+                        $rows->plz = "00".$rows->plz;
+                    } else if(strlen($rows->plz) == 4) {
+                        $rows->plz = "0".$rows->plz;
+                    } else if(strlen($rows->plz) == 2) {
+                        $rows->plz = "000".$rows->plz;
+                    }
+
+                    $row = array(
+                        '','','','','',
+                        $rows->customer,'',
+                        $rows->address1,
+                        $rows->address2,'',
+                        $rows->plz,
+                        $rows->city,
+                        $rows->telefon,
+                        '','','','','','','',
+                        '','',$rows->country,'','','','',
                         '','','',
                         $rows->country,
                         '','','','','',

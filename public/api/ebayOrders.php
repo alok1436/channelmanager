@@ -294,21 +294,22 @@
                                     $userid             = $order['BuyerUserID'];
                                     $platform           = $data['Platform'];
                                     $refid              = isset($order['MonetaryDetails']['Payments']['Payment']['ReferenceID']) ? $order['MonetaryDetails']['Payments']['Payment']['ReferenceID'] :''  ;
-                                    $name               = $order['ShippingAddress']['Name'];
+                                    //$name               = $order['ShippingAddress']['Name'];
+                                    $name               = filter_var($order['ShippingAddress']['Name'],FILTER_SANITIZE_STRING,FILTER_FLAG_STRIP_HIGH);
                                     if(isset($order['UserLastName']) && !is_array($order['UserLastName'])) {
-                                        $lastname           = $order['UserLastName'];
+                                        $lastname           =filter_var($order['UserLastName'],FILTER_SANITIZE_STRING,FILTER_FLAG_STRIP_HIGH);
                                     } else {
                                         $lastname           = "";
                                     }
                                     if(is_array($order['ShippingAddress']['Street1'])) {
                                         $Street1            = "";
                                     } else {
-                                        $Street1            = str_replace("'", "", $order['ShippingAddress']['Street1']);
+                                        $Street1            = filter_var($order['ShippingAddress']['Street1'],FILTER_SANITIZE_STRING,FILTER_FLAG_STRIP_HIGH);
                                     }
                                     if(is_array($order['ShippingAddress']['Street2'])) {
                                         $Street2            = "";
                                     } else {
-                                        $Street2            = str_replace("'", "", $order['ShippingAddress']['Street2']);
+                                        $Street2            = filter_var($order['ShippingAddress']['Street2'],FILTER_SANITIZE_STRING,FILTER_FLAG_STRIP_HIGH);
                                     }
                                     if(is_array($order['ShippingAddress']['PostalCode'])) {
                                         $postalcode            = "";
@@ -318,15 +319,15 @@
                                     if(is_array($order['ShippingAddress']['CityName'])) {
                                         $cityname            = "";
                                     } else {
-                                        $cityname            = str_replace("'", "", $order['ShippingAddress']['CityName']);
+                                        $cityname            = filter_var($order['ShippingAddress']['CityName'],FILTER_SANITIZE_STRING,FILTER_FLAG_STRIP_HIGH);
                                     }
                                     if(is_array($order['ShippingAddress']['StateOrProvince'])) {
                                         $state            = "";
                                     } else {
-                                        $state            = mysqli_real_escape_string($conn, $order['ShippingAddress']['StateOrProvince']);
+                                        $state            =  filter_var($order['ShippingAddress']['StateOrProvince'],FILTER_SANITIZE_STRING,FILTER_FLAG_STRIP_HIGH);
                                     }
                                     if(isset($order['ShippingAddress']['Country']) && !is_array($order['ShippingAddress']['Country'])) {
-                                        $countryname        = $order['ShippingAddress']['Country'];
+                                        $countryname        =  filter_var($order['ShippingAddress']['Country'],FILTER_SANITIZE_STRING,FILTER_FLAG_STRIP_HIGH);
                                     } else {
                                         $countryname        = '';
                                     }
