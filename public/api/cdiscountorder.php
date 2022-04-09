@@ -74,7 +74,7 @@
         $orderData = json_decode($response);
         
         foreach($orderData as $order) {
-            //echo '<pre>'; print_r($order); echo '</pre>'; exit();
+           // echo '<pre>'; print_r($order); echo '</pre>';
             echo "<br><br><br>";
             if(isset($order->customer)) {
                 $BuyerEmail                  = $order->customer->encrypted_email;
@@ -108,6 +108,8 @@
             $carref                 = '';
             if(isset($order->order_state) && $order->order_state == "Shipped") {
                 $carref = "Shipped";
+            }else if(isset($order->is_c_logistique_order) && $order->is_c_logistique_order == 1) {
+                $carref = "Shipped";
             }
 
             $print_shipping         = '';
@@ -130,6 +132,7 @@
             
             $shippingser            = '';
             $orderstaus             = $order->order_state;
+            $is_c_logistique_order  = $order->is_c_logistique_order;
 
             if(isset($order->TaxRegistrationDetails)) {
                 //$transactionId          = isset($order['TaxRegistrationDetails']['member']['taxRegistrationId']) ? $order['TaxRegistrationDetails']['member']['taxRegistrationId'] :'';
@@ -213,7 +216,7 @@
                                 $trackinguploadedok         = 1;
                                 $idpayment                  = "Deleted";
                             } else {
-                                if($orderstaus == "Shipped") {
+                                if($orderstaus == "Shipped" || $is_c_logistique_order == 1) {
                                     $print_shipping             = 1;
                                     $registeredtosolddayok      = 1;
                                     $registeredtolagerstandok   = 1;
@@ -242,7 +245,7 @@
                                 $trackinguploadedok         = 1;
                                 $idpayment                  = "Deleted";
                             } else {
-                                if($orderstaus == "Shipped") {
+                                if($orderstaus == "Shipped" || $is_c_logistique_order == 1) {
                                     $print_shipping             = 1;
                                     $registeredtosolddayok      = 1;
                                     $registeredtolagerstandok   = 1;
@@ -257,7 +260,7 @@
                                 }
                             }
     
-                            $sql = "UPDATE orderitem SET sync = 'Synch with CDiscount', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', carriername = '".$carref."', printedshippingok = '".$print_shipping."', address1='".$address1."' WHERE idorderplatform= '".$id."'";
+                          echo  $sql = "UPDATE orderitem SET sync = 'Synch with CDiscount', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', carriername = '".$carref."', printedshippingok = '".$print_shipping."', address1='".$address1."' WHERE idorderplatform= '".$id."'";
                             mysqli_query($conn, $sql);
                         }
                     } else {
@@ -279,7 +282,7 @@
                             $trackinguploadedok         = 1;
                             $idpayment                  = "Deleted";
                         } else {
-                            if($orderstaus == "Shipped") {
+                            if($orderstaus == "Shipped" || $is_c_logistique_order == 1) {
                                 $print_shipping             = 1;
                                 $registeredtosolddayok      = 1;
                                 $registeredtolagerstandok   = 1;
