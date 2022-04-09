@@ -1268,7 +1268,7 @@ class Controller extends BaseController
         if (count($select) > 0){
             // loop over the rows, outputting them
             foreach($select as $rows) {
-                if($rows->address1 != "" && $rows->address1 != null) {
+                //if($rows->address1 != "" && $rows->address1 != null) {
                     $quentiti   = $rows->quantity;
                     $idorder    = $rows->idorder;
                     $multiorder = $rows->multiorder;
@@ -1299,9 +1299,9 @@ class Controller extends BaseController
                         '','','','','','','','',
                     );
 
-                    if($rows->multiorder == '0') {
+                    //if($rows->multiorder == '0') {
                         fputcsv($file, $row);
-                    }
+                    //}
 
                     DB::table('orderitem')
                         ->where('idorder', '=', $idorder)
@@ -1446,7 +1446,7 @@ class Controller extends BaseController
                     //             ->increment('quantity', $quentiti);
                     //     }
                     // }
-                }
+                //}
             }
         }
 
