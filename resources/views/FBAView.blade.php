@@ -325,7 +325,7 @@
                                             <a href="{{ url('api/fbaProduct.php') }}" target="_blank" class="btn btn-info">CHECK VIA API Integrity FBA</a>
                                         </div>
                                     </div>
-                                    <?php /* ?>
+                                    <?php  ?>
                                     <div class="col-sm-3">
                                         <input type="button" class="btn btn-info btn-block send_courier" data-toggle="modal" data-target="#myModalNew" value="Download actual level" name="">
                                         <div class="modal fade" id="myModalNew" role="dialog">
@@ -417,7 +417,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <?php */ ?>
+                                    <?php  ?>
                                     <div class="row mb-2">
                                     <div class="col-xs-12 table-responsive">
                                         <style>
