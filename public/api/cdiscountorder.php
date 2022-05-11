@@ -231,7 +231,9 @@
                                 }
                             }
                             
-                            $sql = "INSERT INTO orderitem (idorderplatform, registeredtolagerstandok, multiorder, productid, referenceorder, sync, idcompany, referencechannel, weeksell, datee, quantity, sum, idpayment, idwarehouse, platformname, referencechannelname, country, email, currency, plz, city, region, order_item_id,inv_vat, email1, plz1, ship_service_level, transactionId, registeredtosolddayok, courierinformedok, trackinguploadedok, carriername, printedshippingok,customer, city1, country1, telefon1, inv_customer, inv_address1, address1)
+                            $table = ($is_c_logistique_order == 1) ? 'orderitem_fba' : 'orderitem';
+
+                            $sql = "INSERT INTO {$table} (idorderplatform, registeredtolagerstandok, multiorder, productid, referenceorder, sync, idcompany, referencechannel, weeksell, datee, quantity, sum, idpayment, idwarehouse, platformname, referencechannelname, country, email, currency, plz, city, region, order_item_id,inv_vat, email1, plz1, ship_service_level, transactionId, registeredtosolddayok, courierinformedok, trackinguploadedok, carriername, printedshippingok,customer, city1, country1, telefon1, inv_customer, inv_address1, address1)
                                     VALUES ( '".$id."', ".$registeredtolagerstandok.", '".$multiorder."', '".$productId."', '".$id."','Synch with Amazon','".$idcompany."','".$idchannel."','".$dateweek."','".$newcdateform."','".$quantity."' ,'".$sum."','".$idpayment."','".$warehouse."','".$platform."','".$shortname."','".$countryname."','".$BuyerEmail."','".$currency."','".$PostalCode."','".$City."','".$StateOrRegion."','".$orderItemId."','".$vat."','".$BuyerEmail."','".$plz1."','".$shippingser."','".$transactionId."'  , ".$registeredtosolddayok."  , ".$courierinformedok."  , ".$trackinguploadedok." , '".$carref."' , ".$print_shipping.", '".$customer."', '".$city1."', '".$country1."', '".$phone1."', '".$inv_customer."', '".$inv_address1."', '".$address1."')";
                             
                             echo $sql."<br>";
@@ -296,8 +298,10 @@
                                 $trackinguploadedok         = 0;
                             }
                         }
-    
-                        $sql = "INSERT INTO orderitem (idorderplatform, tracking, registeredtolagerstandok, productid, referenceorder, sync, idcompany, referencechannel, weeksell, datee, quantity, sum, idpayment, idwarehouse, platformname, referencechannelname, country, email, currency, plz, city, region, order_item_id,inv_vat, email1, plz1, ship_service_level, transactionId, registeredtosolddayok, courierinformedok, trackinguploadedok, carriername, printedshippingok,customer, city1, country1, telefon1, inv_customer, inv_address1, address1)
+                        
+                        $table = ($is_c_logistique_order == 1) ? 'orderitem_fba' : 'orderitem';
+
+                        $sql = "INSERT INTO {$table} (idorderplatform, tracking, registeredtolagerstandok, productid, referenceorder, sync, idcompany, referencechannel, weeksell, datee, quantity, sum, idpayment, idwarehouse, platformname, referencechannelname, country, email, currency, plz, city, region, order_item_id,inv_vat, email1, plz1, ship_service_level, transactionId, registeredtosolddayok, courierinformedok, trackinguploadedok, carriername, printedshippingok,customer, city1, country1, telefon1, inv_customer, inv_address1, address1)
                                 VALUES ( '".$id."', '".$tracking."', ".$registeredtolagerstandok.", '".$productId."', '".$id."','Synch with Amazon','".$idcompany."','".$idchannel."','".$dateweek."','".$newcdateform."','".$quantity."' ,'".$sum."','".$idpayment."','".$warehouse."','".$platform."','".$shortname."','".$countryname."','".$BuyerEmail."','".$currency."','".$PostalCode."','".$City."','".$StateOrRegion."','".$orderItemId."','".$vat."','".$BuyerEmail."','".$plz1."','".$shippingser."','".$transactionId."'  , ".$registeredtosolddayok."  , ".$courierinformedok."  , ".$trackinguploadedok." , '".$carref."' , ". $print_shipping.", '".$customer."', '".$city1."', '".$country1."', '".$phone1."', '".$inv_customer."', '".$inv_address1."', '".$address1."')";
                         echo $sql."<br>";
                         mysqli_query($conn, $sql);
