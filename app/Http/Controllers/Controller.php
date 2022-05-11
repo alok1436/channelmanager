@@ -1261,7 +1261,7 @@ class Controller extends BaseController
                 ->where('carriername', '=', 'GLS')
                 ->where('courierinformedok', '=', 0)
                 ->where('idpayment', '!=', '')
-                ->where('multiorder', '=', '0')
+                //->where('multiorder', '=', '0')
                 ->where('idpayment', '!=', 'Not Paid')
                 ->get();
         
@@ -1299,9 +1299,9 @@ class Controller extends BaseController
                         '','','','','','','','',
                     );
 
-                    //if($rows->multiorder == '0') {
+                    if($rows->multiorder == '0') {
                         fputcsv($file, $row);
-                    //}
+                    }
 
                     DB::table('orderitem')
                         ->where('idorder', '=', $idorder)
