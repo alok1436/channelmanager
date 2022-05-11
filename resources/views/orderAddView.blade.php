@@ -183,7 +183,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Reference Order</label>
-                                <input type="number" name="referenceorder" class="form-control" required="" />
+                                <input type="text" name="referenceorder" class="form-control" required="" />
                             </div>
                             <div class="form-group">
                                 <label>Customer</label>
@@ -317,12 +317,12 @@
                                     <input type="checkbox" name="courierinformedok" checked data-on-color="info" value="1" data-off-color="success">
                                 </div>
                             </div>
-                            <div class="form-group d-none">
+                            <!-- <div class="form-group d-none">
                                 <label>Tracking Ok:</label>
                                 <div class="bt-switch mb-10" style="width:140px;">
                                     <input type="checkbox" name="trackinguploadedok" checked data-on-color="info" value="1" data-off-color="success">
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div class="form-group d-none">
                                 <label>Note</label>

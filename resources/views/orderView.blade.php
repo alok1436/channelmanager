@@ -291,7 +291,7 @@
                         <table class="table">
                           <tr>
                             <td class="td-field">
-                               <span class="field-value">{{$row->sum}}EUR</span>
+                               <span class="field-value">{{$row->sum}} {{$row->currency}}</span>
                                     <div class="field-edit">
                                         <input type="text" name="sum" class="form-control" placeholder="sum" value="{{$row->sum}}" data-id="{{$row->idorder}}" data-field="sum">
                                     </div>
