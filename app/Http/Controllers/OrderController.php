@@ -460,6 +460,9 @@ class OrderController extends Controller
             $order->telefon1 = $order->telefon;
             $order->fax1 = $order->fax;
             $order->email1 = $order->email;
+            $order->trackinguploadedok = 0;
+            $order->courierinformedok = 0;
+            $order->registeredtolagerstandok = 0;
             
             $order->datee = $date;
             $order->referencechannelname = $channel ? $channel->shortname : '';
