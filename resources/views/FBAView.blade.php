@@ -315,6 +315,8 @@
                                         </div>
                                         <div class="col-sm-7">
                                             <a href="{{ url('api/fbaQuantity.php') }}" target="_blank" class="btn btn-info">CHECK VIA API ACTUAL QUANTITY</a>
+
+                                            <a href="" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModalNew">CHECK VIA EXCEL QUANTITY</a>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -325,7 +327,49 @@
                                             <a href="{{ url('api/fbaProduct.php') }}" target="_blank" class="btn btn-info">CHECK VIA API Integrity FBA</a>
                                         </div>
                                     </div>
-                                    <?php  ?>
+                                    <div class="modal fade" id="myModalNew" role="dialog">
+                                            <div class="modal-dialog modal-lg">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">IMPORT FBA</h4>
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <table class="table table-responsive" border="1">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Platform</th>
+                                                                    <th>Channel</th>
+                                                                    <th>File</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <form class="form-horizontal" action="importFBAFile" method="post" name="frmCSVImport" id="frmCSVImport" enctype="multipart/form-data">
+                                                            {{csrf_field()}}
+                                                            <tbody>
+                                                                @foreach ($platformsShort as $key => $row)
+                                                                <tr>
+                                                                    <td>
+                                                                        <input type="checkbox" name="check[]" value="{{$row->platformid}}-{{$row->channelId}}" style="display: none;">
+                                                                        {{$row->platformname}}
+                                                                    </td>
+                                                                    <td>{{$row->channelname}}</td>
+                                                                    <td><input type="file" name="uploadfilename[]" class="form-control" onchange="checkCheckBox(this)" /></td>
+                                                                </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                            <button type="submit" id="submit" name="importsystem" class="btn-submit">Upload Files</button>
+                                                            </form>
+                                                        </table>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php /* ?>
                                     <div class="col-sm-3">
                                         <input type="button" class="btn btn-info btn-block send_courier" data-toggle="modal" data-target="#myModalNew" value="Download actual level" name="">
                                         <div class="modal fade" id="myModalNew" role="dialog">
@@ -417,7 +461,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <?php  ?>
+                                    <?php */ ?>
                                     <div class="row mb-2">
                                     <div class="col-xs-12 table-responsive">
                                         <style>
