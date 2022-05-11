@@ -125,6 +125,10 @@
                 $shippingser            = $order['ShipServiceLevel'];
                 $orderstaus             = $order['OrderStatus'];
 
+                if($orderstaus == 'Pending'){
+                    continue;
+                }
+
                 if(isset($order['TaxRegistrationDetails'])) {
                     $transactionId          = isset($order['TaxRegistrationDetails']['member']['taxRegistrationId']) ? $order['TaxRegistrationDetails']['member']['taxRegistrationId'] :'';
                 } else {
