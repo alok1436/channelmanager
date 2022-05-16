@@ -20,6 +20,7 @@ use Image;
 use File;
 use DNS1D;
 use DNS2D;
+use App\Imports\FBAImport;
 use CodeItNow\BarcodeBundle\Utils\BarcodeGenerator;
 
 class FBAController extends Controller {
@@ -132,7 +133,7 @@ class FBAController extends Controller {
     }
 
     public function importFBAFile(Request $request) {
-        if($request->hasFile('uploadfilename')) {
+        if($request->hasFile('uploadfilename')) { //dd($request->all());
             $files      = $request->file('uploadfilename');
             $checks     = $request->check;
             $dateTime   = date('Y-m-d H:i:s');
@@ -148,50 +149,65 @@ class FBAController extends Controller {
                 $platformId      = $check_idexplode[0];
                 $channelId       = $check_idexplode[1];
 
-                DB::table('tbl_fba')
-                    ->where('channel', '=', $channelId)
-                    ->update([
-                        'actuallevel'     => 0,
-                        'active'        => 0
-                    ]);
+                $import = new FBAImport($request, $check_idexplode);
+                Excel::import($import, $dir);
+//                 dd($import->nonExistingProducts());
 
-                $query   = DB::table('channel')
-                            ->where('channel.idchannel', '=', $channelId)
-                            ->leftjoin('coding', 'channel.codingId', '=', 'coding.codingId')
-                            ->get();
+//                 $nonExistingProduct = Excel::import(new FBAImport($request, $check_idexplode), $dir);
+// dd($nonExistingProduct);
+                $nonExistingProduct = $import->nonExistingProducts();
+                array_push($nonExistingProducts,$nonExistingProduct);
 
-                $channel = $query[0];
+                // DB::table('tbl_fba')
+                //     ->where('channel', '=', $channelId)
+                //     ->update([
+                //         'actuallevel'     => 0,
+                //         'active'        => 0
+                //     ]);
 
-                $file       = file_get_contents($dir);
-                $file       = explode("\n", $file);  
-                $totalrows  = count($file);
+                // $file = fopen($dir, "r");
+                // while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
+
+
+                // }
+
+                // $query   = DB::table('channel')
+                //             ->where('channel.idchannel', '=', $channelId)
+                //             ->leftjoin('coding', 'channel.codingId', '=', 'coding.codingId')
+                //             ->get();
+
+                // $channel = $query[0];
+
+                // $file       = file_get_contents($dir);
+                // $file       = explode("\n", $file);  
+
+                // $totalrows  = count($file);
                 
-                for($loopfile=1; $loopfile<$totalrows; $loopfile++) {
-                    $row    = $file[$loopfile];
-                    $row    = explode("\t",$row);
+                // for($loopfile=1; $loopfile<$totalrows; $loopfile++) {
+                //     $row    = $file[$loopfile];
+                //     $row    = explode("\t",$row);
 
-                    if($row[4] == "SELLABLE") {
-                        $existingFBA = DB::table('tbl_fba')
-                                ->where('asin'      , '=', $row[2])
-                                ->where('channel'   , '=', $channelId)
-                                ->first();
+                //     if($row[4] == "SELLABLE") {
+                //         $existingFBA = DB::table('tbl_fba')
+                //                 ->where('asin'      , '=', $row[2])
+                //                 ->where('channel'   , '=', $channelId)
+                //                 ->first();
 
-                        if(empty($existingFBA) && $row[5] > 0) {
-                            array_push($nonExistingProducts, $row[2]);
-                        } else {
-                            DB::table('tbl_fba')
-                                ->where('asin'      , '=', $row[2])
-                                ->where('channel'   , '=', $channelId)
-                                ->update([
-                                    'actuallevel'     => $row[5],
-                                    'active'          => 1
-                                ]);
-                        }
-                    }
-                }
+                //         if(empty($existingFBA) && $row[5] > 0) {
+                //             array_push($nonExistingProducts, $row[2]);
+                //         } else {
+                //             DB::table('tbl_fba')
+                //                 ->where('asin'      , '=', $row[2])
+                //                 ->where('channel'   , '=', $channelId)
+                //                 ->update([
+                //                     'actuallevel'     => $row[5],
+                //                     'active'          => 1
+                //                 ]);
+                //         }
+                //     }
+                // }
             }
         }
-
         if(count($nonExistingProducts) > 0) {
             Session::put('noneProducts', $nonExistingProducts);
         }

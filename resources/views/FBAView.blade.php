@@ -273,16 +273,20 @@
                 <div class="container-fluid">
                     @if(Session::has('noneProducts'))
                         <?php $noneProducts = Session::get('noneProducts'); ?>
-                        <div class='alert alert-danger'>
-                            <button type='button' class='close' data-dismiss='alert'>&times;</button>
-                            @foreach($noneProducts as $row)
-                                @if($row != "")
-                                <i class='fa fa-exclamation-circle'></i> 
-                                Warning: The product {{$row}} not found in warehouse<br>
-                                @endif
-                            @endforeach
-                            <?php Session::forget('noneProducts'); ?>
-                        </div>
+                        @if(isset($noneProducts[0]) && !empty($noneProducts[0]))
+                            <div class='alert alert-danger'>
+                                <button type='button' class='close' data-dismiss='alert'>&times;</button>
+                                @foreach($noneProducts as $rows11)
+                                    @foreach($rows11 as $roww)
+                                        @if($roww != "")
+                                        <i class='fa fa-exclamation-circle'></i> 
+                                        Warning: The product {{$roww}} not found in warehouse<br>
+                                        @endif
+                                    @endforeach
+                                @endforeach
+                                <?php Session::forget('noneProducts'); ?>
+                            </div>
+                        @endif
                     @endif
                     @if(Session::has('nonExistingFBAProducts'))
                         <?php $nonExistingFBAProducts = Session::get('nonExistingFBAProducts'); ?>
@@ -357,8 +361,13 @@
                                                                     <td><input type="file" name="uploadfilename[]" class="form-control" onchange="checkCheckBox(this)" /></td>
                                                                 </tr>
                                                                 @endforeach
+                                                                <tr>
+                                                                    <td colspan="3">
+                                                                        <button type="submit" id="submit" name="importsystem" class="btn-submit">Upload Files</button>
+                                                                    </td>
+                                                                </tr>
                                                             </tbody>
-                                                            <button type="submit" id="submit" name="importsystem" class="btn-submit">Upload Files</button>
+                                                            
                                                             </form>
                                                         </table>
                                                     </div>

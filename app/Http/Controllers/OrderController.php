@@ -342,7 +342,8 @@ class OrderController extends Controller
                     'trackinguploadedok'        => '1',
                     'registeredtolagerstandok'  => '1',
                     'tracking'                  => '---',
-                    'carriername'               => '---'
+                    'carriername'               => '---',
+                    'idpayment'                 => 'Done',
                 ]);
         } else if($type=="set_as_not_done"){
             DB::table('orderitem')
@@ -352,7 +353,8 @@ class OrderController extends Controller
                     'registeredtosolddayok'	    => '0',
                     'courierinformedok'         => '0',
                     'trackinguploadedok'        => '0',
-                    'registeredtolagerstandok'  => '0'
+                    'registeredtolagerstandok'  => '0',
+                    'idpayment'                 => 'Not done',
                 ]);
         }
         return redirect()->route('orderView');
