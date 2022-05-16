@@ -314,12 +314,12 @@ class OrderController extends Controller
         }
     }
 
-    public function orderDelete() {
+    public function orderDelete(Request $request) {
         $type   = $_GET["type"];
         $id     = $_GET['del'];
-
+        $table  = $request->filled('search') && $request->search == 'idpayment' ? 'order_to_pay' : 'orderitem';
         if($type=="delete_order"){
-            DB::table('orderitem')
+            DB::table($table)
                 ->where('idorder', '=', $id)
                 ->update([
                     'sum'                       => '0.0',
@@ -333,7 +333,7 @@ class OrderController extends Controller
                     'is_deleted'                => 1
                 ]);
         } else if($type=="set_as_done"){
-            DB::table('orderitem')
+            DB::table($table)
                 ->where('idorder', '=', $id)
                 ->update([
                     'printedshippingok'         => '1',
@@ -346,7 +346,7 @@ class OrderController extends Controller
                     'idpayment'                 => 'Done',
                 ]);
         } else if($type=="set_as_not_done"){
-            DB::table('orderitem')
+            DB::table($table)
                 ->where('idorder', '=', $id)
                 ->update([
                     'printedshippingok'         => '0',
@@ -357,7 +357,7 @@ class OrderController extends Controller
                     'idpayment'                 => 'Not done',
                 ]);
         }
-        return redirect()->route('orderView');
+        return redirect()->route('orderView', $request->except('type','del'));
     }
 
     public function orderAddView() {

@@ -1010,11 +1010,13 @@ input[type=checkbox], input[type=radio] {
             
                     var type    = $(this).val();
             
+                    var query = "<?php echo http_build_query(request()->all()); ?>";
+                    
                     if(type=="delete_order"){
             
                         if (confirm('Are you sure to Delete this Order?')) {
             
-                            window.location.href = 'orderDelete?del='+deleid+"&type="+type;
+                            window.location.href = 'orderDelete?del='+deleid+"&type="+type+"&"+query;
             
                             return true;
             
