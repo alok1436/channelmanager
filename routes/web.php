@@ -16,6 +16,8 @@
 */
 
 Route::get('/',                                 'DashboardController@index')->name('home');
+Route::get('/gls_csv',                          'Controller@gls_csv')->name('gls_csv');
+Route::get('/checkwoocommerce',                 'OrderController@checkwoocommerce')->name('checkwoocommerce');
 Route::get('amazon/orders',                     'OrderController@amazonOrders')->name('amazonOrders');
 Route::get('order/mark/paid/{id}',              'OrderController@markPaid')->name('markPaid');
 Route::get('/dashboard',                        'DashboardController@index')->name('dashboard');

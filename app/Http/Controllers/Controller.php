@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\OrderItem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -1250,6 +1250,175 @@ class Controller extends BaseController
     }
     
     public function gls_csv(){
+        $headers = array('Kundennummer','EbayName','Versandart','Versandkosten','Zahlart','Firma','Anrede','Name','Strasse','Land','PLZ','Ort','Telefon','fax','email','auktionsgruppe','Lieferanschrift','LFirma','Lname','Lstrasse','Lplz','Lort','LLand','Gruppensumme','Zahlartenaufschlag','Versandgruppe','Gewicht','ReNr','EbayVersand','Zinfo','ISOLLand','ISOLand','EKNummer','Anschrift2','Lanschrift2','Logistikerversandart','Artikelnummer','Artikelname','EAN','MengeEAN','Bundesland','LBundesland','Memo','MarkierungsID','LTelefon','MengeProduktID','Produkt','Teilnahme');
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $worksheet = $spreadsheet->getActiveSheet();
+
+        $select = DB::table('orderitem')
+                    ->where('carriername', '=', 'GLS')
+                    ->where('courierinformedok', '=', 0)
+                    ->where('idpayment', '!=', '')
+                    ->where('multiorder', '=', "0")
+                    ->where('idpayment', '!=', 'Not Paid')
+                    ->get();
+        
+            $i=1;
+            $j=0;
+            for ($index = 'A'; $index !== 'AW'; $index++){
+                $worksheet->getCell($index.($i))->setValue($headers[$j]);
+                $j++;
+            }
+ 
+            $i++;
+            $num = 1;
+
+        
+        if (count($select) > 0){
+            // loop over the rows, outputting them
+            foreach($select as $rows) {
+
+                $order = OrderItem::find($rows->idorder);
+                //if($rows->address1 != "" && $rows->address1 != null) {
+                    $quentiti   = $rows->quantity;
+                    $idorder    = $rows->idorder;
+                    $multiorder = $rows->multiorder;
+                    $waerhouse  = $rows->idwarehouse;
+
+                    if(strlen($rows->plz) == 3) {
+                        $rows->plz = "00".$rows->plz;
+                    } else if(strlen($rows->plz) == 4) {
+                        $rows->plz = "0".$rows->plz;
+                    } else if(strlen($rows->plz) == 2) {
+                        $rows->plz = "000".$rows->plz;
+                    }
+
+                    $row = array(
+                        '','','','','',
+                        $rows->customer,'',
+                        $rows->address1,
+                        $rows->address2,'',
+                        $rows->plz,
+                        $rows->city,
+                        $rows->telefon,
+                        '','','','','','','',
+                        '','',$rows->country,'','','','',
+                        '','','',
+                        $rows->country,
+                        '','','','','',
+                        $rows->productid,'',
+                        '','','','','','','','',
+                    );
+
+                     
+                    for ($index = 'A'; $index !== 'AW'; $index++){
+                        if($index == 'F'){
+                            $worksheet->getCell($index.($i))->setValue($rows->customer);
+                        }else if($index == 'H'){
+                            $worksheet->getCell($index.($i))->setValue($rows->address1);
+                        }else if($index == 'I'){
+                            $worksheet->getCell($index.($i))->setValue($rows->address2);
+                        }else if($index == 'K'){
+                            $worksheet->getCell($index.($i))->setValue($rows->plz);
+                        }else if($index == 'L'){
+                            $worksheet->getCell($index.($i))->setValue($rows->city);
+                        }else if($index == 'M'){
+                            $worksheet->getCell($index.($i))->setValue($rows->telefon);
+                        }else if($index == 'W'){
+                            $worksheet->getCell($index.($i))->setValue($rows->country);
+                        }else if($index == 'AA'){
+                            $worksheet->getCell($index.($i))->setValue(3);
+                        }else if($index == 'AE'){
+                            $worksheet->getCell($index.($i))->setValue($rows->country);
+                        }else if($index == 'AK'){
+
+                            $productshortname = $order->product ? $order->product->nameshort : '';
+                            $data = $productshortname;
+
+                            $worksheet->getCell($index.($i))->setValue($data);
+                        }else{
+                            $worksheet->getCell($index.($i))->setValue('');
+                        }
+                        $j++;
+                    }                   
+                    
+                    $i++;
+                    $num = 1;
+                    DB::table('orderitem')
+                        ->where('idorder', '=', $idorder)
+                        ->update([
+                            "courierinformedok"     =>1,
+                            "printedshippingok"     => 0,
+                            "registeredtosolddayok" =>0
+                        ]);
+
+                    $rowssss = DB::table('product')
+                            ->where('productid', '=', $rows->productid)
+                            ->first();
+
+                    $rowlager = DB::table('lagerstand')
+                            ->where('productid', '=', $rows->productid)
+                            ->where('idwarehouse', '=', $waerhouse)
+                            ->first();
+                    /* ADD LAGERSTAND RECORD */ 
+
+                    if(empty($rowlager)){
+                        $reslager = DB::table('lagerstand')
+                                ->insert([
+                                    "productid"     => $rows->productid,
+                                    "idwarehouse"   => $waerhouse,
+                                    "quantity"      => (-1)*$quentiti
+                                ]);
+                    }else{
+                        $quan = $rowlager->quantity - $quentiti;
+                        DB::table('lagerstand')
+                            ->where('productid',    '=', $rows->productid)
+                            ->where('idwarehouse',  '=', $waerhouse)
+                            ->update(['quantity'=>$quan]);
+                    }
+
+                    $existedCheck = DB::table('soldweekly')
+                        ->where('productid',    '=', $rows->productid)
+                        ->where('idwarehouse',  '=', $waerhouse)
+                        ->where('weeksell',     '=', $rows->weeksell)
+                        ->first();
+                    if(empty($existedCheck)) {
+                        DB::table('soldweekly')
+                            ->insert([
+                                'idwarehouse'   => $waerhouse,
+                                'productid'     => $rows->productid,
+                                'weeksell'      => $rows->weeksell,
+                                'quantity'      => $quentiti,
+                                'country'       => $rows->country,
+                                'year'          => date('Y')
+                            ]);
+                    } else {
+                        DB::table('soldweekly')
+                            ->where('productid',    '=', $rows->productid)
+                            ->where('idwarehouse',  '=', $waerhouse)
+                            ->increment('quantity', $quentiti);
+                    } 
+
+            }
+        }
+
+        for ($index = 'A'; $index !== 'AW'; $index++){
+           // $spreadsheet->getActiveSheet()->getColumnDimension($v)->setWidth(26.7);
+            $style = array(
+                    'alignment' => array(
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                    )
+                );
+            $spreadsheet->getActiveSheet()->getStyle($index)->applyFromArray($style);
+            $spreadsheet->getActiveSheet() ->getStyle($index) ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR)
+                    ->getStartColor()
+                    ->setRGB('FFFF00');
+        }
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+        $writer->save(public_path('courier_csv/'.'gls.xls'));
+    }
+    
+    public function gls_csv_old(){
         $file = fopen ('courier_csv/GLS.csv','w');
         // send the column headers
         fputcsv($file, array('Kundennummer', 'EbayName', 'Versandart', 'Versandkosten','Zahlart','Firma','Anrede','Name','Strasse','Land','PLZ','Ort','Telefon','fax','email','auktionsgruppe',

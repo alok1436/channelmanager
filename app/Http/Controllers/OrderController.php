@@ -31,6 +31,7 @@ use App\Exports\PrintOrderExport;
 use MCS\MWSClient;
 
 use Codexshaper\WooCommerce\Facades\Order; 
+use Codexshaper\WooCommerce\Facades\Product as WooProduct; 
 
 class OrderController extends Controller
 {
@@ -5180,37 +5181,24 @@ class OrderController extends Controller
 
         $this->sda_csv();
 
-        $this->dpd_csv();	
+        $this->gls_csv();	
 
-
+        $this->dpd_csv();   
 
         $zip        = new ZipArchive;
-
         $destinationPath = public_path('documents');
         if (! File::exists( $destinationPath ) ) {
             File::makeDirectory( $destinationPath );
         }
-
         $fileName   = 'documents/'.time()."_csv.zip";
-
         if ($zip->open($fileName, ZipArchive::CREATE) === TRUE) {
-
             $files = File::files(public_path('courier_csv'));
-
             foreach ($files as $key => $value) {
-
                 $file = basename($value);
-
                 $zip->addFile($value, $file);
-
             }
-
-            
-
             $zip->close();
-
         }
-
         $document = new Document();
         $document->file = $fileName;
         $document->type = 'courier';
@@ -5219,14 +5207,10 @@ class OrderController extends Controller
 
     }
 
-
-
     public function documents()
 
     {
-
         $cha = DB::table('channel') 
-
                 ->where('sync', '=', 'Automatic Synch with: eBay')
 
                 ->get();
@@ -5598,6 +5582,38 @@ class OrderController extends Controller
 
 
 
+    public function checkwoocommerce() {
+        $channels = DB::table("channel")
+
+                        ->leftjoin("platform", "channel.platformid", "=", "platform.platformid")
+
+                        ->where("idchannel", "=", "18")
+
+                        ->select("channel.*")
+
+                        ->get();
+$options = [
+
+            'per_page' => 100, // Or your desire number
+
+            'page' => 1
+
+        ];
+        foreach($channels as $channel) {
+            config([
+                'woocommerce.store_url' => $channel->woo_store_url,
+                'woocommerce.consumer_key' => $channel->woo_consumer_key,
+                'woocommerce.consumer_secret' => $channel->woo_consumer_secret
+            ]);
+            Session::put("WOOCOMMERCE_STORE_URL",       $channel->woo_store_url);
+            Session::put("WOOCOMMERCE_CONSUMER_KEY",    $channel->woo_consumer_key);
+            Session::put("WOOCOMMERCE_CONSUMER_SECRET", $channel->woo_consumer_secret);
+
+            $orders = WooProduct::all($options, $channel);
+
+            dd( $orders);
+        }
+    }
     public function getWoocommerceOrders() {
 
         $options = [
