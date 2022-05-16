@@ -207,11 +207,11 @@ class FBAController extends Controller {
                 //     }
                 // }
             }
+
+            if(count($nonExistingProducts) > 0) {
+                Session::put('noneProducts', $nonExistingProducts);
+            }
         }
-        if(count($nonExistingProducts) > 0) {
-            Session::put('noneProducts', $nonExistingProducts);
-        }
-        
         return redirect()->route('FBAView');
     }
 

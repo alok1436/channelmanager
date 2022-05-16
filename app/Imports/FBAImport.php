@@ -53,7 +53,7 @@ class FBAImport implements ToCollection
                         ->where('asin'      , '=', $row[2])
                         ->where('channel'   , '=', $channelId)
                         ->update([
-                            'actuallevel'     => $row[5],
+                            'actuallevel'     => $row[10],
                             'active'          => $row[8] == 'Yes' ? 1 : 0
                         ]);
                 }
