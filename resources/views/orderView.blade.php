@@ -1026,7 +1026,7 @@ input[type=checkbox], input[type=radio] {
             
                         if (confirm('Are you sure to change status set as done?')) {
             
-                            window.location.href = 'orderDelete?del='+deleid+"&type="+type;
+                            window.location.href = 'orderDelete?del='+deleid+"&type="+type+"&"+query;
             
                             return true;
             
@@ -1036,7 +1036,7 @@ input[type=checkbox], input[type=radio] {
             
                         if (confirm('Are you sure to change status set as not done?')) {
             
-                            window.location.href = 'orderDelete?del='+deleid+"&type="+type;
+                            window.location.href = 'orderDelete?del='+deleid+"&type="+type+"&"+query;
             
                             return true;
             
@@ -1046,7 +1046,7 @@ input[type=checkbox], input[type=radio] {
             
                         if (confirm('Are you sure to create invoice?')) {
             
-                            window.location.href = 'createOrderInvoice?del='+deleid+"&type="+type;
+                            window.location.href = 'createOrderInvoice?del='+deleid+"&type="+type+"&"+query;
             
                             return true;
             
@@ -1090,7 +1090,7 @@ input[type=checkbox], input[type=radio] {
             
                             // });
             
-                            window.location.href = 'api/updateOrder.php?orderId='+deleid;
+                            window.location.href = 'api/updateOrder.php?orderId='+deleid+"&"+query;
             
                             return true;
             
