@@ -6036,21 +6036,27 @@ class OrderController extends Controller
 
 
 
-    public function createOrderInvoice() {
+    public function createOrderInvoice(Request $request) {
 
         $orderId    = $_GET['del'];
 
         $type       = $_GET['type'];
 
+        $order = OrderItem::findOrFail($orderId);
 
+        if(!$order->orderInvoice()->exists()){
+            $order->orderInvoice()->create(['shipping'=>0,'vat'=> $order->channel->vat ]);
+        }
+        
+        $table  = $request->filled('search') && $request->search == 'idpayment' ? 'order_to_pay' : 'orderitem';
 
-        $orders     = DB::table('orderitem')
+        $orders     = DB::table($table)
 
-                        ->leftjoin('companyinfo', 'companyinfo.idcompany', '=', 'orderitem.idcompany')
+                        ->leftjoin('companyinfo', 'companyinfo.idcompany', '=', $table.'.idcompany')
 
-                        ->leftjoin('product', 'orderitem.productid', '=', 'product.productid')
+                        ->leftjoin('product', $table.'.productid', '=', 'product.productid')
 
-                        ->leftjoin('channel', 'orderitem.referencechannel', '=', 'channel.idchannel')
+                        ->leftjoin('channel', $table.'.referencechannel', '=', 'channel.idchannel')
 
                         // ->where('orderitem.carriername',          '!=', '')
 
@@ -6058,11 +6064,11 @@ class OrderController extends Controller
 
                         // ->where('orderitem.printedshippingok',    '=', 0)
 
-                        ->where('orderitem.idorder',          '=', $orderId)
+                        ->where($table.'.idorder',          '=', $orderId)
 
                         //->orderby('orderitem.referenceorder', 'desc')
 
-                        ->select('orderitem.*', 'companyinfo.shortname as shortnamecompany', 'companyinfo.street1 as street1company', 'product.ean', 'companyinfo.plz as plzcomapny', 
+                        ->select($table.'.*', 'companyinfo.shortname as shortnamecompany', 'companyinfo.street1 as street1company', 'product.ean', 'companyinfo.plz as plzcomapny', 
 
                                 'companyinfo.shortname as companyName', 'companyinfo.street1', 'companyinfo.phone as companyPhone', 'companyinfo.email as companyEmail', 'product.sku', 'product.modelcode', 'channel.vat as channelVat', 
 
@@ -6074,11 +6080,11 @@ class OrderController extends Controller
 
 
 
-        $multiOrders = DB::table('orderitem')
+        $multiOrders = DB::table($table)
 
-                        ->leftjoin('product', 'orderitem.productid', '=', 'product.productid')
+                        ->leftjoin('product', $table.'.productid', '=', 'product.productid')
 
-                        ->where('orderitem.multiorder', '=', $orders->referenceorder)
+                        ->where($table.'.multiorder', '=', $orders->referenceorder)
 
                         ->get();
 
