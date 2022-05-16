@@ -40,7 +40,7 @@ class FBAImport implements ToCollection
                             ->first();
 
         foreach ($rows as $key => $row) {
-            if(strtolower($row[4]) == "sellable") {
+           // if(strtolower($row[4]) == "sellable") {
                 $existingFBA = DB::table('tbl_fba')
                         ->where('asin'      , '=', $row[2])
                         ->where('channel'   , '=', $channelId)
@@ -57,7 +57,7 @@ class FBAImport implements ToCollection
                             'active'          => $row[8] == 'Yes' ? 1 : 0
                         ]);
                 }
-            }
+           // }
         }
         return $this->nonExistingProducts;
     }
