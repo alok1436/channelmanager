@@ -501,15 +501,17 @@
                          </table>
                     </td>
                     <td>
-                       <select name="delete" class="form-control delete" data-id="{{$row->idorder}}" style="width: 100%;">
+                       <!-- <select name="delete" class="form-control delete" data-id="{{$row->idorder}}" style="width: 100%;">
                             <option value="">Select Option</option>
                             <option value="delete_order">Delete Order</option>
                             <option value="set_as_done">Set as Done</option>
                             <option value="set_as_not_done">Set as not Done</option>
                             <option value="send_to_platform">Send to platform</option>
                             <option value="create_invoice">Create invoice</option>
-                        </select>
-                        <a class="btn btn-danger getInvoiceForm1" target="_blank" href="{{ route('orderInvoiceCreate',['id'=>$row->idorder]) }}" data-id="{{$row->idorder}}" style="width: 100%; word-wrap: break-word; margin-top: 10px;">Edit invoice</a>
+                        </select> -->
+                        <a class="btn btn-danger" target="" href="orderDelete?del={{$row->idorder}}&type=delete_order&<?php echo http_build_query(request()->all()); ?>" onclick="return confirm('are you sure?')" style="width: 100%; word-wrap: break-word; margin-top: 10px;">Delete order</a>
+
+                        <a class="btn btn-warning getInvoiceForm1" target="_blank" href="{{ route('orderInvoiceCreate',['id'=>$row->idorder]) }}" data-id="{{$row->idorder}}" style="width: 100%; word-wrap: break-word; margin-top: 10px;">Edit invoice</a>
                     </td>
                 </tr>
                 <?php $sps++; }?>
