@@ -166,7 +166,7 @@ class OrderController extends Controller
         }
         
         if(isset($_GET['search']) && $_GET['search'] == "carriername") {
-            $collection->where('carriername', '=', "");
+            $collection->where('carriername', '=', null);
             //$collection->orwhere('orderitem.carriername', '=', "");
         }
 
@@ -5609,7 +5609,7 @@ $options = [
             Session::put("WOOCOMMERCE_CONSUMER_KEY",    $channel->woo_consumer_key);
             Session::put("WOOCOMMERCE_CONSUMER_SECRET", $channel->woo_consumer_secret);
 
-            $orders = WooProduct::all($options, $channel);
+            $orders = Order::all($options, $channel);
 
             dd( $orders);
         }
