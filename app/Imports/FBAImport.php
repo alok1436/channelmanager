@@ -46,7 +46,7 @@ class FBAImport implements ToCollection
                         ->where('channel'   , '=', $channelId)
                         ->first();
 
-                if(empty($existingFBA) && $row[5] > 0) {
+                if(empty($existingFBA) && $row[5] > 0 && $row[8] == 'Yes') {
                     $this->nonExistingProducts[] = $row[2];
                 } else {
                     DB::table('tbl_fba')
