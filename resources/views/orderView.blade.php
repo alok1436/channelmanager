@@ -501,7 +501,7 @@
                          </table>
                     </td>
                     <td>
-                        @if(request()->filled('search') && $request->search == 'idpayment')
+                        @if(request()->filled('search') && request()->search == 'idpayment')
                             <a class="btn btn-danger" target="" href="orderDelete?del={{$row->idorder}}&type=delete_order&<?php echo http_build_query(request()->all()); ?>" onclick="return confirm('are you sure?')" style="width: 100%; word-wrap: break-word; margin-top: 10px;">Delete order</a>
                         @else
 
