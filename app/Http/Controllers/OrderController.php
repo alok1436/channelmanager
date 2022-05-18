@@ -123,8 +123,8 @@ class OrderController extends Controller
         }); 
         
         if($request->keyword !=''){
-          	$keyword = request()->keyword;
-          	$collection->whereHas("products", function($collection) use($keyword){
+            $keyword = request()->keyword;
+            $collection->whereHas("products", function($collection) use($keyword){
                 $collection->where('namelong','like', "%$keyword%");
                 $collection->orWhere('sku','like', "%$keyword%");
                 $collection->orWhere('ean','like', "%$keyword%");
@@ -166,7 +166,11 @@ class OrderController extends Controller
         }
         
         if(isset($_GET['search']) && $_GET['search'] == "carriername") {
-            $collection->where('carriername', '=', null);
+            
+            $collection->where(function($collection) {
+                $collection->where('carriername', '=', '')->orWhereNull('carriername');
+            });
+            //$collection->where('carriername', '=', "");
             //$collection->orwhere('orderitem.carriername', '=', "");
         }
 
@@ -325,7 +329,7 @@ class OrderController extends Controller
                 ->update([
                     'sum'                       => '0.0',
                     'printedshippingok'         => '1',
-                    'registeredtosolddayok'	    => '1',
+                    'registeredtosolddayok'     => '1',
                     'courierinformedok'         => '1',
                     'trackinguploadedok'        => '1',
                     'registeredtolagerstandok'  => 'Deleted',
@@ -338,7 +342,7 @@ class OrderController extends Controller
                 ->where('idorder', '=', $id)
                 ->update([
                     'printedshippingok'         => '1',
-                    'registeredtosolddayok'	    => '1',
+                    'registeredtosolddayok'     => '1',
                     'courierinformedok'         => '1',
                     'trackinguploadedok'        => '1',
                     'registeredtolagerstandok'  => '1',
@@ -351,7 +355,7 @@ class OrderController extends Controller
                 ->where('idorder', '=', $id)
                 ->update([
                     'printedshippingok'         => '0',
-                    'registeredtosolddayok'	    => '0',
+                    'registeredtosolddayok'     => '0',
                     'courierinformedok'         => '0',
                     'trackinguploadedok'        => '0',
                     'registeredtolagerstandok'  => '0',
@@ -1221,17 +1225,17 @@ class OrderController extends Controller
 
                 if($files[$fileArrKey[$i]]->getClientOriginalExtension() == "txt"){
 
-					$file       = file_get_contents($dir);
+                    $file       = file_get_contents($dir);
 
-					$file       = explode("\n", $file); // this is your array of words
+                    $file       = explode("\n", $file); // this is your array of words
 
-					$totalrows  = count($file);
+                    $totalrows  = count($file);
 
-				} else if($files[$fileArrKey[$i]]->getClientOriginalExtension() == "csv") {
+                } else if($files[$fileArrKey[$i]]->getClientOriginalExtension() == "csv") {
 
-					$file       = file_get_contents($dir);
+                    $file       = file_get_contents($dir);
 
-					$file       = explode("\n", $file);
+                    $file       = explode("\n", $file);
 
                     $totalrows  = count($file);
 
@@ -1239,9 +1243,9 @@ class OrderController extends Controller
 
                     $xlsx=SimpleXLSX::parse($dir);
 
-					$file=$xlsx->rows();
+                    $file=$xlsx->rows();
 
-					$totalrows=count($xlsx->rows());
+                    $totalrows=count($xlsx->rows());
 
                     list($totalcolumns,$totalrowstobeused)=$xlsx->dimension();
 
@@ -1251,25 +1255,25 @@ class OrderController extends Controller
 
                 // Logic for xlsx and Cdiscount file
 
-				if($coding == 'Cdiscount-01'){
+                if($coding == 'Cdiscount-01'){
 
-					for($loopfile=0; $loopfile<$totalrows; $loopfile++) {
+                    for($loopfile=0; $loopfile<$totalrows; $loopfile++) {
 
-						if($loopfile >= 6) {
+                        if($loopfile >= 6) {
 
-							if($filetype=="txt") {
+                            if($filetype=="txt") {
 
-								$row    = $file[$loopfile];
+                                $row    = $file[$loopfile];
 
-								$row    = explode("\t",$row);
+                                $row    = explode("\t",$row);
 
-							}else if($filetype=="xlsx"){
+                            }else if($filetype=="xlsx"){
 
-								$row    = $file[$loopfile];
+                                $row    = $file[$loopfile];
 
-							} else if($filetype=="csv") {
+                            } else if($filetype=="csv") {
 
-								$row    = str_getcsv($file[$loopfile], $fileseparator);
+                                $row    = str_getcsv($file[$loopfile], $fileseparator);
 
                             }
 
@@ -1281,7 +1285,7 @@ class OrderController extends Controller
 
                                     if($filetype=="txt") {
 
-                                        $orderNo = $row[1];	
+                                        $orderNo = $row[1]; 
 
                                     }
 
@@ -1387,7 +1391,7 @@ class OrderController extends Controller
 
         
 
-                                    if(count($countrycode) > 0) {	
+                                    if(count($countrycode) > 0) {   
 
                                         $country    = $countrycode[0]->shortname;
 
@@ -1617,23 +1621,23 @@ class OrderController extends Controller
 
                             }
 
-						}
+                        }
 
-					} // end of reading file
+                    } // end of reading file
 
-				} else if($coding == 'EbayIT-01') {
+                } else if($coding == 'EbayIT-01') {
 
                     $file = fopen($dir, "r");
 
-			        $newArr = array();
+                    $newArr = array();
 
 
 
-			        while (!feof($file)) {
+                    while (!feof($file)) {
 
-			            $data = fgetcsv($file, null, ';');
+                        $data = fgetcsv($file, null, ';');
 
-			            array_push($newArr, $data);
+                        array_push($newArr, $data);
 
                     }
 
@@ -1641,7 +1645,7 @@ class OrderController extends Controller
 
                     for($i=3; $i<count($newArr); $i++){
 
-                		$quantity       = $newArr[$i][24];
+                        $quantity       = $newArr[$i][24];
 
                         $idpayment      = $newArr[$i][40];
 
@@ -1659,85 +1663,85 @@ class OrderController extends Controller
 
 
 
-                		if($month == 'gen'){
+                        if($month == 'gen'){
 
-							$datemonth = "01";
+                            $datemonth = "01";
 
-						}else if($month == 'feb'){
+                        }else if($month == 'feb'){
 
-							$datemonth = "02";
+                            $datemonth = "02";
 
-						}else if($month == 'mar'){
+                        }else if($month == 'mar'){
 
-							$datemonth = "03";
+                            $datemonth = "03";
 
-						}else if($month == 'apr'){
+                        }else if($month == 'apr'){
 
-							$datemonth = "04";
+                            $datemonth = "04";
 
-						}else if($month == 'mag'){
+                        }else if($month == 'mag'){
 
-							$datemonth = "05";
+                            $datemonth = "05";
 
-						}else if($month == 'giu'){
+                        }else if($month == 'giu'){
 
-							$datemonth = "06";
+                            $datemonth = "06";
 
-						}else if($month == 'lug'){
+                        }else if($month == 'lug'){
 
-							$datemonth = "07";
+                            $datemonth = "07";
 
-						}else if($month == 'aug'){
+                        }else if($month == 'aug'){
 
-							$datemonth = "08";
+                            $datemonth = "08";
 
-						}else if($month == 'set'){
+                        }else if($month == 'set'){
 
-							$datemonth = "09";
+                            $datemonth = "09";
 
-						}else if(strtolower($month) == 'ott' || strtolower($month) == 'okt' || strtolower($month) == 'oct'){
+                        }else if(strtolower($month) == 'ott' || strtolower($month) == 'okt' || strtolower($month) == 'oct'){
 
-							$datemonth = "10";
+                            $datemonth = "10";
 
-						}else if($month == 'nov'){
+                        }else if($month == 'nov'){
 
-							$datemonth = "11";
+                            $datemonth = "11";
 
-						}else if($month == 'dic'){
+                        }else if($month == 'dic'){
 
-							$datemonth = "12";
+                            $datemonth = "12";
 
-						}
-
-
-
-						$year   = date("Y");
-
-						$year1  = substr($year, 0, 2);
-
-						$datee  = $year1.$dateyear.'-'.$datemonth.'-'.$dateday;
+                        }
 
 
 
-						$date = $this->checkmydate($datee);
+                        $year   = date("Y");
 
-						if($date==1){
+                        $year1  = substr($year, 0, 2);
 
-							$newdatee = $datee;
-
-						}else{
-
-							$newdatee = '';
-
-						}
+                        $datee  = $year1.$dateyear.'-'.$datemonth.'-'.$dateday;
 
 
 
-                		$productid  = substr($newArr[$i][22], 0, 5);
+                        $date = $this->checkmydate($datee);
 
-                		$getsum     = explode(" ", $newArr[$i][38]);
+                        if($date==1){
 
-                		$sum        = str_replace(",",".",$getsum[0]);
+                            $newdatee = $datee;
+
+                        }else{
+
+                            $newdatee = '';
+
+                        }
+
+
+
+                        $productid  = substr($newArr[$i][22], 0, 5);
+
+                        $getsum     = explode(" ", $newArr[$i][38]);
+
+                        $sum        = str_replace(",",".",$getsum[0]);
 
                             
 
@@ -1765,49 +1769,49 @@ class OrderController extends Controller
 
 
 
-                		$referenceorder = $newArr[$i][1];
+                        $referenceorder = $newArr[$i][1];
 
-                		$sale           = $newArr[$i][2];
+                        $sale           = $newArr[$i][2];
 
-                		$invoicenr      = $newArr[$i][2];
+                        $invoicenr      = $newArr[$i][2];
 
-                		$inv_customer   = $newArr[$i][3];
+                        $inv_customer   = $newArr[$i][3];
 
-                		$inv_address1   = $newArr[$i][6];
+                        $inv_address1   = $newArr[$i][6];
 
-                		$inv_address2   = $newArr[$i][7];
+                        $inv_address2   = $newArr[$i][7];
 
-                		$city1          = $newArr[$i][8];
+                        $city1          = $newArr[$i][8];
 
-                		$region1        = $newArr[$i][9];
+                        $region1        = $newArr[$i][9];
 
-                		$customer       = $newArr[$i][12];
+                        $customer       = $newArr[$i][12];
 
-                		$telefon        = $newArr[$i][13];
+                        $telefon        = $newArr[$i][13];
 
-                		$telefon1       = $newArr[$i][13];
+                        $telefon1       = $newArr[$i][13];
 
-                		$address1       = $newArr[$i][14];
+                        $address1       = $newArr[$i][14];
 
-                		$address2       = $newArr[$i][15];
+                        $address2       = $newArr[$i][15];
 
-                		$city           = $newArr[$i][16];
+                        $city           = $newArr[$i][16];
 
-                		$region         = $newArr[$i][17];
+                        $region         = $newArr[$i][17];
 
-                		$plz            = $newArr[$i][18];
+                        $plz            = $newArr[$i][18];
 
-                		$plz1           = $newArr[$i][10];
+                        $plz1           = $newArr[$i][10];
 
-                		$country        = $newArr[$i][19];
+                        $country        = $newArr[$i][19];
 
-                		$country1       = $newArr[$i][11];
+                        $country1       = $newArr[$i][11];
 
-                		$notes          = $newArr[$i][22];
+                        $notes          = $newArr[$i][22];
 
-                		$order_item_id  = $newArr[$i][0];
+                        $order_item_id  = $newArr[$i][0];
 
-                		$multiorder     = 0;
+                        $multiorder     = 0;
 
                          
 
@@ -1819,7 +1823,7 @@ class OrderController extends Controller
 
 
 
-                        if(count($countrycode) > 0) {	
+                        if(count($countrycode) > 0) {   
 
                             $country    = $countrycode[0]->shortname;
 
@@ -1851,7 +1855,7 @@ class OrderController extends Controller
 
 
 
-					 	$sku                = $notes;
+                        $sku                = $notes;
 
                         $modelcode          = substr($sku, 0, 5);
 
@@ -1869,13 +1873,13 @@ class OrderController extends Controller
 
                         }
 
-						$productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
+                        $productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
 
                         $checkIsDuplicate   = $this->isDuplicate($referenceorder,$order_item_id, $productId);
 
 
 
-					 	if($referenceorder!="" && $sale!="" && $checkIsDuplicate ==0) {
+                        if($referenceorder!="" && $sale!="" && $checkIsDuplicate ==0) {
 
                             if($referenceorder!="") {
 
@@ -1959,33 +1963,33 @@ class OrderController extends Controller
 
                             }
 
-					 	}
+                        }
 
-                	}
+                    }
 
-				} else if($coding == 'EbayDE-01') {
+                } else if($coding == 'EbayDE-01') {
 
                     $file = fopen($dir, "r");
 
-			        $newArr = array();
+                    $newArr = array();
 
 
 
-			        while (!feof($file)) {
+                    while (!feof($file)) {
 
-			            $data = fgetcsv($file, null, ';');
+                        $data = fgetcsv($file, null, ';');
 
-			            array_push($newArr, $data);
+                        array_push($newArr, $data);
 
                     }
 
                     
 
-			        while (!feof($file)) {
+                    while (!feof($file)) {
 
-			            $data = fgetcsv($file, null, ';');
+                        $data = fgetcsv($file, null, ';');
 
-			            array_push($newArr, $data);
+                        array_push($newArr, $data);
 
                     }
 
@@ -1993,7 +1997,7 @@ class OrderController extends Controller
 
                     for($i=3; $i<count($newArr); $i++){
 
-                		$quantity       = $newArr[$i][24];                        
+                        $quantity       = $newArr[$i][24];                        
 
                         $idpayment      = $newArr[$i][40];
 
@@ -2011,83 +2015,83 @@ class OrderController extends Controller
 
                                                 
 
-                		if(strtolower($month) == 'gen'){
+                        if(strtolower($month) == 'gen'){
 
-							$datemonth = "01";
+                            $datemonth = "01";
 
-						}else if(strtolower($month) == 'feb'){
+                        }else if(strtolower($month) == 'feb'){
 
-							$datemonth = "02";
+                            $datemonth = "02";
 
-						}else if(strtolower($month) == 'mar' || strtolower($month) == 'mrz') {
+                        }else if(strtolower($month) == 'mar' || strtolower($month) == 'mrz') {
 
-							$datemonth = "03";
+                            $datemonth = "03";
 
-						}else if(strtolower($month) == 'apr'){
+                        }else if(strtolower($month) == 'apr'){
 
-							$datemonth = "04";
+                            $datemonth = "04";
 
-						}else if(strtolower($month) == 'mag'){
+                        }else if(strtolower($month) == 'mag'){
 
-							$datemonth = "05";
+                            $datemonth = "05";
 
-						}else if(strtolower($month) == 'giu'){
+                        }else if(strtolower($month) == 'giu'){
 
-							$datemonth = "06";
+                            $datemonth = "06";
 
-						}else if(strtolower($month) == 'lug'){
+                        }else if(strtolower($month) == 'lug'){
 
-							$datemonth = "07";
+                            $datemonth = "07";
 
-						}else if(strtolower($month) == 'aug'){
+                        }else if(strtolower($month) == 'aug'){
 
-							$datemonth = "08";
+                            $datemonth = "08";
 
-						}else if(strtolower($month) == 'set' || strtolower($month) == 'sep'){
+                        }else if(strtolower($month) == 'set' || strtolower($month) == 'sep'){
 
-							$datemonth = "09";
+                            $datemonth = "09";
 
-						}else if(strtolower($month) == 'ott' || strtolower($month) == 'okt' || strtolower($month) == 'oct'){
+                        }else if(strtolower($month) == 'ott' || strtolower($month) == 'okt' || strtolower($month) == 'oct'){
 
-							$datemonth = "10";
+                            $datemonth = "10";
 
-						}else if(strtolower($month) == 'nov'){
+                        }else if(strtolower($month) == 'nov'){
 
-							$datemonth = "11";
+                            $datemonth = "11";
 
-						}else if(strtolower($month) == 'dic' || strtolower($month) == 'dez'){
+                        }else if(strtolower($month) == 'dic' || strtolower($month) == 'dez'){
 
-							$datemonth = "12";
+                            $datemonth = "12";
 
-						}
-
-
-
-						$year   = date("Y");
-
-						$year1  = substr($year, 0, 2);
-
-						$datee  = $year1.$dateyear.'-'.$datemonth.'-'.$dateday;
+                        }
 
 
 
-						$date = $this->checkmydate($datee);
+                        $year   = date("Y");
 
-						if($date==1){
+                        $year1  = substr($year, 0, 2);
 
-							$newdatee = $datee;
-
-						}else{
-
-							$newdatee = '';
-
-						}
+                        $datee  = $year1.$dateyear.'-'.$datemonth.'-'.$dateday;
 
 
 
-                		$getsum     = explode(" ", $newArr[$i][38]);
+                        $date = $this->checkmydate($datee);
 
-                		$sum        = str_replace(",",".",$getsum[0]);
+                        if($date==1){
+
+                            $newdatee = $datee;
+
+                        }else{
+
+                            $newdatee = '';
+
+                        }
+
+
+
+                        $getsum     = explode(" ", $newArr[$i][38]);
+
+                        $sum        = str_replace(",",".",$getsum[0]);
 
                             
 
@@ -2115,49 +2119,49 @@ class OrderController extends Controller
 
 
 
-                		$referenceorder = $newArr[$i][1];
+                        $referenceorder = $newArr[$i][1];
 
-                		$sale           = $newArr[$i][2];
+                        $sale           = $newArr[$i][2];
 
-                		$invoicenr      = $newArr[$i][2];
+                        $invoicenr      = $newArr[$i][2];
 
-                		$inv_customer   = $newArr[$i][3];
+                        $inv_customer   = $newArr[$i][3];
 
-                		$inv_address1   = $newArr[$i][6];
+                        $inv_address1   = $newArr[$i][6];
 
-                		$inv_address2   = $newArr[$i][7];
+                        $inv_address2   = $newArr[$i][7];
 
-                		$city1          = $newArr[$i][8];
+                        $city1          = $newArr[$i][8];
 
-                		$region1        = $newArr[$i][9];
+                        $region1        = $newArr[$i][9];
 
-                		$customer       = $newArr[$i][12];
+                        $customer       = $newArr[$i][12];
 
-                		$telefon        = $newArr[$i][13];
+                        $telefon        = $newArr[$i][13];
 
-                		$telefon1       = $newArr[$i][13];
+                        $telefon1       = $newArr[$i][13];
 
-                		$address1       = $newArr[$i][14];
+                        $address1       = $newArr[$i][14];
 
-                		$address2       = $newArr[$i][15];
+                        $address2       = $newArr[$i][15];
 
-                		$city           = $newArr[$i][16];
+                        $city           = $newArr[$i][16];
 
-                		$region         = $newArr[$i][17];
+                        $region         = $newArr[$i][17];
 
-                		$plz            = $newArr[$i][18];
+                        $plz            = $newArr[$i][18];
 
-                		$plz1           = $newArr[$i][10];
+                        $plz1           = $newArr[$i][10];
 
-                		$country        = $newArr[$i][19];
+                        $country        = $newArr[$i][19];
 
-                		$country1       = $newArr[$i][11];
+                        $country1       = $newArr[$i][11];
 
-                		$notes          = $newArr[$i][22];
+                        $notes          = $newArr[$i][22];
 
-                		$order_item_id  = $newArr[$i][0];
+                        $order_item_id  = $newArr[$i][0];
 
-                		$multiorder     = 0;
+                        $multiorder     = 0;
 
 
 
@@ -2169,7 +2173,7 @@ class OrderController extends Controller
 
 
 
-                        if(count($countrycode) > 0) {	
+                        if(count($countrycode) > 0) {   
 
                             $country    = $countrycode[0]->shortname;
 
@@ -2201,7 +2205,7 @@ class OrderController extends Controller
 
 
 
-					 	$sku                = $notes;
+                        $sku                = $notes;
 
                         $modelcode          = substr($sku, 0, 5);
 
@@ -2223,7 +2227,7 @@ class OrderController extends Controller
 
 
 
-						$productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
+                        $productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
 
 
 
@@ -2265,7 +2269,7 @@ class OrderController extends Controller
 
 
 
-					 	if($referenceorder!="" && $sale!="" && $checkIsDuplicate == 0) {
+                        if($referenceorder!="" && $sale!="" && $checkIsDuplicate == 0) {
 
                             if($referenceorder!="") {
 
@@ -2349,11 +2353,11 @@ class OrderController extends Controller
 
                             }
 
-					 	}
+                        }
 
-                	}
+                    }
 
-				} else if($files[$fileArrKey[$i]]->getClientOriginalExtension() == "csv" && $checks[$i] == "ddddd"){
+                } else if($files[$fileArrKey[$i]]->getClientOriginalExtension() == "csv" && $checks[$i] == "ddddd"){
 
                     for($loopfile=3; $loopfile<$totalrows; $loopfile++) {
 
@@ -2381,7 +2385,7 @@ class OrderController extends Controller
 
                         if($filetype=="txt") {
 
-                            $orderNo = $row[1];	
+                            $orderNo = $row[1]; 
 
                         }
 
@@ -2395,7 +2399,7 @@ class OrderController extends Controller
 
                             $shipping_price = $row[13];
 
-                            $sumtotal       = ($item_price + $shipping_price);	
+                            $sumtotal       = ($item_price + $shipping_price);  
 
                         }
 
@@ -2467,9 +2471,9 @@ class OrderController extends Controller
 
                                 }
 
-                                $productId  = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);	
+                                $productId  = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);    
 
-                            }								
+                            }                               
 
                             $fewmorefieldsarray = ['idpayment' => 'Amazon'];
 
@@ -2587,7 +2591,7 @@ class OrderController extends Controller
 
 
 
-                        if(count($countrycode) > 0) {	
+                        if(count($countrycode) > 0) {   
 
                             $country    = $countrycode;
 
@@ -2849,9 +2853,9 @@ class OrderController extends Controller
 
                                     }
 
-                                    $productId  = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);	
+                                    $productId  = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);    
 
-                                }								
+                                }                               
 
                                 $fewmorefieldsarray     = ['idpayment' => 'Amazon'];
 
@@ -2877,7 +2881,7 @@ class OrderController extends Controller
 
 
 
-                                if(count($countrycode) > 0) {	
+                                if(count($countrycode) > 0) {   
 
                                     $country    = $countrycode;
 
@@ -3169,9 +3173,9 @@ class OrderController extends Controller
 
                                         }
 
-                                        $productId  = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);	
+                                        $productId  = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);    
 
-                                    }								
+                                    }                               
 
                                     $fewmorefieldsarray     = ['idpayment' => 'Amazon'];
 
@@ -3289,7 +3293,7 @@ class OrderController extends Controller
 
 
 
-                                if(count($countrycode) > 0) {	
+                                if(count($countrycode) > 0) {   
 
                                     $country    = $countrycode;
 
@@ -3471,41 +3475,41 @@ class OrderController extends Controller
 
                 } else if($filetype=="txt" && $checks[$i] == "10-81") {
 
-					for($loopfile=0; $loopfile<$totalrows; $loopfile++) {
+                    for($loopfile=0; $loopfile<$totalrows; $loopfile++) {
 
-						if($loopfile > 0) {
+                        if($loopfile > 0) {
 
-							if($filetype=="txt") {
+                            if($filetype=="txt") {
 
-								$row=$file[$loopfile];
+                                $row=$file[$loopfile];
 
-								$row=explode("\t",$row);
+                                $row=explode("\t",$row);
 
                             }
 
                             
 
-							$columnscount       = count($row);
+                            $columnscount       = count($row);
 
-							$pallorderitem      = [];
+                            $pallorderitem      = [];
 
-							$fieldsoforderitem  = "";
+                            $fieldsoforderitem  = "";
 
-							$fieldoforderitem   = "";
+                            $fieldoforderitem   = "";
 
-							for($loopvalue=0; $loopvalue<$columnscount; $loopvalue++) {
+                            for($loopvalue=0; $loopvalue<$columnscount; $loopvalue++) {
 
-								if(isset($fieldsvaluearray[$loopvalue])) {
+                                if(isset($fieldsvaluearray[$loopvalue])) {
 
-									$fieldvalue=$fieldsvaluearray[$loopvalue];
+                                    $fieldvalue=$fieldsvaluearray[$loopvalue];
 
-									$fieldname=$fieldsnamearray[$loopvalue];
+                                    $fieldname=$fieldsnamearray[$loopvalue];
 
-									${$fieldname}=$row[$fieldvalue];
+                                    ${$fieldname}=$row[$fieldvalue];
 
-								}
+                                }
 
-						  	} // creating fields and their values variables and assigning data
+                            } // creating fields and their values variables and assigning data
 
                             if(isset($row[7])) {
 
@@ -3513,15 +3517,15 @@ class OrderController extends Controller
 
                             }
 
-						  	// amazon format
+                            // amazon format
 
-						  	if(isset($h) && $h!="" && isset($row[11])) {
+                            if(isset($h) && $h!="" && isset($row[11])) {
 
-						  		$productId="";
+                                $productId="";
 
-							  	if($platformtype =="Amazon") { 
+                                if($platformtype =="Amazon") { 
 
-									$sku                = $notes;
+                                    $sku                = $notes;
 
                                     $modelcode          = substr($sku, 0, 5);
 
@@ -3539,27 +3543,27 @@ class OrderController extends Controller
 
                                     }
 
-									$productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
+                                    $productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
 
-									$fewmorefieldsarray = ['idpayment' => 'Amazon'];
+                                    $fewmorefieldsarray = ['idpayment' => 'Amazon'];
 
-									$dateexplode        = explode("T", $date);
+                                    $dateexplode        = explode("T", $date);
 
-									$date               = $dateexplode[0];
+                                    $date               = $dateexplode[0];
 
-									$sumtotal           = '';
+                                    $sumtotal           = '';
 
-									$sumtotal           = ($row[11] + $row[13]);
+                                    $sumtotal           = ($row[11] + $row[13]);
 
-									$customer           = $row[16];
+                                    $customer           = $row[16];
 
-									$invoicenr          = $row[5];
+                                    $invoicenr          = $row[5];
 
-								}
+                                }
 
 
 
-								$countrycode = DB::table('country')
+                                $countrycode = DB::table('country')
 
                                         ->where('longname', '=', $country)
 
@@ -3571,7 +3575,7 @@ class OrderController extends Controller
 
 
 
-                                if(count($countrycode) > 0) {	
+                                if(count($countrycode) > 0) {   
 
                                     $country    = $countrycode;
 
@@ -3689,21 +3693,21 @@ class OrderController extends Controller
 
                         }
 
-						  	
+                            
 
-					} // end of reading file
+                    } // end of reading file
 
-				} else if($coding == 'EbayUK-01') {
+                } else if($coding == 'EbayUK-01') {
 
-					for($loopfile=3; $loopfile<$totalrows; $loopfile++) {
+                    for($loopfile=3; $loopfile<$totalrows; $loopfile++) {
 
-						if($loopfile > 0) {
+                        if($loopfile > 0) {
 
-							if($filetype=="txt") {
+                            if($filetype=="txt") {
 
-								$row=$file[$loopfile];
+                                $row=$file[$loopfile];
 
-								$row=explode("\t",$row);
+                                $row=explode("\t",$row);
 
                             } else if($filetype=="xlsx"){
 
@@ -3723,15 +3727,15 @@ class OrderController extends Controller
 
                             
 
-							$columnscount       = count($row);
+                            $columnscount       = count($row);
 
-							$pallorderitem      = [];
+                            $pallorderitem      = [];
 
-							$fieldsoforderitem  = "";
+                            $fieldsoforderitem  = "";
 
-							$fieldoforderitem   = "";
+                            $fieldoforderitem   = "";
 
-							for($loopvalue=0; $loopvalue<count($fieldsvaluearray); $loopvalue++) {
+                            for($loopvalue=0; $loopvalue<count($fieldsvaluearray); $loopvalue++) {
 
                                 if(isset($fieldsvaluearray[$loopvalue]) && $fieldsvaluearray[$loopvalue] != "") {
 
@@ -3759,11 +3763,11 @@ class OrderController extends Controller
 
                             }
 
-						  	// amazon format
+                            // amazon format
 
-						  	if(isset($row[11])) {
+                            if(isset($row[11])) {
 
-						  		$productId="";
+                                $productId="";
 
                                 $quantity   = $row[24];
 
@@ -3945,7 +3949,7 @@ class OrderController extends Controller
 
 
 
-                                if(count($countrycode) > 0) {	
+                                if(count($countrycode) > 0) {   
 
                                     $country    = $countrycode[0]->shortname;
 
@@ -4127,21 +4131,21 @@ class OrderController extends Controller
 
                         }
 
-					} // end of reading file
+                    } // end of reading file
 
-				} else if($coding == 'EbayES-01') {
+                } else if($coding == 'EbayES-01') {
 
-					for($loopfile=3; $loopfile<$totalrows; $loopfile++) {
+                    for($loopfile=3; $loopfile<$totalrows; $loopfile++) {
 
-						if($loopfile > 0) {
+                        if($loopfile > 0) {
 
-							$row=str_getcsv($file[$loopfile], ";");
+                            $row=str_getcsv($file[$loopfile], ";");
 
                             
 
-						  	// amazon format
+                            // amazon format
 
-						  	if(isset($row[24]) && $row[24] != "") {
+                            if(isset($row[24]) && $row[24] != "") {
 
                                 $quantity       = $row[24];
 
@@ -4321,7 +4325,7 @@ class OrderController extends Controller
 
         
 
-                                if(count($countrycode) > 0) {	
+                                if(count($countrycode) > 0) {   
 
                                     $country    = $countrycode[0]->shortname;
 
@@ -4503,19 +4507,19 @@ class OrderController extends Controller
 
                         }
 
-					} // end of reading file
+                    } // end of reading file
 
-				} else if($coding == 'EbayFR-01') {
+                } else if($coding == 'EbayFR-01') {
 
-					for($loopfile=0; $loopfile<$totalrows; $loopfile++) {
+                    for($loopfile=0; $loopfile<$totalrows; $loopfile++) {
 
-						if($loopfile > 0) {
+                        if($loopfile > 0) {
 
-							if($filetype=="txt") {
+                            if($filetype=="txt") {
 
-								$row=$file[$loopfile];
+                                $row=$file[$loopfile];
 
-								$row=explode("\t",$row);
+                                $row=explode("\t",$row);
 
                             } else if($filetype=="xlsx"){
 
@@ -4529,15 +4533,15 @@ class OrderController extends Controller
 
                             
 
-							$columnscount       = count($row);
+                            $columnscount       = count($row);
 
-							$pallorderitem      = [];
+                            $pallorderitem      = [];
 
-							$fieldsoforderitem  = "";
+                            $fieldsoforderitem  = "";
 
-							$fieldoforderitem   = "";
+                            $fieldoforderitem   = "";
 
-							for($loopvalue=0; $loopvalue<count($fieldsvaluearray); $loopvalue++) {
+                            for($loopvalue=0; $loopvalue<count($fieldsvaluearray); $loopvalue++) {
 
                                 if(isset($fieldsvaluearray[$loopvalue]) && $fieldsvaluearray[$loopvalue] != "") {
 
@@ -4565,15 +4569,15 @@ class OrderController extends Controller
 
                             }
 
-						  	// amazon format
+                            // amazon format
 
-						  	if(isset($h) && $h!="" && isset($row[11])) {
+                            if(isset($h) && $h!="" && isset($row[11])) {
 
-						  		$productId="";
+                                $productId="";
 
-							  	if($platformtype =="Amazon") { 
+                                if($platformtype =="Amazon") { 
 
-									$sku                = $notes;
+                                    $sku                = $notes;
 
                                     $modelcode          = substr($sku, 0, 5);
 
@@ -4591,23 +4595,23 @@ class OrderController extends Controller
 
                                     }
 
-									$productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
+                                    $productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
 
-									$fewmorefieldsarray = ['idpayment' => 'Amazon'];
+                                    $fewmorefieldsarray = ['idpayment' => 'Amazon'];
 
-									$dateexplode        = explode("T", $date);
+                                    $dateexplode        = explode("T", $date);
 
-									$date               = $dateexplode[0];
+                                    $date               = $dateexplode[0];
 
-									$sumtotal           = '';
+                                    $sumtotal           = '';
 
-									$sumtotal           = ($row[11] + $row[13]);
+                                    $sumtotal           = ($row[11] + $row[13]);
 
-									$customer           = $row[16];
+                                    $customer           = $row[16];
 
-									$invoicenr          = $row[5];
+                                    $invoicenr          = $row[5];
 
-								} else if($platformtype=="Ebay"){ 
+                                } else if($platformtype=="Ebay"){ 
 
                                     // $quantity = $row[24];
 
@@ -4669,7 +4673,7 @@ class OrderController extends Controller
 
 
 
-								$countrycode = DB::table('country')
+                                $countrycode = DB::table('country')
 
                                         ->where('longname', '=', $country)
 
@@ -4681,7 +4685,7 @@ class OrderController extends Controller
 
 
 
-                                if(count($countrycode) > 0) {	
+                                if(count($countrycode) > 0) {   
 
                                     $country    = $countrycode;
 
@@ -4823,21 +4827,21 @@ class OrderController extends Controller
 
                         }
 
-						  	
+                            
 
-					} // end of reading file
+                    } // end of reading file
 
-				} else {
+                } else {
 
-					for($loopfile=3; $loopfile<$totalrows; $loopfile++) {
+                    for($loopfile=3; $loopfile<$totalrows; $loopfile++) {
 
-						if($loopfile > 0) {
+                        if($loopfile > 0) {
 
-							if($filetype=="txt") {
+                            if($filetype=="txt") {
 
-								$row=$file[$loopfile];
+                                $row=$file[$loopfile];
 
-								$row=explode("\t",$row);
+                                $row=explode("\t",$row);
 
                             } else if($filetype=="xlsx"){
 
@@ -4851,15 +4855,15 @@ class OrderController extends Controller
 
 
 
-							$columnscount       = count($row);
+                            $columnscount       = count($row);
 
-							$pallorderitem      = [];
+                            $pallorderitem      = [];
 
-							$fieldsoforderitem  = "";
+                            $fieldsoforderitem  = "";
 
-							$fieldoforderitem   = "";
+                            $fieldoforderitem   = "";
 
-							for($loopvalue=0; $loopvalue<count($fieldsvaluearray); $loopvalue++) {
+                            for($loopvalue=0; $loopvalue<count($fieldsvaluearray); $loopvalue++) {
 
                                 if(isset($fieldsvaluearray[$loopvalue]) && $fieldsvaluearray[$loopvalue] != "") {
 
@@ -4887,15 +4891,15 @@ class OrderController extends Controller
 
                             }
 
-						  	// amazon format
+                            // amazon format
 
-						  	if(isset($h) && $h!="" && isset($row[11])) {
+                            if(isset($h) && $h!="" && isset($row[11])) {
 
-						  		$productId="";
+                                $productId="";
 
-							  	if($platformtype =="Amazon") { 
+                                if($platformtype =="Amazon") { 
 
-									$sku                = $notes;
+                                    $sku                = $notes;
 
                                     $modelcode          = substr($sku, 0, 5);
 
@@ -4913,25 +4917,25 @@ class OrderController extends Controller
 
                                     }
 
-									$productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
+                                    $productId          = $this->product_check_insert($modelcode, $sku, $channel->warehouse, $quantity);
 
-									$productId          = substr($productId, 0, 5);
+                                    $productId          = substr($productId, 0, 5);
 
-									$fewmorefieldsarray = ['idpayment' => 'Amazon'];
+                                    $fewmorefieldsarray = ['idpayment' => 'Amazon'];
 
-									$dateexplode        = explode("T", $date);
+                                    $dateexplode        = explode("T", $date);
 
-									$date               = $dateexplode[0];
+                                    $date               = $dateexplode[0];
 
-									$sumtotal           = '';
+                                    $sumtotal           = '';
 
-									$sumtotal           = round(($row[11] + $row[13]), 2);
+                                    $sumtotal           = round(($row[11] + $row[13]), 2);
 
-									$customer           = $row[16];
+                                    $customer           = $row[16];
 
-									$invoicenr          = $row[5];
+                                    $invoicenr          = $row[5];
 
-								} else if($platformtype=="Ebay"){ 
+                                } else if($platformtype=="Ebay"){ 
 
                                     // $quantity = $row[24];
 
@@ -4993,7 +4997,7 @@ class OrderController extends Controller
 
 
 
-								$countrycode = DB::table('country')
+                                $countrycode = DB::table('country')
 
                                         ->where('longname', '=', $country)
 
@@ -5005,7 +5009,7 @@ class OrderController extends Controller
 
 
 
-                                if(count($countrycode) > 0) {	
+                                if(count($countrycode) > 0) {   
 
                                     $country    = $countrycode[0]->shortname;
 
@@ -5149,11 +5153,11 @@ class OrderController extends Controller
 
                         }
 
-						  	
+                            
 
-					} // end of reading file
+                    } // end of reading file
 
-				}
+                }
 
             }
 
@@ -5181,7 +5185,7 @@ class OrderController extends Controller
 
         $this->sda_csv();
 
-        $this->gls_csv();	
+        $this->gls_csv();   
 
         $this->dpd_csv();   
 
