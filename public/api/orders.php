@@ -257,7 +257,13 @@
                                 }
                             }
 
-                            $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', quantity = '".$quantity."' , carriername = '".$carref."', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
+                            $result = mysqli_query($conn, "SELECT * FROM orderitem WHERE referenceorder = '".$id."' AND order_item_id = '".$orderItemId."' AND carriername ='' LIMIT 1");
+                            if($result->num_rows == 0) {
+                                $sql = "UPDATE orderitem SET carriername = '".$carref."' WHERE idorderplatform= '".$id."'";
+                                mysqli_query($conn, $sql);
+                            }
+                            //, carriername = '".$carref."'
+                            $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', quantity = '".$quantity."' , printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
                             if($id == "408-1482479-5488308") {
                                 echo $sql."-----------2";
                             }
@@ -465,7 +471,15 @@
                                 // } else {
                                 //     $print_shipping = 0;
                                 // }
-                                $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', carriername = '".$carref."', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
+
+                                $result = mysqli_query($conn, "SELECT * FROM orderitem WHERE referenceorder = '".$id."' AND order_item_id = '".$orderItemId."' AND carriername ='' LIMIT 1");
+                                if($result->num_rows == 0) {
+                                    $sql = "UPDATE orderitem SET carriername = '".$carref."' WHERE idorderplatform= '".$id."'";
+                                    mysqli_query($conn, $sql);
+                                }
+
+
+                                $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
                                 mysqli_query($conn, $sql);
                                 echo $sql .'<br>';
                             }
