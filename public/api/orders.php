@@ -263,12 +263,14 @@
                                 mysqli_query($conn, $sql);
                             }
                             //, carriername = '".$carref."'
-                            $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', quantity = '".$quantity."' , printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
-                            if($id == "408-1482479-5488308") {
-                                echo $sql."-----------2";
+                            if($carref == 'Shipped'){
+                                $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', quantity = '".$quantity."' , printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
+                                if($id == "408-1482479-5488308") {
+                                    echo $sql."-----------2";
+                                }
+                                echo $sql.'<br>';
+                                mysqli_query($conn, $sql);
                             }
-                            echo $sql.'<br>';
-                            mysqli_query($conn, $sql);
                         }
                     } else {
                         $currdate           = date("Y-m-d");
@@ -478,10 +480,11 @@
                                     mysqli_query($conn, $sql);
                                 }
 
-
-                                $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
-                                mysqli_query($conn, $sql);
-                                echo $sql .'<br>';
+                                if($carref == 'Shipped'){
+                                    $sql = "UPDATE orderitem SET sync = 'Synch with Amazon', registeredtosolddayok = '1', courierinformedok = '1', trackinguploadedok = '1', printedshippingok = '".$print_shipping."' WHERE idorderplatform= '".$id."'";
+                                    mysqli_query($conn, $sql);
+                                    echo $sql .'<br>';
+                                }
                             }
                         } else {
                             $currdate           = date("Y-m-d");
