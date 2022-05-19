@@ -230,7 +230,7 @@ class Controller extends BaseController
                     DB::table('orderitem')
                         ->where('idorder', '=', $idorder)
                         ->update([
-                            "courierinformedok"     => 0,
+                            "courierinformedok"     => 1,
                             "printedshippingok"     => 0,
                             "registeredtosolddayok" => 0
                         ]);
