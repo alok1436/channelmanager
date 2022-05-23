@@ -318,7 +318,7 @@
                                             Download the actual level of the items in Amazon Warehouses :
                                         </div>
                                         <div class="col-sm-7">
-                                            <a href="{{ url('api/fbaQuantity.php') }}" target="_blank" class="btn btn-info">CHECK VIA API ACTUAL QUANTITY</a>
+                                            <a href="{{ url('api/fbaQuantityNew.php') }}" target="_blank" class="btn btn-info">CHECK VIA API ACTUAL QUANTITY</a>
 
                                             <a href="" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModalNew">CHECK VIA EXCEL QUANTITY</a>
                                         </div>

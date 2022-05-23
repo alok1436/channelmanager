@@ -222,5 +222,7 @@ Route::get('/bufferUpdate',                     'KitController@bufferUpdate')->n
 Route::get('/sendNewKit',                       'KitController@sendNewKit')->name('sendNewKit');
 
 Route::get('/inventoryView',                    'InventoryController@inventoryView')->name('inventoryView');
-Route::get('/inventoryView2',                    'InventoryController@inventoryView2')->name('inventoryView2');
+Route::get('/inventoryView2',                   'InventoryController@inventoryView2')->name('inventoryView2');
 Route::get('ajax/invertory/get',                'InventoryController@ajaxInventory')->name('ajax.inventory');
+Route::get('otto/get/orders',                	'OttoController@getOrders')->name('otto.orders');
+Route::get('fba/quantity',                		'FBAController@getQuantity');

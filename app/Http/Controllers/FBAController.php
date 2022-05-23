@@ -24,6 +24,7 @@ use App\Imports\FBAImport;
 use CodeItNow\BarcodeBundle\Utils\BarcodeGenerator;
 
 class FBAController extends Controller {
+
     public function index() {
         $query = DB::table('tbl_fba');
 
