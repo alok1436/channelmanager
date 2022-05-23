@@ -258,7 +258,7 @@
                             }
 
                             $result = mysqli_query($conn, "SELECT * FROM orderitem WHERE referenceorder = '".$id."' AND order_item_id = '".$orderItemId."' AND carriername ='' LIMIT 1");
-                            if($result->num_rows == 0) {
+                            if($result->num_rows > 0) {
                                 $sql = "UPDATE orderitem SET carriername = '".$carref."' WHERE idorderplatform= '".$id."'";
                                 mysqli_query($conn, $sql);
                             }
@@ -475,7 +475,7 @@
                                 // }
 
                                 $result = mysqli_query($conn, "SELECT * FROM orderitem WHERE referenceorder = '".$id."' AND order_item_id = '".$orderItemId."' AND carriername ='' LIMIT 1");
-                                if($result->num_rows == 0) {
+                                if($result->num_rows > 0) {
                                     $sql = "UPDATE orderitem SET carriername = '".$carref."' WHERE idorderplatform= '".$id."'";
                                     mysqli_query($conn, $sql);
                                 }
