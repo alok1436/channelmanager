@@ -170,6 +170,7 @@ class OttoController extends Controller {
                             $orderItem->weeksell                = $week;
                             $orderItem->idpayment               = 'Otto';
                             $orderItem->inv_vat                 = $item->product->vatRate;
+                            $orderItem->inv_price               = $item->itemValueGrossPrice->amount;
                             if(isset($item->trackingInfo)){
                                 $orderItem->carriername             = $item->trackingInfo->carrier;
                                 $orderItem->tracking                = $item->trackingInfo->trackingNumber;
