@@ -34,7 +34,10 @@ use App\Models\OrderItem;
 
 class OttoController extends Controller {
     
-    public function getOrders(){
+    public function getOrders(Request $request){
+        if(request()->filled('delete') && request()->delete == 1){
+            OrderItem::where('referencechannelname','OTTO')->delete();
+        }
         $channels  = Channel::query()
                 ->join('platform', 'channel.platformid', '=', 'platform.platformid')
                 ->where('platform.platformtype','Otto')
@@ -58,6 +61,7 @@ class OttoController extends Controller {
                    $channel->save();
                    echo 'Getting orders for '.$channel->shortname.'</br>';
                    $this->ottoOrders($res, $channel);
+                   echo 'Done orders for '.$channel->shortname.'</br>';
                 }
                 
                 
@@ -74,7 +78,6 @@ class OttoController extends Controller {
     
     public function ottoOrders($response, $channel){
         $client = new \GuzzleHttp\Client();
-        
         $args = [
                 'fromOrderDate'=> date('Y-m-d', strtotime('-3 days')).'T01:00:00+02:00',
                 'toOrderDate'=> date('Y-m-d'). 'T23:59:59+02:00',
@@ -89,11 +92,11 @@ class OttoController extends Controller {
                     ],
                 ]);
         $orders = json_decode($response->getBody()->getContents());
-        //dd($orders);
+      //   dd($orders);
         if(!empty($orders)){
             $orders = $orders->resources;
             if(!empty($orders)){
-                foreach($orders as $row){
+                foreach($orders as $index => $row){
                     $multiorder = 0;
                     set_time_limit(0);
                     echo 'OrderId: <a href="'.url('orderView?is_search=1&keyword='.$row->orderNumber).'" target="_blank">'.$row->orderNumber.'</a></br>';
@@ -104,6 +107,9 @@ class OttoController extends Controller {
                             $sum += $item2->itemValueGrossPrice->amount + $row->initialDeliveryFees[0]->deliveryFeeAmount->amount;
                         }
                     }
+                    // if($index == 9){
+                    //     dd($item2);
+                    // }
                     foreach($row->positionItems as $k=>$item){
                         $sku = $item->product->sku;
                         $modelcode      = explode(" ", $sku)[0];
@@ -129,7 +135,7 @@ class OttoController extends Controller {
                             $lagerStand->idwarehouse = $channel->warehouse;
                             $lagerStand->save();
                         }
-                         
+                        
                         $isExists = OrderItem::where(['idorderplatform' => $row->orderNumber, 'order_item_id'=> $item->positionItemId])->first();
                         if(!$isExists){
                            // dd($row);
@@ -161,7 +167,6 @@ class OttoController extends Controller {
                             $orderItem->platformname            = $channel->pShortName;
                             $orderItem->currency                = $item->itemValueGrossPrice->currency;
                             $orderItem->quantity                = 1;
-                            $orderItem->sum                     = $total;
                             $orderItem->weeksell                = $week;
                             $orderItem->idpayment               = 'Otto';
                             $orderItem->inv_vat                 = $item->product->vatRate;
