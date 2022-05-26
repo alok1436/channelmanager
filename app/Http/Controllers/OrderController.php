@@ -151,8 +151,8 @@ class OrderController extends Controller
             $collection->where('idwarehouse', '=', $request->warehouse);
         }
         
-        if($request->filled('warehouse') && $request->get('warehouse') > 0) {
-            $collection->where('idwarehouse', '=', $request->warehouse);
+        if($request->filled('company') && $request->get('company') > 0) {
+            $collection->where('idcompany', '=', $request->company);
         }
         
         if($request->filled('show_deleted_orders')) {

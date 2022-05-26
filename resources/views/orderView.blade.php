@@ -24,9 +24,17 @@
                                                     </label>
                                                     @endforeach
                                                 </div>
+                                               
+                                                @foreach ($companies as $key => $comp)
+                                                <label for="option_{{$comp->idcompany}}" class="btn btn-outline-primary mt-2 {{ request()->company == $comp->idcompany ? 'active' : '' }}">
+                                                    <input type="radio" name="company" id="option_{{$comp->idcompany}}" autocomplete="off" value="{{$comp->idcompany}}" {{ request()->company == $comp->idcompany ? 'checked' : '' }} onchange="this.form.submit()"> {{$comp->shortname}}
+                                                </label>
+                                                @endforeach
+
                                                 @if(request()->is_search == 1)
                                                 <a href="orderView" class="btn btn-warning">Reset</a>
                                                 @endif
+                                                 
                                             </form>
                                         </div>
                                         <div class="col-sm-6 col-lg-6 col-md-6">
@@ -95,6 +103,11 @@
                                             <button  class="btn btn-info d-block w-100">
                                             <a onclick="getAmazonOrders()"> Get Amazon Orders</a>
                                             </button>
+                                        </div>
+                                        <div class="mr-3">
+                                           
+                                            <a target="_blank" href="{{ route('otto.orders') }}" class="btn btn-info"> Get Otto Orders</a>
+                                         
                                         </div>
                                         <div class="mr-3">
                                             <button class="btn btn-info d-block w-100" onclick="getEbayOrders()">
@@ -441,7 +454,7 @@
                         </table>
                     </td>
                     <td class="td-field">
-                        <span  class="field-value">{{$row->warehouse->shortname}}</span>
+                        <span  class="field-value">{{$row->warehouse ? $row->warehouse->shortname : ''}}</span>
                         <div class="field-edit">
                             <select name="idwarehouse" class="form-control w-100" data-id="{{$row->idorder}}" data-field="idwarehouse">
                             <option value="">Select</option>
