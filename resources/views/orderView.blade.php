@@ -17,7 +17,7 @@
                                                     <input type="radio" name="warehouse" id="{{$warehouse->shortname}}" autocomplete="off" value="{{$warehouse->idwarehouse}}" {{ request()->warehouse == $warehouse->idwarehouse ? 'checked' : '' }} onchange="this.form.submit()">{{$warehouse->shortname}}
                                                     </label>
                                                     @endforeach
-                                                    <?php $searchMethods = ['idpayment'=>'Orders to pay','carriername'=>'Orders to ship','printedshippingok'=>'Print orders','registeredtosolddayok'=>'Orders for platforms'] ?>
+                                                    <?php $searchMethods = ['idpayment'=>'Orders to pay','carriername'=>'Orders to ship','printedshippingok'=>'Print orders','trackinguploadedok'=>'Orders for platforms'] ?>
                                                     @foreach($searchMethods as $k=>$method)
                                                     <label for="option_{{$method}}" class="btn btn-outline-primary {{ request()->search == $k ? 'active' : '' }}">
                                                     <input type="radio" name="search" id="option_{{$method}}" autocomplete="off" value="{{$k}}" {{ request()->search == $k ? 'checked' : '' }} onchange="this.form.submit()">{{$method}}
@@ -511,6 +511,31 @@
                                 </div>
                             </td>
                           </tr>
+                          @if($row->platformname == 'Otto')
+                              <tr>
+                                <td  class="td-field">
+                                    <span class="field-value">{{$row->returnTrackingCarrier}}</span>
+                                    <div class="field-edit">
+                                        <select name="returnTrackingCarrier" class="form-control w-100" data-id="{{$row->idorder}}" data-field="returnTrackingCarrier">
+                                        <option value="">Select</option>
+                                        @foreach ($carriers as $key => $carrier)
+                                        <option value="{{$carrier->shortname}}" @if ($carrier->shortname==$row->returnTrackingCarrier) selected="" @endif >
+                                        {{$carrier->shortname}}
+                                        </option>
+                                        @endforeach
+                                        </select>
+                                    </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td  class="td-field">
+                                    <span  class="field-value">{{$row->returnTrackingNumber}}</span>
+                                    <div class="field-edit">
+                                        <input type="text" name="returnTrackingNumber" class="form-control" value="{{$row->returnTrackingNumber}}" data-id="{{$row->idorder}}" data-field="returnTrackingNumber">
+                                    </div>
+                                </td>
+                              </tr>
+                          @endif
                          </table>
                     </td>
                     <td>
@@ -518,7 +543,7 @@
                             <a class="btn btn-danger" target="" href="orderDelete?del={{$row->idorder}}&type=delete_order&<?php echo http_build_query(request()->all()); ?>" onclick="return confirm('are you sure?')" style="width: 100%; word-wrap: break-word; margin-top: 10px;">Delete order</a>
                         @else
 
-                           <select name="delete" class="form-control delete" data-id="{{$row->idorder}}" style="width: 100%;">
+                           <select name="delete" class="form-control delete" data-id="{{$row->idorder}}" data-platform="{{$row->referencechannelname}}" style="width: 100%;">
                                 <option value="">Select Option</option>
                                 <option value="delete_order">Delete Order</option>
                                 <option value="set_as_done">Set as Done</option>
@@ -1026,6 +1051,7 @@ input[type=checkbox], input[type=radio] {
                 $(".delete").on('change', function() {
             
                     var deleid  = $(this).data("id");
+                    var platform  = $(this).data("platform");
             
                     var type    = $(this).val();
             
@@ -1074,44 +1100,29 @@ input[type=checkbox], input[type=radio] {
                     }else if(type=="send_to_platform"){
             
                         if (confirm('Are you sure to change status send to platform?')) {
-            
-                            // $(".preloader").fadeIn();
-            
-                            // var data = {
-            
-                            //     orderId     : deleid
-            
-                            // }
-            
-                            // $.ajax({
-            
-                            //     type: "GET",
-            
-                            //     url: "api/updateOrder.php",
-            
-                            //     data: data,
-            
-                            //     success : function(data) {
-            
-                            //         $(".preloader").fadeOut();
-            
-                            //         if(data=="Success") {
-            
-                            //             alert("Successfuly sent!");
-            
-                            //         } else {
-            
-                            //             alert(data);
-            
-                            //         }
-            
-                            //     }
-            
-                            // });
-            
-                            window.location.href = 'api/updateOrder.php?orderId='+deleid+"&"+query;
-            
-                            return true;
+                            if(platform == 'OTTO'){
+                                $(".preloader").fadeIn();
+                                var data = {
+                                    orderId     : deleid,
+                                    platform     : platform,
+                                }
+                                $.ajax({
+                                    type: "GET",
+                                    url: "{{ route('order.send_to_platform') }}",
+                                    data: data,
+                                    success : function(data) {
+                                        $(".preloader").fadeOut();
+                                        if(data=="Success") {
+                                            alert("Successfuly sent!");
+                                        } else {
+                                            alert(data);
+                                        }
+                                    }
+                                });
+                            }else{
+                                window.location.href = 'api/updateOrder.php?orderId='+deleid+"&"+query;
+                                return true;
+                            }
             
                         }
             

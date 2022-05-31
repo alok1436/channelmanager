@@ -34,6 +34,133 @@ use App\Models\OrderItem;
 
 class OttoController extends Controller {
     
+
+    public function __construct(){
+
+    }
+
+    public function orderSendToPlatform(Request $request)
+    {
+        if($request->filled('platform') && $request->platform == 'OTTO'){
+
+            $orderId = $request->orderId;
+            $order = OrderItem::find($orderId); //dd($order);
+            if($order){
+                if($order->channel){
+                    $token = $this->getAccessToken( $order->channel );
+                    $client = new \GuzzleHttp\Client();
+                    try {
+                        $result  =    $this->createShipment($order, $token->access_token); dd($result);exit();
+                        //$result  =   $this->getShipmentDetails($order->carriername, $order->tracking, $token->access_token);
+                        if(isset($result->errors[0]) && $result->errors[0]->title == 'RESOURCE_NOT_FOUND'){
+
+                        }
+                    }
+                    catch (\GuzzleHttp\Exception\ClientException $e) {
+                        
+                    return [];
+                    }
+                }
+            }
+        }
+    }
+
+    public function createShipment($order, $token)
+    { //$order->tracking
+        try {
+            $client = new \GuzzleHttp\Client();
+            $body = '{
+              "trackingKey": {
+                "carrier": "'.$order->carriername.'",
+                "trackingNumber": "431237178573"
+              },
+              "shipDate": "'.date("Y-m-d\TH:i:s.000\Z").'",
+              "shipFromAddress": {
+                "city": "'.$order->carriername.'",
+                "countryCode": "'.( $order->country == 'DE' ? 'DEU' : $order->country ).'",
+                "zipCode": "'.$order->plz.'"
+              },
+              "positionItems": [
+                {
+                    "positionItemId": "'.$order->order_item_id.'",
+                    "salesOrderId": "'.$order->salesOrderId.'",
+                    "returnTrackingKey": {
+                        "carrier": "'.$order->returnTrackingCarrier.'",
+                        "trackingNumber": "'.$order->returnTrackingNumber.'"
+                    }
+                }
+              ]
+            }';
+
+            $response = $client->post('https://api.otto.market/v1/shipments', [
+              'body' => $body,
+              'headers' => [
+                'Content-Type' => 'application/json', 
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' .$token,
+              ]
+            ]);
+            $shipments = json_decode($response->getBody()->getContents());
+            return $shipments;
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $result =  json_decode($response->getBody()->getContents());
+            return $result;
+        }
+    }
+
+    public function getShipmentDetails($carrier, $trackingNumber, $token)
+    {
+        try {
+            $client = new \GuzzleHttp\Client();
+            $args = [
+                    'carrier'=> $carrier,
+                    'trackingNumber'=> $trackingNumber
+                ];
+            $queryString = http_build_query($args);
+            $response = $client->get("https://api.otto.market/v1/shipments/carriers/{$carrier}/trackingnumbers/{$trackingNumber}",
+                    [
+                        'headers' => [
+                            'Authorization' => 'Bearer ' .$token,
+                        ],
+                    ]);
+            $shipments = json_decode($response->getBody()->getContents());
+            return $shipments;
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $result =  json_decode($response->getBody()->getContents());
+            return $result;
+        }
+    }
+
+    public function getAccessToken($channel)
+    {
+        $client = new \GuzzleHttp\Client();
+        try {
+            $res = $client->post('https://api.otto.market/v1/token', [
+            'form_params' => [
+                        'username' => $channel->username,
+                        'password' => $channel->password,
+                        'grant_type' => 'password',
+                        'client_id' =>$channel->client_id,
+                    ]
+                ]);
+    
+            $res = json_decode($res->getBody()->getContents());
+            if($res){
+               $channel->refresh_token = $res->refresh_token;
+               $channel->save();
+            }
+            return $res;
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            // $response = $e->getResponse();
+            // $result =  json_decode($response->getBody()->getContents());
+            // return response()->json(['data' => $result]);
+
+            return [];
+        }
+    }
     public function getOrders(Request $request){
         if(request()->filled('delete') && request()->delete == 1){
             OrderItem::where('referencechannelname','OTTO')->delete();
@@ -44,30 +171,14 @@ class OttoController extends Controller {
                 ->select('channel.*','platform.shortname as pShortName')
                 ->get();
         foreach($channels as $channel){
-        $client = new \GuzzleHttp\Client();
             try {
-                $res = $client->post('https://api.otto.market/v1/token', [
-                'form_params' => [
-                            'username' => $channel->username,
-                            'password' => $channel->password,
-                            'grant_type' => 'password',
-                            'client_id' =>$channel->client_id,
-                        ]
-                    ]);
-        
-                $res = json_decode($res->getBody()->getContents());
+                $res = $this->getAccessToken( $channel );
                 if($res){
-                   $channel->refresh_token = $res->refresh_token;
-                   $channel->save();
                    echo 'Getting orders for '.$channel->shortname.'</br>';
                    $this->ottoOrders($res, $channel);
                    echo 'Done orders for '.$channel->shortname.'</br>';
-                }
-                
-                
-                
-            }
-            catch (\GuzzleHttp\Exception\ClientException $e) {
+                }    
+            }catch (\GuzzleHttp\Exception\ClientException $e) {
                 $response = $e->getResponse();
                 $result =  json_decode($response->getBody()->getContents());
                 return response()->json(['data' => $result]);
@@ -103,13 +214,15 @@ class OttoController extends Controller {
                     //dd($row->positionItems);
                     $sum = 0;
                     foreach($row->positionItems as $k=>$item2){
-                        if(isset($row->initialDeliveryFees[0])){
-                            $sum += $item2->itemValueGrossPrice->amount + $row->initialDeliveryFees[0]->deliveryFeeAmount->amount;
+                        if(isset($item2->itemValueGrossPrice)){
+                            $sum += $item2->itemValueGrossPrice->amount;
                         }
                     }
-                    // if($index == 9){
-                    //     dd($item2);
-                    // }
+
+                    if(isset($row->initialDeliveryFees[0])){
+                        $sum  =$sum + $row->initialDeliveryFees[0]->deliveryFeeAmount->amount;
+                    }
+                    
                     foreach($row->positionItems as $k=>$item){
                         $sku = $item->product->sku;
                         $modelcode      = explode(" ", $sku)[0];
@@ -157,6 +270,7 @@ class OttoController extends Controller {
                                 $orderItem->multiorder          = $row->orderNumber;
                                 $orderItem->sum                 = $total;
                             }
+                            $orderItem->salesOrderId            = $row->salesOrderId;
                             $orderItem->referenceorder          = $row->orderNumber;
                             $orderItem->order_item_id           = $item->positionItemId;
                             $orderItem->productid               = $product->productid;
@@ -209,7 +323,6 @@ class OttoController extends Controller {
                                 $orderItem->printedshippingok          = 1;
                                 $orderItem->trackinguploadedok          = 1;
                                 $orderItem->courierinformedok           = 1;
-                                $orderItem->trackinguploadedok          = 1;
                                 $orderItem->registeredtolagerstandok    = 1;
                             }
                             
@@ -222,14 +335,14 @@ class OttoController extends Controller {
                             
                         }else{
                             
+                            $isExists->salesOrderId            = $row->salesOrderId;
                             if($item->fulfillmentStatus == 'SENT'){
-                                $orderItem = $isExists;
-                                $orderItem->printedshippingok          = 1;
-                                $orderItem->trackinguploadedok          = 1;
-                                $orderItem->courierinformedok           = 1;
-                                $orderItem->trackinguploadedok          = 1;
-                                $orderItem->registeredtolagerstandok    = 1;
-                                $orderItem->save();
+                                $isExists = $isExists;
+                                $isExists->printedshippingok          = 1;
+                                $isExists->trackinguploadedok          = 1;
+                                $isExists->courierinformedok           = 1;
+                                $isExists->registeredtolagerstandok    = 1;
+                                $isExists->save();
                             }
                         }
                         $multiorder++;

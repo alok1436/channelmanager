@@ -155,6 +155,7 @@ Route::post('/orderAdd',                        'OrderController@orderAdd')->nam
 Route::post('/importOrderFile',                 'OrderController@importOrderFile')->name('importOrderFile');
 Route::get('/createCSV',                        'OrderController@createCSV')->name('createCSV');
 Route::get('/sendToPlatform',                   'OrderController@sendToPlatform')->name('sendToPlatform');
+Route::get('/send_to_platform',                 'OttoController@orderSendToPlatform')->name('order.send_to_platform');
 Route::get('/printDocuments',                   'OrderController@printDocuments')->name('printDocuments');
 Route::post('/addAmazonAddress',                'OrderController@addAmazonAddress')->name('addAmazonAddress');
 Route::get('/getWoocommerceOrders',             'OrderController@getWoocommerceOrders')->name('getWoocommerceOrders');
@@ -225,4 +226,5 @@ Route::get('/inventoryView',                    'InventoryController@inventoryVi
 Route::get('/inventoryView2',                   'InventoryController@inventoryView2')->name('inventoryView2');
 Route::get('ajax/invertory/get',                'InventoryController@ajaxInventory')->name('ajax.inventory');
 Route::get('otto/get/orders',                	'OttoController@getOrders')->name('otto.orders');
+Route::get('otto/get/quantity',                	'OttoController@downloadQuantity')->name('otto.quantity');
 Route::get('fba/quantity',                		'FBAController@getQuantity');

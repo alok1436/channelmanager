@@ -28,6 +28,10 @@
     use \DTS\eBaySDK\Inventory\Types;
     use \DTS\eBaySDK\Inventory\Enums;
 
+    function pr($array){
+
+            echo '<pre>'; print_r($array); echo '</pre>';  exit();
+    }
     $sql        = "SELECT * FROM product";
     $result     = mysqli_query($conn, $sql);
     $products   = array();
@@ -213,6 +217,8 @@
                 'sandbox'     => false
             ]);
             
+            //pr($sdk);
+
             
 
             $exchangeService    = $sdk->createBulkDataExchange();
@@ -230,11 +236,11 @@
             $startDownloadJobRequest->UUID = uniqid();
             $startDownloadJobRequest->downloadRequestFilter = new BulkDataExchange\Types\DownloadRequestFilter();
             $startDownloadJobRequest->downloadRequestFilter->activeInventoryReportFilter = $activeInventoryReportFilter;
-
+ 
             print('Requesting job Id from eBay...');
             $startDownloadJobResponse = $exchangeService->startDownloadJob($startDownloadJobRequest);
             print("Done\n");
-
+//pr($startDownloadJobResponse);
             if (isset($startDownloadJobResponse->errorMessage)) {
                 foreach ($startDownloadJobResponse->errorMessage->error as $error) {
                     printf(

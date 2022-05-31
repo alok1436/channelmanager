@@ -178,8 +178,13 @@ class OrderController extends Controller
             $collection->where('printedshippingok', '=', 0);
         }
 
+
         if(isset($_GET['search']) && $_GET['search'] == "registeredtosolddayok") {
             $collection->where('registeredtosolddayok', '=', 0);
+        }
+
+        if($request->filled('search') && $request->search == 'trackinguploadedok') {
+            $collection->where('trackinguploadedok', '=', 1);
         }
 
         if(isset($_GET['integrate'])) {
@@ -187,6 +192,7 @@ class OrderController extends Controller
         }
         //$collection->where('idorder','25');
         $collection->where('multiorder','0');
+        $collection->where('platformname',"Otto");
         $orders = $collection->orderBy('idorder','desc')->groupBy('referenceorder')->paginate(100);
        // dd($orders);
         $modalWares = DB::table('orderitem')
@@ -5628,30 +5634,15 @@ $options = [
 
         ];
 
-        
-
-
-
         $channels = DB::table("channel")
-
                         ->leftjoin("platform", "channel.platformid", "=", "platform.platformid")
-
                         ->where("platform.platformtype", "=", "Woocommerce")
-
                         ->select("channel.*")
-
                         ->get();
 
-
-
         $noneProducts = [];
-
-        
-
         foreach($channels as $channel) {
-
             if($channel->woo_store_url != null && $channel->woo_store_url != "") {
-                
                 config([
                     'woocommerce.store_url' => $channel->woo_store_url,
                     'woocommerce.consumer_key' => $channel->woo_consumer_key,
@@ -5662,280 +5653,160 @@ $options = [
                 Session::put("WOOCOMMERCE_CONSUMER_SECRET", $channel->woo_consumer_secret);
 
                 $orders = Order::all($options, $channel);
-
                 $shortname          = $channel->shortname;   
-
                 $idcompany          = $channel->idcompany;    
-
                 $vat                = $channel->vat; 
-
                 $platformid         = $channel->platformid; 
-
                 $idwarehouse        = $channel->warehouse;
-
                 $idchannel          = $channel->idchannel; 
-
                 $countryname        = $channel->country;
-
                 $warehouse          = $channel->warehouse;
 
-                
-
                 foreach($orders as $order) {
-
                     $referenceorder         = $order->id; 
-
                     $platformname           = 'Woocommerce';
-
                     $sum                    = $order->total;
-
                     $currency               = $order->currency;
-
                     $id                     = $order->id;
-
                     $cdate                  = $order->date_created;
-
                     $dateweekcell           = date_create($cdate);
-
                     $dateweek               = date_format($dateweekcell,"W");
-
                     $newcdate               = date_create($cdate);
-
                     $newcdateform           = date_format($newcdate,"Y/m/d");
-
                     $tracking               = '';
-
                     $carref                 = '';
-
                     $print_shipping         = '';
-
                     $platform               = 'Woocommerce';
-
                     $PostalCode             = $order->shipping->postcode;
-
                     $city                   = $order->shipping->city;
-
                     $country                = $order->shipping->country;
-
                     $region                 = $order->shipping->state;
-
                     $customer               = $order->shipping->first_name.' '.$order->billing->last_name;
-
                     $address_1              = $order->shipping->address_1;
-
                     $address_2              = $order->shipping->address_2;
-
                     $plz1                   = $order->billing->postcode;
-
                     $city1                  = $order->billing->city;
-
                     $country1               = $order->billing->country;
-
                     $email1                 = $order->billing->email;
-
                     $phone1                 = $order->billing->phone;
-
                     $region1                = $order->billing->state;
-
                     $inv_customer           = $order->billing->first_name.' '.$order->billing->last_name;
-
                     $inv_address1           = $order->billing->address_1;
-
                     $inv_address2           = $order->billing->address_2;
-
                     $orderstaus             = $order->status;
-
                     $transactionId          = $order->transaction_id;
-
                     $customer_note          = $order->customer_note;
-
                     $registeredtosolddayok  = 0;            
-
                     $courierinformedok      = 0;           
-
                     $trackinguploadedok     = 0;
-
                     $registeredtolagerstandok   = 0;
 
-
-
                     if($order->payment_method == "bacs") {
-
                         $idpayment              = "";
-
                     } else {
-
                         $idpayment              = $order->payment_method;
-
                     }
-
-                   
 
                     $items                  = $order->line_items;
 
-                    
-
                     foreach($items as $item) {
-
                         $sku            = $item->sku;
-
-
-
                         if($sku == "10452 S27kit") {
-
                             print_r($order);
-
                         }
-
-
 
                         $orderItemId    = $item->id;
-
                         $quantity       = $item->quantity;
-
                         $modelcode      = explode(" ", $sku)[0];
-
                         echo $id."--------------".$orderItemId."<br>";
-
                         if($sum == 0 || $quantity == 0 || $orderstaus == "cancelled" || $orderstaus == "refunded") {
-
                             $print_shipping             = 1;
-
                             $registeredtosolddayok      = 1;
-
                             $registeredtolagerstandok   = 1;
-
                             $courierinformedok          = 1;
-
                             $trackinguploadedok         = 1;
-
                             $idpayment                  = "Deleted";
-
                             $tracking                   = '---';
-
                             $carref                     = '---';
-
                         }
-
-
 
                         if($orderstaus == "completed") {
-
                             $print_shipping             = 1;
-
                             $registeredtosolddayok      = 1;
-
                             $registeredtolagerstandok   = 1;
-
                             $courierinformedok          = 1;
-
                             $trackinguploadedok         = 1;
-
                             $tracking                   = 'Shipped';
-
                             $carref                     = 'Shipped';
-
                         }
 
-
-
-                        $productExist = DB::table('product')
-
-                                            ->where('sku', '=', $sku)
-
-                                            ->first();
-
-
-
-                        if(empty($productExist)) {
-
+                        $productExist = Product::where('sku', '=', $sku)->first();
+                        if(!$productExist) {
                             array_push($noneProducts, $modelcode);
-
                             $productId          = $this->product_check_insert_two('sku', $sku, '', $quantity,$sku);
-
                         } else {
-
                             $productId          = $productExist->productid;
-
                         }
 
-
-
-                        $orderExist = DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
-                                        ->where('referenceorder', '=', $id)
-                                        ->first();
-
-
-
-                        if(!empty($orderExist)) {
-
+                        $orderExist = DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))->where('referenceorder', '=', $id)->first();
+                        if(!$orderExist){
                             $itemExist = DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
-
                                             ->where('referenceorder',   '=', $id)
-
                                             ->where('order_item_id',    '=', $orderItemId)
-
                                             ->first();
-
-
 
                             if(!empty($itemExist)) {
-
                                 DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
-
                                     ->where('referenceorder',   '=', $id)
-
                                     ->where('order_item_id',    '=', $orderItemId)
-
                                     ->update([
-
                                         'sync'                  => 'Synch with Woocommerce',
-
-                                        'registeredtosolddayok' => $registeredtosolddayok, 
-
-                                        'courierinformedok'     => $courierinformedok,
-
-                                        'trackinguploadedok'    => $trackinguploadedok,
-
                                         'productid'             => $productId,
-
-                                        'carriername'           => $carref, 
-
+                                        //'carriername'           => $carref, 
                                         'tracking'              => $tracking,
-
                                         'customer'              => $customer,
-
                                         'address1'              => $address_1,
-
                                         'address2'              => $address_2,
-
                                         'delivery_Instructions' => $customer_note,
-
                                         'inv_customer'          => $inv_customer,
-
                                         'inv_address1'          => $inv_address1,
-
                                         'inv_address2'          => $inv_address2,
-
                                         'country1'              => $country1,
-
                                         'plz1'                  => $plz1,
-
                                         'city1'                 => $city1, 
-
                                         'telefon1'              => $phone1,
-
                                         'region1'               => $region1,
-
                                         'idcompany'             => $idcompany,
-
                                         'referencechannel'      => $idchannel,
-
-                                        'idwarehouse'           => $warehouse,
-
-                                        'printedshippingok'     => $print_shipping
-
+                                        'idwarehouse'           => $warehouse
                                     ]);
+
+                                    $carriernameExists = DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
+                                            ->where('referenceorder',   '=', $id)
+                                            ->where('order_item_id',    '=', $orderItemId)
+                                            ->where('carriername',      '=', '')
+                                            ->first();
+
+                                    if($carriernameExists){
+                                        DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
+                                            ->where('referenceorder',   '=', $id)
+                                            ->where('order_item_id',    '=', $orderItemId)
+                                            ->update([
+                                                'carriername'           => $carref, 
+                                            ]);
+                                    }
+
+                                    if($orderstaus == "completed") {
+                                         DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
+                                            ->where('referenceorder',   '=', $id)
+                                            ->where('order_item_id',    '=', $orderItemId)
+                                            ->update([
+                                                'printedshippingok'     => $print_shipping,
+                                                'registeredtosolddayok' => $registeredtosolddayok, 
+                                                'courierinformedok'     => $courierinformedok,
+                                                'trackinguploadedok'    => $trackinguploadedok,
+                                            ]);
+                                    }
 
                             } else {
                                 DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
@@ -6035,7 +5906,6 @@ $options = [
                                     'courierinformedok'         => $courierinformedok, 
                                     'trackinguploadedok'        => $trackinguploadedok, 
                                     'printedshippingok'         => $print_shipping
-
                                 ]);
                         }             
                     }
