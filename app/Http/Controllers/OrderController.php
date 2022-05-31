@@ -184,7 +184,7 @@ class OrderController extends Controller
         }
 
         if($request->filled('search') && $request->search == 'trackinguploadedok') {
-            $collection->where('trackinguploadedok', '=', 1);
+            $collection->where('trackinguploadedok', '=', 0);
         }
 
         if(isset($_GET['integrate'])) {
@@ -340,8 +340,7 @@ class OrderController extends Controller
                     'trackinguploadedok'        => '1',
                     'registeredtolagerstandok'  => 'Deleted',
                     'carriername'               => 'Deleted',
-                    'idpayment'                 => 'Deleted',
-                    'is_deleted'                => 1
+                    'idpayment'                 => 'Deleted'
                 ]);
         } else if($type=="set_as_done"){
             DB::table($table)
