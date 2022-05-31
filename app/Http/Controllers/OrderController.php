@@ -192,7 +192,7 @@ class OrderController extends Controller
         }
         //$collection->where('idorder','25');
         $collection->where('multiorder','0');
-        $collection->where('platformname',"Otto");
+       // $collection->where('platformname',"Otto");
         $orders = $collection->orderBy('idorder','desc')->groupBy('referenceorder')->paginate(100);
        // dd($orders);
         $modalWares = DB::table('orderitem')
