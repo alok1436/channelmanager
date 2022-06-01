@@ -789,6 +789,8 @@
                 var channelforcheckprice = document.getElementById("channelforcheckprice").value;
                 if(channelforcheckprice == 5) {
                     window.open('api/cdiscountprice.php', '_blank');
+                }else if(channelforcheckprice == 17) {
+                    window.open('otto/get/price?channelId='+channelforcheckprice, '_blank');
                 } else {
                     window.open('api/price.php?channelforcheckprice='+channelforcheckprice, '_blank');
                 }
@@ -802,7 +804,9 @@
                 var channelforcheckprice = document.getElementById("channelforcheckprice").value;
                 if(channelforcheckprice == 5) {
                     window.open('api/cdiscountprice.php', '_blank');
-                } else {
+                }else if(channelforcheckprice == 17) {
+                    window.open('otto/get/quantity?channelId='+channelforcheckprice, '_blank');
+                }else {
                     window.open('api/quantity.php?channelforcheckprice='+channelforcheckprice, '_blank');
                 }
             }

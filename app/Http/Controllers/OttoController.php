@@ -39,6 +39,7 @@ class OttoController extends Controller {
 
     }
 
+
     public function orderSendToPlatform(Request $request)
     {
         if($request->filled('platform') && $request->platform == 'OTTO'){
@@ -363,5 +364,183 @@ class OttoController extends Controller {
             }
         }
        // echo '<pre>'; print_r($orders); echo '</pre>'; 
+    }
+
+    public function downloadAssets(Request $request, $type){
+        $collection  = Channel::query();
+        $collection->join('platform', 'channel.platformid', '=', 'platform.platformid');
+        $collection->where('platform.platformtype','Otto');
+        $collection->select('channel.*','platform.shortname as pShortName');
+        if(request()->filled('channelId')){
+            $collection->where('idchannel', request()->channelId);
+        }
+        $channels   =  $collection->get();
+
+        if($channels->count() >0){
+            foreach($channels as $channel){
+                try {
+                    $res = $this->getAccessToken( $channel );
+                    if($res){
+                        if($type == 'quantity'){
+                           echo 'Getting quantities for '.$channel->shortname.'</br>';
+                           $this->getQualities($res, $channel);
+                           echo 'Done quantities for '.$channel->shortname.'</br>';
+                        }else{
+                            if($type == 'price'){
+                               echo 'Getting prices for '.$channel->shortname.'</br>';
+                               $this->getPrices($res, $channel, 0);
+                               echo 'Done prices for '.$channel->shortname.'</br>';
+                            }
+                        }
+                    }    
+                }catch (\GuzzleHttp\Exception\ClientException $e) {
+                    $response = $e->getResponse();
+                    $result =  json_decode($response->getBody()->getContents());
+                    return response()->json(['data' => $result]);
+                }
+            }
+        }else{
+            echo "Channel not found";
+        }
+    }
+
+    public function getQualities($response, $channel, $page = 0){
+        $client = new \GuzzleHttp\Client();
+        $args = [
+                'fromOrderDate'=> date('Y-m-d', strtotime('-3 days')).'T01:00:00+02:00',
+                'toOrderDate'=> date('Y-m-d'). 'T23:59:59+02:00',
+            ];
+        $queryString = http_build_query($args);
+        $res = $client->get('https://api.otto.market/v2/quantities?page='.$page.'&limit=200',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $response->access_token,
+                    ],
+                ]);
+        $quantities = json_decode($res->getBody()->getContents());
+        if(!empty($quantities)){
+            if(isset($quantities->resources->variations) && !empty($quantities->resources->variations)){
+                foreach($quantities->resources->variations as $index => $row){
+                    $sku = $row->sku;    
+                    echo "sku: ".$sku.' - quantity: '.$row->quantity.'<br>';
+                    $product = Product::where(['modelcode'=>substr($sku, 0, 5)])->first(); 
+                    if($product){
+                        $priceRow = Price::where(['channel_id'=>$channel->idchannel, 'country'=> $channel->country, 'sku'=>$sku])->first();
+                        if(!$priceRow){
+                            $created = Price::create([
+                                'product_id'=> $product->productid,
+                                'last_update_qty_date'=> date('Y-m-d H:i:s', strtotime($row->lastModified)),
+                                'online_quentity'=> $row->quantity,
+                                'channel_id'=>$channel->idchannel,
+                                'warehouse_id'=>$channel->warehouse,
+                                'platform_id'=>$channel->platformid,
+                                'country'=>$channel->country,
+                                'sku'=>$sku,
+                                'online_price'=> 0,
+                                'ean'=>$product->ean,
+                                'asin'=>$product->asin,
+                                'online_price'=>0,
+                                'online_shipping'=>0,
+                                'price'=>0,
+                                'created_date'=> date('Y-m-d H:i:s'),
+                                'updated_date'=> date('Y-m-d H:i:s'),
+                            ]);
+                        }else{
+                            $updated = Price::where('price_id', $priceRow->price_id)->update([
+                                'last_update_qty_date'=> date('Y-m-d H:i:s', strtotime($row->lastModified)),
+                                'online_quentity'=> $row->quantity,
+                                'updated_date'=> date('Y-m-d H:i:s'),
+                            ]);
+                        }
+                    }else{
+                        //product not exists
+                        $warnmessage   = "Warning: No quantities for ".$sku." in ".$channel->country." of channel ".$channel->shortname;    
+                        DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
+                    }
+                }
+            }
+        }
+
+
+        if(!empty($quantities->links)){
+            foreach ($quantities->links as $key => $link) {
+                if($link->rel == 'next'){
+                    $query_str = parse_url($link->href, PHP_URL_QUERY);
+                    parse_str($query_str, $query_params);
+                    if(isset($query_params['page'])){
+                        $this->getQualities($response, $channel, $query_params['page']);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public function getPrices($response, $channel, $page = 0){
+        $client = new \GuzzleHttp\Client();
+        $res = $client->get('https://api.otto.market/v2/products/prices?page='.$page.'&limit=100',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $response->access_token,
+                    ],
+                ]);
+        $results = json_decode($res->getBody()->getContents());
+
+        if(!empty($results)){
+            if(isset($results->variationPrices) && !empty($results->variationPrices)){
+                foreach($results->variationPrices as $index => $row){ //dd($row);
+                    $sku = $row->sku;   // dd($row->standardPrice);
+                    echo "sku: ".$sku.' - price: '.$row->standardPrice->amount.'<br>';
+                    $product = Product::where(['modelcode'=>substr($sku, 0, 5)])->first(); 
+                    if($product){
+                        $priceRow = Price::where(['channel_id'=>$channel->idchannel, 'country'=> $channel->country, 'sku'=>$sku])->first();
+                        if(!$priceRow){
+                            $created = Price::create([
+                                'product_id'=> $product->productid,
+                                'last_update_date'=> date('Y-m-d H:i:s'),
+                                'online_quentity'=> 0,
+                                'channel_id'=>$channel->idchannel,
+                                'warehouse_id'=>$channel->warehouse,
+                                'platform_id'=>$channel->platformid,
+                                'country'=>$channel->country,
+                                'sku'=>$sku,
+                                'ean'=>$product->ean,
+                                'asin'=>$product->asin,
+                                'online_price'=>$row->standardPrice->amount,
+                                'online_shipping'=>0,
+                                'price'=>$row->standardPrice->amount,
+                                'created_date'=> date('Y-m-d H:i:s'),
+                                'updated_date'=> date('Y-m-d H:i:s'),
+                            ]);
+                        }else{
+                            $updated = Price::where('price_id', $priceRow->price_id)->update([
+                                'last_update_date'=> date('Y-m-d H:i:s'),
+                                'online_shipping'=> $row->standardPrice->amount,
+                                'price'=> $row->standardPrice->amount,
+                                'updated_date'=> date('Y-m-d H:i:s'),
+                            ]);
+                        }
+                    }else{
+                        //product not exists
+                        $warnmessage   = "Warning: No price for ".$sku." in ".$channel->country." of channel ".$channel->shortname;    
+                        DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
+                    }
+                }
+            }
+        }
+
+        if(!empty($results->links)){
+            foreach ($results->links as $key => $link) {
+                if($link->rel == 'next'){
+                    $query_str = parse_url($link->href, PHP_URL_QUERY);
+                    parse_str($query_str, $query_params);
+                    if(isset($query_params['page'])){
+                        $this->getPrices($response, $channel, $query_params['page']);
+                    }
+
+                    break;
+                }
+            }
+        }
     }
 }

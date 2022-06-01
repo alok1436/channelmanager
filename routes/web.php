@@ -226,5 +226,5 @@ Route::get('/inventoryView',                    'InventoryController@inventoryVi
 Route::get('/inventoryView2',                   'InventoryController@inventoryView2')->name('inventoryView2');
 Route::get('ajax/invertory/get',                'InventoryController@ajaxInventory')->name('ajax.inventory');
 Route::get('otto/get/orders',                	'OttoController@getOrders')->name('otto.orders');
-Route::get('otto/get/quantity',                	'OttoController@downloadQuantity')->name('otto.quantity');
+Route::get('otto/get/{type}',                	'OttoController@downloadAssets')->name('otto.assets');
 Route::get('fba/quantity',                		'FBAController@getQuantity');
