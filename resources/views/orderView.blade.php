@@ -1112,13 +1112,14 @@ input[type=checkbox], input[type=radio] {
                                     data: data,
                                     success : function(data) {
                                         $(".preloader").fadeOut();
-                                        if(data.success== true ) {
+                                        if(data.success == true ) {
                                             alert("Successfuly sent!");
                                         } else {
                                             alert(data.message);
                                         }
                                     },
                                     error: function(xhr, status, error) {
+                                    $(".preloader").fadeOut();
                                       var err = JSON.parse(xhr.responseText);
                                       alert(err.message);
                                     }

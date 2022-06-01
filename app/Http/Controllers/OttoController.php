@@ -52,10 +52,10 @@ class OttoController extends Controller {
                     try {
                         if($order->trackinguploadedok == 0 ){
                             $result  =    $this->createShipment($order, $token->access_token);
-                            if(isset($result['shipmentId'])){
+                            if(isset($result->shipmentId)){
                                 $order->trackinguploadedok = 1;
                                 $order->save();
-                                $result['success'] = true
+                                $result['success'] = true;
                                 return response()->json($result);
                             }else{
                                 return response()->json(['success'=>false,'message'=>'This order already infromed to platform'], 400);
