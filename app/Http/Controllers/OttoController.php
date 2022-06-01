@@ -515,7 +515,7 @@ class OttoController extends Controller {
                         }else{
                             $updated = Price::where('price_id', $priceRow->price_id)->update([
                                 'last_update_date'=> date('Y-m-d H:i:s'),
-                                'online_shipping'=> $row->standardPrice->amount,
+                                'online_price'=> $row->standardPrice->amount,
                                 'price'=> $row->standardPrice->amount,
                                 'updated_date'=> date('Y-m-d H:i:s'),
                             ]);
