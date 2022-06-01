@@ -1112,11 +1112,15 @@ input[type=checkbox], input[type=radio] {
                                     data: data,
                                     success : function(data) {
                                         $(".preloader").fadeOut();
-                                        if(data=="Success") {
+                                        if(data.success== true ) {
                                             alert("Successfuly sent!");
                                         } else {
-                                            alert(data);
+                                            alert(data.message);
                                         }
+                                    },
+                                    error: function(xhr, status, error) {
+                                      var err = JSON.parse(xhr.responseText);
+                                      alert(err.message);
                                     }
                                 });
                             }else{

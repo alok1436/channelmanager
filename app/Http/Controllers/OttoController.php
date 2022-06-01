@@ -52,11 +52,16 @@ class OttoController extends Controller {
                     try {
                         if($order->trackinguploadedok == 0 ){
                             $result  =    $this->createShipment($order, $token->access_token);
-                            $order->trackinguploadedok = 1;
-                            $order->save();
-                            return response()->json($result);
+                            if(isset($result['shipmentId'])){
+                                $order->trackinguploadedok = 1;
+                                $order->save();
+                                $result['success'] = true
+                                return response()->json($result);
+                            }else{
+                                return response()->json(['success'=>false,'message'=>'This order already infromed to platform'], 400);
+                            }
                         }else{
-                            return response()->json(['message'=>'This order already infromed to platform'], 400);
+                            return response()->json(['success'=>false,'message'=>'Something went wrong'], 400);
                         }
                         //$result  =   $this->getShipmentDetails($order->carriername, $order->tracking, $token->access_token);
                         if(isset($result->errors[0]) && $result->errors[0]->title == 'RESOURCE_NOT_FOUND'){
