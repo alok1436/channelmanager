@@ -454,7 +454,8 @@ class OttoController extends Controller {
                         }
                     }else{
                         //product not exists
-                        $warnmessage   = "Warning: No quantities for ".$sku." in ".$channel->country." of channel ".$channel->shortname;    
+                        $warnmessage   = "Warning: No quantities for ".$sku." in ".$channel->country." of channel ".$channel->shortname;
+                        echo $warnmessage.'</br>'; 
                         DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
                     }
                 }
@@ -523,6 +524,7 @@ class OttoController extends Controller {
                     }else{
                         //product not exists
                         $warnmessage   = "Warning: No price for ".$sku." in ".$channel->country." of channel ".$channel->shortname;    
+                        echo $warnmessage.'</br>';
                         DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
                     }
                 }
