@@ -50,7 +50,14 @@ class OttoController extends Controller {
                     $token = $this->getAccessToken( $order->channel );
                     $client = new \GuzzleHttp\Client();
                     try {
-                        $result  =    $this->createShipment($order, $token->access_token); dd($result);exit();
+                        if($order->trackinguploadedok == 0 ){
+                            $result  =    $this->createShipment($order, $token->access_token);
+                            $order->trackinguploadedok = 1;
+                            $order->save();
+                            return response()->json($result);
+                        }else{
+                            return response()->json(['message'=>'This order already infromed to platform'], 400);
+                        }
                         //$result  =   $this->getShipmentDetails($order->carriername, $order->tracking, $token->access_token);
                         if(isset($result->errors[0]) && $result->errors[0]->title == 'RESOURCE_NOT_FOUND'){
 
@@ -72,7 +79,7 @@ class OttoController extends Controller {
             $body = '{
               "trackingKey": {
                 "carrier": "'.$order->carriername.'",
-                "trackingNumber": "431237178573"
+                "trackingNumber": "'.$order->tracking.'"
               },
               "shipDate": "'.date("Y-m-d\TH:i:s.000\Z").'",
               "shipFromAddress": {
