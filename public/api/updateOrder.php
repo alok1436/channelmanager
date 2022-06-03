@@ -108,6 +108,9 @@
                 //convert the XML result into array
                 $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
             }
+
+            $sql = "UPDATE orderitem SET trackinguploadedok =1 WHERE idorder='".$order->idorder."'";
+            mysqli_query($conn, $sql);
         }
     }
 
