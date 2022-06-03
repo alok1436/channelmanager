@@ -228,3 +228,6 @@ Route::get('ajax/invertory/get',                'InventoryController@ajaxInvento
 Route::get('otto/get/orders',                	'OttoController@getOrders')->name('otto.orders');
 Route::get('otto/get/{type}',                	'OttoController@downloadAssets')->name('otto.assets');
 Route::get('fba/quantity',                		'FBAController@getQuantity');
+
+Route::get('ebay/connect/{id}',                	'EbayController@connect')->name('ebay.connect');
+Route::get('ebay/callback',                		'EbayController@callback')->name('ebay.callback');

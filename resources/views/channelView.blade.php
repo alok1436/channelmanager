@@ -501,6 +501,8 @@
                                                         @if($row->pl_shortname == "Woocommerce")
                                                         <a href="channelEditView?channel=woocommerce&idchannel=<?php echo $row->idchannel;?>" class="btn btn-success">Flat Shipping costs</a> 
                                                         @endif
+
+                                                        <a href="{{ url('ebay/connect') }}/<?php echo $row->idchannel;?>" class="btn btn-success">connent eBay</a> 
                                                     </td>
                                                 </tr>
                                                 @endforeach
