@@ -57,10 +57,44 @@ class EbayController extends Controller {
             $channel = Channel::find($idchannel);
             $channel->ebaycode = $request->code;
             $channel->save();
+            
+            $this->getAccessToken($channel, $request->code);
 
             return redirect('channelView')->with('msg','Connected successfully');
         }else{
             return redirect('channelView')->with('msg','Something went wrong.');
+        }
+    }
+
+    public function getAccessToken($channel, $code)
+    {
+        $client = new \GuzzleHttp\Client();
+        try {
+            $res = $client->post('https://api.ebay.com/identity/v1/oauth2/token', [
+                    'form_params' => [
+                        'grant_type' => 'authorization_code',
+                        'code' => $code,
+                        'redirect_uri' => 'ottavio_linzalo-ottaviol-testap-gipawcx',
+                    ],
+                    'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authorization' => 'Basic ' .base64_decode($channel->appid.':'.$channel->certid),
+                  ]                    
+                ]);
+    
+            $res = json_decode($res->getBody()->getContents());
+            if($res){
+               $channel->refresh_token = $res->refresh_token;
+               $channel->save();
+            }
+            return $res;
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            // $response = $e->getResponse();
+            // $result =  json_decode($response->getBody()->getContents());
+            // return response()->json(['data' => $result]);
+
+            return [];
         }
     }
 }
