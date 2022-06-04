@@ -40,9 +40,13 @@ class EbayController extends Controller {
     }
 
 
-    public function connect(Request $request)
+    public function connect(Request $request, $id)
     {
-    	dd($request);
+        $channel = Channel::find($id); //dd($channel);
+        if($channel){
+            $url = "https://auth.ebay.com/oauth2/authorize?client_id=".$channel->appid."&response_type=code&redirect_uri=ottavio_linzalo-ottaviol-testap-gipawcx&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly";
+            return redirect($url);
+        }
     }
 
     public function callback(Request $request)

@@ -496,13 +496,16 @@
                                                         <a href="channelEditView?channel=amazon&idchannel=<?php echo $row->idchannel;?>" class="btn btn-success">Edit Keys</a> 
                                                         @elseif($row->sync == "Automatic Synch with: eBay") 
                                                         <a href="channelEditView?channel=ebay&idchannel=<?php echo $row->idchannel;?>" class="btn btn-success">Edit Keys</a> 
+
+                                                        <a href="{{ url('ebay/connect') }}/<?php echo $row->idchannel;?>" class="btn btn-success">connent with eBay</a> 
+                                                        
                                                         @endif
 
                                                         @if($row->pl_shortname == "Woocommerce")
                                                         <a href="channelEditView?channel=woocommerce&idchannel=<?php echo $row->idchannel;?>" class="btn btn-success">Flat Shipping costs</a> 
                                                         @endif
 
-                                                        <a href="{{ url('ebay/connect') }}/<?php echo $row->idchannel;?>" class="btn btn-success">connent eBay</a> 
+                                                        
                                                     </td>
                                                 </tr>
                                                 @endforeach
