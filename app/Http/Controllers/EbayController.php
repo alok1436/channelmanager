@@ -53,21 +53,16 @@ class EbayController extends Controller {
     public function callback(Request $request)
     {   
         if($request->filled('code')){
-            $idchannel = session()->get('channel');
-            $channel = Channel::find($idchannel);
-            $channel->ebaycode = $request->code;
-            $channel->save();
-            
-            $this->getAccessToken($channel, $request->code);
-
+            $this->getAccessToken($request->code);
             return redirect('channelView')->with('msg','Connected successfully');
         }else{
             return redirect('channelView')->with('msg','Something went wrong.');
         }
     }
 
-    public function getAccessToken($channel, $code)
-    {
+    public function getAccessToken( $code)
+    {   $idchannel = session()->get('channel');
+        $channel = Channel::find($idchannel);
         $client = new \GuzzleHttp\Client();
         try {
             $res = $client->post('https://api.ebay.com/identity/v1/oauth2/token', [
@@ -78,14 +73,18 @@ class EbayController extends Controller {
                     ],
                     'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
-                    'Authorization' => 'Basic ' .base64_decode($channel->appid.':'.$channel->certid),
+                    'Authorization' => 'Basic ' .base64_encode($channel->appid.':'.$channel->certid),
                   ]                    
                 ]);
     
-            $res = json_decode($res->getBody()->getContents());
+            $res = json_decode($res->getBody()->getContents()); 
             if($res){
-               $channel->refresh_token = $res->refresh_token;
-               $channel->save();
+                
+                $channel->refresh_token = $res->refresh_token;
+                $channel->accesstoken = $res->access_token;
+                $channel->expire = $res->expires_in;
+                $channel->data = json_encode($res);
+                $channel->save();
             }
             return $res;
         }
