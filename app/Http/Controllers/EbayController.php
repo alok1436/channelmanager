@@ -58,9 +58,9 @@ class EbayController extends Controller {
             $channel->ebaycode = $request->code;
             $channel->save();
 
-            return redirect('channelView')->with('success','Connected successfully');
+            return redirect('channelView')->with('msg','Connected successfully');
         }else{
-            return redirect('channelView')->with('error','Something went wrong.');
+            return redirect('channelView')->with('msg','Something went wrong.');
         }
     }
 }
