@@ -31,6 +31,7 @@ class Price extends Model
                         'created_date',
                         'updated_date',
                         'ebayActive',
+                        'cost'
                     ];
     
     public function product(){

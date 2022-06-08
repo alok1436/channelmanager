@@ -187,13 +187,23 @@ class EbayController extends Controller {
             return [];
         }
     }
-    public function downloadReport(Request $request, $idchannel){
+    public function downloadReport(Request $request){
+
+        $idchannel = request()->channelId;
+        if(!$idchannel || !intval($idchannel)){
+            abort(404);
+        }
         $channel = Channel::find($idchannel);
         ini_set('memory_limit', -1);
         ini_set('max_execution_time', 300);
         if($channel){
             $response = $this->getAccessTokenByRefreshtoken($channel);
-            //$this->createInventorTask($response->access_token);
+            $inventoryTasksLists = $this->getInventoryTasks($response->access_token);
+ 
+            if(isset($inventoryTasksLists->tasks) && empty($inventoryTasksLists->tasks)){
+                $tasks = $this->createInventorTask($response->access_token);
+            }
+
             $inventoryTasksLists = $this->getInventoryTasks($response->access_token);
             if(isset($response) && isset($inventoryTasksLists->tasks)){
                 foreach($inventoryTasksLists->tasks as $tasks){
@@ -205,8 +215,6 @@ class EbayController extends Controller {
                                 'Authorization' => 'Bearer '.$response->access_token,
                               ]                    
                             ]);
-
-                        //$file = rand(11111,99999).time().''
                         $headers = $res->getHeaders();
                         $fileName = explode('=', $headers['content-disposition'][0]);
                         $filename = $this->saveAttachment($res->getBody());
@@ -217,19 +225,37 @@ class EbayController extends Controller {
                                 foreach($array_data as $data){
                                     foreach($data['SKUDetails'] as $data){
                                         set_time_limit(0);
-                                   
+                                        $sku = $data['SKU'];
+                                        $Quantity = $data['Quantity'];
+                                        //$Price = $data['Price'];
+                                        $itemID = $data['ItemID'];
+                                        echo $itemID."<br>";
                                         
-                                        // continue;
+                                        $item_data = $this->getItem( $channel, $response, $data );
+                                        if(isset($item_data['Item'])) {
+                                            $item       = $item_data['Item'];
+                                            $quantity   = $data['Quantity'];
+                                            $country    = $item['Site'];
+                                            $online_shipping = $item['ShippingDetails']['ShippingServiceOptions']['ShippingServiceCost'];
+                                            echo 'itemID-----'.$itemID.'-------'.$country."-------online_shipping=".$online_shipping.'-----Quantity='.$quantity."<br>";      
+                                            if($country == "Germany") {
+                                                $country = "DE";
+                                            } else if($country == "Spain") {
+                                                $country = "ES";
+                                            } else if($country == "France") {
+                                                $country = "FR";
+                                            } else if($country == "Italy") {
+                                                $country = "IT";
+                                            }
 
-                                        if(isset($data['Price'])) {
-
-                                            $this->prepareAndUpdateDB( $channel, $response, $data);
-
-                                        }else{
-                                            if(isset($data['Variations'])) {
-                                                $variations = $data['Variations']['Variation'];
-                                                foreach ($variations as $key => $data) {
-                                                     //echo '<pre>'; print_r($data); echo '</pre>';
+                                            if(isset($data['Price'])) {
+                                                $this->prepareAndUpdateDB( $channel, $sku, $country, $online_shipping, $itemID, $data['Price'], $quantity);
+                                            }else{
+                                                if(isset($data['Variations'])) {
+                                                    $variations = $data['Variations']['Variation'];
+                                                    foreach ($variations as $key => $itemRow) {
+                                                        $this->prepareAndUpdateDB( $channel, $itemRow['SKU'], $country, $online_shipping, $itemID, $itemRow['Price'] , $itemRow['Quantity'] );
+                                                    }
                                                 }
                                             }
                                         }
@@ -246,90 +272,80 @@ class EbayController extends Controller {
     }
 
 
-    public function prepareAndUpdateDB( $channel, $response, $data){
-        $sku = $data['SKU'];
-        $Quantity = $data['Quantity'];
-        //$Price = $data['Price'];
-        $itemID = $data['ItemID'];
-        echo $itemID."<br>";
-        $online_price = $data['Price'];
+    public function prepareAndUpdateDB( $channel, $sku, $country, $online_shipping, $itemID, $online_price, $quantity ){
 
-        $item_data = $this->getItemByItemId($itemID, $response->access_token);
-        echo '<pre>'; print_r($data); echo '</pre>'; 
-        echo '<pre>'; print_r($item_data); echo '</pre>'; 
-        return;
-        dd($item_data);
-        if(isset($item_data['Item'])) {
-                $item       = $item_data['Item'];
-                $quantity   = $data['Quantity'];
-                $country    = $item['Site'];
-                $online_shipping = $item['ShippingDetails']['ShippingServiceOptions']['ShippingServiceCost'];
-                echo $country."-------online_shipping=".$online_shipping.'-----Quantity='.$quantity."<br>";      
-                if($country == "Germany") {
-                    $country = "DE";
-                } else if($country == "Spain") {
-                    $country = "ES";
-                } else if($country == "France") {
-                    $country = "FR";
-                } else if($country == "Italy") {
-                    $country = "IT";
+        $product = Product::where(['modelcode'=>substr($sku, 0, 5)])->first(); 
+        if($product){
+            $cost = 0;
+            if($product->virtualkit == "Yes") {
+                $cost = 0;
+                for($i=1; $i<10; $i++) {
+                    $item = "pcs".$i;
+                    $itemProductId  = "productid".$i;
+                    $productid      = $product->$itemProductId;
+                    if($product->$item != null && $product->$item > 0 && $product->$item != "" && $productid != "" && $productid != null) {
+                        $itemProduct = $product = Product::where(['modelcode'=>$productid])->first();
+                        if($itemProduct){
+                            $cost += $itemProduct->price*$product->$item;
+                        }
+                    }
                 }
-
-            $product = Product::where(['modelcode'=>substr($sku, 0, 5)])->first(); 
-            if($product){
-                $priceRow = Price::where(['channel_id'=>$channel->idchannel, 'country'=> $country, 'sku'=>$sku])->first();
-                if(!$priceRow){
-                    $created = Price::create([
-                        'itemId'=> $itemID,
-                        'country'=> $country,
-                        'shipping'=> $online_shipping,
-                        'product_id'=> $product->productid,
-                        'last_update_shipping'=> date('Y-m-d H:i:s'),
-                        'last_update_date'=> date('Y-m-d H:i:s'),
-                        'online_shipping'=> $online_shipping,
-                        'last_update_qty_date'=> date('Y-m-d H:i:s'),
-                        'online_quentity'=> $quantity,
-                        'channel_id'=>$channel->idchannel,
-                        'warehouse_id'=>$channel->warehouse,
-                        'platform_id'=>$channel->platformid,
-                        'sku'=>$sku,
-                        'online_price'=> $online_price,
-                        'ean'=>$product->ean,
-                        'asin'=>$product->asin,
-                        'price'=>$online_price,
-                        'created_date'=> date('Y-m-d H:i:s'),
-                        'updated_date'=> date('Y-m-d H:i:s'),
-                    ]);
-                }else{
-                    $updated = Price::where('price_id', $priceRow->price_id)->update([
-                        'itemId'=> $itemID,
-                        'country'=> $country,
-                        'shipping'=> $online_shipping,
-                        'product_id'=> $product->productid,
-                        'last_update_shipping'=> date('Y-m-d H:i:s'),
-                        'last_update_date'=> date('Y-m-d H:i:s'),
-                        'online_shipping'=> $online_shipping,
-                        'last_update_qty_date'=> date('Y-m-d H:i:s'),
-                        'online_quentity'=> $quantity,
-                        'channel_id'=>$channel->idchannel,
-                        'warehouse_id'=>$channel->warehouse,
-                        'platform_id'=>$channel->platformid,
-                        'sku'=>$sku,
-                        'online_price'=> $online_price,
-                        'ean'=>$product->ean,
-                        'asin'=>$product->asin,
-                        'price'=>$online_price,
-                        'created_date'=> date('Y-m-d H:i:s'),
-                        'updated_date'=> date('Y-m-d H:i:s'),
-                        'ebayActive'=> 1,
-                    ]);
-                }
-            }else{
-                //product not exists
-                $warnmessage   = "Warning: No quantities for ".$sku." in ".$channel->country." of channel ".$channel->shortname;
-                echo $warnmessage.'</br>'; 
-                DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
             }
+
+            $priceRow = Price::where(['channel_id'=>$channel->idchannel, 'country'=> $country, 'sku'=>$sku])->first();
+            if(!$priceRow){
+                $created = Price::create([
+                    'itemId'=> $itemID,
+                    'country'=> $country,
+                    'shipping'=> $online_shipping,
+                    'product_id'=> $product->productid,
+                    'last_update_shipping'=> date('Y-m-d H:i:s'),
+                    'last_update_date'=> date('Y-m-d H:i:s'),
+                    'online_shipping'=> $online_shipping,
+                    'last_update_qty_date'=> date('Y-m-d H:i:s'),
+                    'online_quentity'=> $quantity,
+                    'channel_id'=>$channel->idchannel,
+                    'warehouse_id'=>$channel->warehouse,
+                    'platform_id'=>$channel->platformid,
+                    'sku'=>$sku,
+                    'online_price'=> $online_price,
+                    'ean'=>$product->ean,
+                    'asin'=>$product->asin,
+                    'price'=>$online_price,
+                    'cost'=>$cost,
+                    'created_date'=> date('Y-m-d H:i:s'),
+                    'updated_date'=> date('Y-m-d H:i:s'),
+                ]);
+            }else{
+                $updated = Price::where('price_id', $priceRow->price_id)->update([
+                    'itemId'=> $itemID,
+                    'country'=> $country,
+                    'shipping'=> $online_shipping,
+                    'product_id'=> $product->productid,
+                    'last_update_shipping'=> date('Y-m-d H:i:s'),
+                    'last_update_date'=> date('Y-m-d H:i:s'),
+                    'online_shipping'=> $online_shipping,
+                    'last_update_qty_date'=> date('Y-m-d H:i:s'),
+                    'online_quentity'=> $quantity,
+                    'channel_id'=>$channel->idchannel,
+                    'warehouse_id'=>$channel->warehouse,
+                    'platform_id'=>$channel->platformid,
+                    'sku'=>$sku,
+                    'online_price'=> $online_price,
+                    'ean'=>$product->ean,
+                    'asin'=>$product->asin,
+                    'price'=>$online_price,
+                    'created_date'=> date('Y-m-d H:i:s'),
+                    'updated_date'=> date('Y-m-d H:i:s'),
+                    'ebayActive'=> 1,
+                    'cost'=>$cost,
+                ]);
+            }
+        }else{
+            //product not exists
+            $warnmessage   = "Warning: No quantities for ".$sku." in ".$channel->country." of channel ".$channel->shortname;
+            echo $warnmessage.'</br>'; 
+            DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
         }
     }
 
@@ -339,6 +355,7 @@ class EbayController extends Controller {
         try {
             $res = $client->get('https://api.ebay.com/buy/browse/v1/item/v1%7C'.$itemId.'%7C0', [
                     'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
                     'Authorization' => 'Bearer '.$access_token,
                   ]                    
             ]);

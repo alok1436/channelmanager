@@ -280,11 +280,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
+                                
                                 <div class="card-body">
                                     <select id="channelforcheckprice">
                                         <option value="">Select a channel</option>
                                         @foreach($channels as $channel)
-                                        <option value="{{$channel->idchannel}}">{{$channel->shortname}}</option>
+                                        <option value="{{$channel->idchannel}}" platform="{{ $channel->sync }}">{{$channel->shortname}}</option>
                                         @endforeach
                                     </select>
                                     <a onclick="getOnlinePrice()" class="btn btn-info">Automatic check price</a>
@@ -787,10 +788,16 @@
 
             function getOnlinePrice() {
                 var channelforcheckprice = document.getElementById("channelforcheckprice").value;
+                var option = $('#channelforcheckprice option:selected', this).attr('platform');
+                var element = $("#channelforcheckprice").find('option:selected'); 
+                var platform = element.attr("platform"); 
+                
                 if(channelforcheckprice == 5) {
                     window.open('api/cdiscountprice.php', '_blank');
                 }else if(channelforcheckprice == 17) {
                     window.open('otto/get/price?channelId='+channelforcheckprice, '_blank');
+                }else if(platform == 'Automatic Synch with: eBay') {
+                    window.open('ebay/downloadReport?channelId='+channelforcheckprice, '_blank');
                 } else {
                     window.open('api/price.php?channelforcheckprice='+channelforcheckprice, '_blank');
                 }
