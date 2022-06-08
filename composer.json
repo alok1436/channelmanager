@@ -17,13 +17,23 @@
         "milon/barcode": "^6.0",
         "phpoffice/phpspreadsheet": "^1.20",
         "rap2hpoutre/fast-excel": "^3.1",
-        "yajra/laravel-datatables-oracle": "^9.18"
+        "yajra/laravel-datatables-oracle": "^9.18",
+        "codeitnowin/barcode": "@dev"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.7"
     },
+    "repositories":[
+        {
+            "type": "path",
+            "url": "./packages/codeitnowin/barcode",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "autoload": {
         "classmap": [
             "database"

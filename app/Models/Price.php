@@ -8,7 +8,12 @@ class Price extends Model
     public $timestamps = false;
 
     public $fillable = [
+                        'shipping',
+                        'itemId',
+                        'country',
                         'product_id',
+                        'online_shipping',
+                        'last_update_shipping',
                         'last_update_qty_date',
                         'last_update_date',
                         'online_quentity',
@@ -25,6 +30,7 @@ class Price extends Model
                         'online_shipping',
                         'created_date',
                         'updated_date',
+                        'ebayActive',
                     ];
     
     public function product(){

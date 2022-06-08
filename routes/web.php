@@ -231,3 +231,4 @@ Route::get('fba/quantity',                		'FBAController@getQuantity');
 
 Route::get('ebay/connect/{id}',                	'EbayController@connect')->name('ebay.connect');
 Route::get('ebay/callback',                		'EbayController@callback')->name('ebay.callback');
+Route::get('ebay/downloadReport/{channelId}',   'EbayController@downloadReport')->name('ebay.downloadReport');

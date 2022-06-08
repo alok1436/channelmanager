@@ -96,4 +96,327 @@ class EbayController extends Controller {
             return [];
         }
     }
+
+    public function getAccessTokenByRefreshtoken(Channel $channel)
+    {   
+        $client = new \GuzzleHttp\Client();
+        try {
+            $res = $client->post('https://api.ebay.com/identity/v1/oauth2/token', [
+                    'form_params' => [
+                        'grant_type'=>'refresh_token',
+                        'refresh_token' => $channel->refresh_token,
+                    ],
+                    'headers' => [
+                    
+                    'Authorization' => 'Basic ' .base64_encode($channel->appid.':'.$channel->certid),
+                  ]                    
+                ]);
+    
+            $res = json_decode($res->getBody()->getContents()); 
+            if($res){
+                $channel->accesstoken = $res->access_token;
+                $channel->expire = $res->expires_in;
+                $channel->save();
+            }
+            return $res;
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            return [];
+            // $response = $e->getResponse();
+            // $result =  json_decode($response->getBody()->getContents());
+            // return response()->json(['data' => $result]);
+        }
+    }
+
+    public function createInventorTask($token)
+    {
+        try {
+            $client = new \GuzzleHttp\Client();
+            $body = '{
+                  "schemaVersion" : "1.0",
+                  "feedType": "LMS_ACTIVE_INVENTORY_REPORT",
+                  "filterCriteria": {
+                    "creationDateRange": {
+                      "from": "",
+                      "to": ""
+                    },
+                    "modifiedDateRange": {
+                      "from": "",
+                      "to": ""
+                    },
+                    "listingFormat": "FIXED_PRICE",
+                    "listingStatus": "ACTIVE"
+                  },
+                  "inventoryFileTemplate": "[STANDARD,GTIN,REVISE_PRICE_QUANTITY]"
+                }';
+
+            $response = $client->post('https://api.ebay.com/sell/feed/v1/inventory_task', [
+              'body' => $body,
+              'headers' => [
+                'Content-Type' => 'application/json', 
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' .$token,
+              ]
+            ]);
+            $shipments = json_decode($response->getBody()->getContents());
+            return $shipments;
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $result =  json_decode($response->getBody()->getContents());
+            return $result;
+        }
+    }
+    public function getInventoryTasks($access_token){
+        $client = new \GuzzleHttp\Client();
+        try {
+            $args = [
+                'offset'=> 0,
+                'limit'=> 10,
+                'feed_type'=> 'LMS_ACTIVE_INVENTORY_REPORT',
+                'date_range'=> date('Y-m-d').'T00:00:00.000Z..'.date('Y-m-d'). 'T23:59:59.000Z',
+            ];
+            $queryString = http_build_query($args);
+            $res = $client->get('https://api.ebay.com/sell/feed/v1/inventory_task?'.$queryString, [
+                    'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authorization' => 'Bearer '.$access_token,
+                  ]                    
+            ]);
+            return json_decode($res->getBody()->getContents()); 
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            return [];
+        }
+    }
+    public function downloadReport(Request $request, $idchannel){
+        $channel = Channel::find($idchannel);
+        ini_set('memory_limit', -1);
+        ini_set('max_execution_time', 300);
+        if($channel){
+            $response = $this->getAccessTokenByRefreshtoken($channel);
+            //$this->createInventorTask($response->access_token);
+            $inventoryTasksLists = $this->getInventoryTasks($response->access_token);
+            if(isset($response) && isset($inventoryTasksLists->tasks)){
+                foreach($inventoryTasksLists->tasks as $tasks){
+                    $client = new \GuzzleHttp\Client();
+                    try {
+                        $res = $client->get('https://api.ebay.com/sell/feed/v1/task/'.$tasks->taskId.'/download_result_file', [
+                                'headers' => [
+                                'Content-Type' => 'application/x-www-form-urlencoded',
+                                'Authorization' => 'Bearer '.$response->access_token,
+                              ]                    
+                            ]);
+
+                        //$file = rand(11111,99999).time().''
+                        $headers = $res->getHeaders();
+                        $fileName = explode('=', $headers['content-disposition'][0]);
+                        $filename = $this->saveAttachment($res->getBody());
+                        if ($filename !== false) {
+                            $xml = $this->unZipArchive($filename);
+                            if ($xml !== false) {
+                                $array_data = json_decode(json_encode(simplexml_load_string($xml)), true);
+                                foreach($array_data as $data){
+                                    foreach($data['SKUDetails'] as $data){
+                                        set_time_limit(0);
+                                   
+                                        
+                                        // continue;
+
+                                        if(isset($data['Price'])) {
+
+                                            $this->prepareAndUpdateDB( $channel, $response, $data);
+
+                                        }else{
+                                            if(isset($data['Variations'])) {
+                                                $variations = $data['Variations']['Variation'];
+                                                foreach ($variations as $key => $data) {
+                                                     //echo '<pre>'; print_r($data); echo '</pre>';
+                                                }
+                                            }
+                                        }
+                                    }   
+                                }
+                            }
+                        }
+                    }catch (\GuzzleHttp\Exception\ClientException $e) {
+                        
+                    }
+                }//endforeach
+            }
+        }
+    }
+
+
+    public function prepareAndUpdateDB( $channel, $response, $data){
+        $sku = $data['SKU'];
+        $Quantity = $data['Quantity'];
+        //$Price = $data['Price'];
+        $itemID = $data['ItemID'];
+        echo $itemID."<br>";
+        $online_price = $data['Price'];
+
+        $item_data = $this->getItemByItemId($itemID, $response->access_token);
+        echo '<pre>'; print_r($data); echo '</pre>'; 
+        echo '<pre>'; print_r($item_data); echo '</pre>'; 
+        return;
+        dd($item_data);
+        if(isset($item_data['Item'])) {
+                $item       = $item_data['Item'];
+                $quantity   = $data['Quantity'];
+                $country    = $item['Site'];
+                $online_shipping = $item['ShippingDetails']['ShippingServiceOptions']['ShippingServiceCost'];
+                echo $country."-------online_shipping=".$online_shipping.'-----Quantity='.$quantity."<br>";      
+                if($country == "Germany") {
+                    $country = "DE";
+                } else if($country == "Spain") {
+                    $country = "ES";
+                } else if($country == "France") {
+                    $country = "FR";
+                } else if($country == "Italy") {
+                    $country = "IT";
+                }
+
+            $product = Product::where(['modelcode'=>substr($sku, 0, 5)])->first(); 
+            if($product){
+                $priceRow = Price::where(['channel_id'=>$channel->idchannel, 'country'=> $country, 'sku'=>$sku])->first();
+                if(!$priceRow){
+                    $created = Price::create([
+                        'itemId'=> $itemID,
+                        'country'=> $country,
+                        'shipping'=> $online_shipping,
+                        'product_id'=> $product->productid,
+                        'last_update_shipping'=> date('Y-m-d H:i:s'),
+                        'last_update_date'=> date('Y-m-d H:i:s'),
+                        'online_shipping'=> $online_shipping,
+                        'last_update_qty_date'=> date('Y-m-d H:i:s'),
+                        'online_quentity'=> $quantity,
+                        'channel_id'=>$channel->idchannel,
+                        'warehouse_id'=>$channel->warehouse,
+                        'platform_id'=>$channel->platformid,
+                        'sku'=>$sku,
+                        'online_price'=> $online_price,
+                        'ean'=>$product->ean,
+                        'asin'=>$product->asin,
+                        'price'=>$online_price,
+                        'created_date'=> date('Y-m-d H:i:s'),
+                        'updated_date'=> date('Y-m-d H:i:s'),
+                    ]);
+                }else{
+                    $updated = Price::where('price_id', $priceRow->price_id)->update([
+                        'itemId'=> $itemID,
+                        'country'=> $country,
+                        'shipping'=> $online_shipping,
+                        'product_id'=> $product->productid,
+                        'last_update_shipping'=> date('Y-m-d H:i:s'),
+                        'last_update_date'=> date('Y-m-d H:i:s'),
+                        'online_shipping'=> $online_shipping,
+                        'last_update_qty_date'=> date('Y-m-d H:i:s'),
+                        'online_quentity'=> $quantity,
+                        'channel_id'=>$channel->idchannel,
+                        'warehouse_id'=>$channel->warehouse,
+                        'platform_id'=>$channel->platformid,
+                        'sku'=>$sku,
+                        'online_price'=> $online_price,
+                        'ean'=>$product->ean,
+                        'asin'=>$product->asin,
+                        'price'=>$online_price,
+                        'created_date'=> date('Y-m-d H:i:s'),
+                        'updated_date'=> date('Y-m-d H:i:s'),
+                        'ebayActive'=> 1,
+                    ]);
+                }
+            }else{
+                //product not exists
+                $warnmessage   = "Warning: No quantities for ".$sku." in ".$channel->country." of channel ".$channel->shortname;
+                echo $warnmessage.'</br>'; 
+                DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
+            }
+        }
+    }
+
+
+    public function getItemByItemId($itemId, $access_token){
+        $client = new \GuzzleHttp\Client();
+        try {
+            $res = $client->get('https://api.ebay.com/buy/browse/v1/item/v1%7C'.$itemId.'%7C0', [
+                    'headers' => [
+                    'Authorization' => 'Bearer '.$access_token,
+                  ]                    
+            ]);
+            return json_decode($res->getBody()->getContents()); 
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            return [];
+        }
+    }
+
+
+    public function getItem( $channel, $response, $data)
+    {
+        $endpoint  = 'https://api.ebay.com/ws/api.dll'; // URL to call
+        $headers = array(
+            'Content-Type: text/xml',
+            'X-EBAY-API-COMPATIBILITY-LEVEL:877',
+            'X-EBAY-API-DEV-NAME:'.$channel->devid,
+            'X-EBAY-API-APP-NAME:'.$channel->appid,
+            'X-EBAY-API-CERT-NAME:'.$channel->certid,
+            'X-EBAY-API-SITEID:0',
+            'X-EBAY-API-CALL-NAME:GetItem'
+        );            
+        $xml = "<?xml version='1.0' encoding='utf-8'?>
+                <GetItemRequest xmlns='urn:ebay:apis:eBLBaseComponents'>
+                <RequesterCredentials>
+                    <eBayAuthToken>".$response->access_token."</eBayAuthToken>
+                </RequesterCredentials>
+                <ItemID>".$data['ItemID']."</ItemID>
+                </GetItemRequest>";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $endpoint);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlRequest=" . $xml);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        //convert the XML result into array
+        $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
+        return $array_data;
+
+    }
+    public function saveAttachment($data)
+    {
+        $tempFilename = tempnam(sys_get_temp_dir(), 'attachment').'.zip';
+        $fp = fopen($tempFilename, 'wb');
+        if ($fp) {
+            fwrite($fp, $data);
+            fclose($fp);
+            return $tempFilename;
+        } else {
+            printf("Failed. Cannot open %s to write!\n", $tempFilename);
+            return false;
+        }
+    }
+
+    public function unzipArchive($filename)
+    {
+        printf("Unzipping %s...", $filename);
+
+        $zip = new ZipArchive();
+        if ($zip->open($filename)) {
+            /**
+             * Assume there is only one file in archives from eBay.
+             */
+            $xml = $zip->getFromIndex(0);
+            if ($xml !== false) {
+                print("Done\n");
+                return $xml;
+            } else {
+                printf("Failed. No XML found in %s\n", $filename);
+                return false;
+            }
+        } else {
+            printf("Failed. Unable to unzip %s\n", $filename);
+            return false;
+        }
+    }
+
 }
