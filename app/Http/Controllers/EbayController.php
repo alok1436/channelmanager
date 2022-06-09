@@ -25,6 +25,7 @@ use App\SimpleXLSX;
 use GuzzleHttp\Client;
 use DateTime;
 use App\Models\Price;
+use App\Models\Country;
 use App\Models\Channel;
 use App\Models\Product;
 use App\Models\LagerStand;
@@ -171,10 +172,12 @@ class EbayController extends Controller {
         try {
             $args = [
                 'offset'=> 0,
-                'limit'=> 10,
+                'limit'=> 1,
                 'feed_type'=> 'LMS_ACTIVE_INVENTORY_REPORT',
                 'date_range'=> date('Y-m-d').'T00:00:00.000Z..'.date('Y-m-d'). 'T23:59:59.000Z',
             ];
+
+
             $queryString = http_build_query($args);
             $res = $client->get('https://api.ebay.com/sell/feed/v1/inventory_task?'.$queryString, [
                     'headers' => [
@@ -198,13 +201,17 @@ class EbayController extends Controller {
         ini_set('max_execution_time', 300);
         if($channel){
             $response = $this->getAccessTokenByRefreshtoken($channel);
-            $inventoryTasksLists = $this->getInventoryTasks($response->access_token);
+         
+            // $inventoryTasksLists = $this->getInventoryTasks($response->access_token);
  
-            if(isset($inventoryTasksLists->tasks) && empty($inventoryTasksLists->tasks)){
-                $tasks = $this->createInventorTask($response->access_token);
-            }
+            // if(isset($inventoryTasksLists->tasks) && empty($inventoryTasksLists->tasks)){
+            //     $tasks = $this->createInventorTask($response->access_token);
+            // }
 
+            $tasks = $this->createInventorTask($response->access_token);
+            sleep(2);
             $inventoryTasksLists = $this->getInventoryTasks($response->access_token);
+          
             if(isset($response) && isset($inventoryTasksLists->tasks)){
                 foreach($inventoryTasksLists->tasks as $tasks){
                     $client = new \GuzzleHttp\Client();
@@ -216,55 +223,65 @@ class EbayController extends Controller {
                               ]                    
                             ]);
                         $headers = $res->getHeaders();
+                        //Storage::put('csv.zip', $res->getBody()->getContents());
                         $fileName = explode('=', $headers['content-disposition'][0]);
                         $filename = $this->saveAttachment($res->getBody());
                         if ($filename !== false) {
                             $xml = $this->unZipArchive($filename);
                             if ($xml !== false) {
                                 $array_data = json_decode(json_encode(simplexml_load_string($xml)), true);
-                                foreach($array_data as $data){
-                                    foreach($data['SKUDetails'] as $data){
-                                        set_time_limit(0);
-                                        $sku = $data['SKU'];
-                                        $Quantity = $data['Quantity'];
-                                        //$Price = $data['Price'];
-                                        $itemID = $data['ItemID'];
-                                        echo $itemID."<br>";
-                                        
-                                        $item_data = $this->getItem( $channel, $response, $data );
-                                        if(isset($item_data['Item'])) {
-                                            $item       = $item_data['Item'];
-                                            $quantity   = $data['Quantity'];
-                                            $country    = $item['Site'];
-                                            $online_shipping = $item['ShippingDetails']['ShippingServiceOptions']['ShippingServiceCost'];
-                                            echo 'itemID-----'.$itemID.'-------'.$country."-------online_shipping=".$online_shipping.'-----Quantity='.$quantity."<br>";      
-                                            if($country == "Germany") {
-                                                $country = "DE";
-                                            } else if($country == "Spain") {
-                                                $country = "ES";
-                                            } else if($country == "France") {
-                                                $country = "FR";
-                                            } else if($country == "Italy") {
-                                                $country = "IT";
-                                            }
+                                if(isset($array_data['ActiveInventoryReport']['SKUDetails']) && !empty($array_data['ActiveInventoryReport']['SKUDetails'])){
+                                        foreach($array_data['ActiveInventoryReport']['SKUDetails'] as $data){
+                                            set_time_limit(0);
+                                            $itemID = $data['ItemID'];
+                                            echo $itemID."<br>";
+                                            
+                                            $item_data = $this->getItem( $channel, $response, $data );
+                                            if(isset($item_data['Item'])) {
+                                                $item       = $item_data['Item'];
+                                                $quantity   = $data['Quantity'];
+                                                $country    = $item['Site'];
+                                                $online_shipping = $item['ShippingDetails']['ShippingServiceOptions']['ShippingServiceCost'];
+                                                echo 'itemID-----'.$itemID.'-------'.$country."-------online_shipping=".$online_shipping.'-----Quantity='.$quantity."<br>";      
+                                                
 
-                                            if(isset($data['Price'])) {
-                                                $this->prepareAndUpdateDB( $channel, $sku, $country, $online_shipping, $itemID, $data['Price'], $quantity);
-                                            }else{
-                                                if(isset($data['Variations'])) {
-                                                    $variations = $data['Variations']['Variation'];
-                                                    foreach ($variations as $key => $itemRow) {
-                                                        $this->prepareAndUpdateDB( $channel, $itemRow['SKU'], $country, $online_shipping, $itemID, $itemRow['Price'] , $itemRow['Quantity'] );
+                                                $countryRow = Country::where('longname', $country)->first();
+
+                                                if($countryRow){
+                                                    $country = $countryRow->shortname;
+                                                }else{
+                                                    if($country == "Germany") {
+                                                        $country = "DE";
+                                                    } else if($country == "Spain") {
+                                                        $country = "ES";
+                                                    } else if($country == "France") {
+                                                        $country = "FR";
+                                                    } else if($country == "Italy") {
+                                                        $country = "IT";
+                                                    }
+                                                }
+
+                                                if(isset($data['Price']) && isset($data['SKU'])) {
+                                                    $this->prepareAndUpdateDB( $channel, $data['SKU'], $country, $online_shipping, $itemID, $data['Price'], $data['Quantity']);
+                                                }else{
+                                                    if(isset($data['Variations'])) {
+                                                        $variations = $data['Variations']['Variation'];
+                                                        foreach ($variations as $key => $itemRow) {
+                                                            $this->prepareAndUpdateDB( $channel, $itemRow['SKU'], $country, $online_shipping, $itemID, $itemRow['Price'] , $itemRow['Quantity'] );
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
-                                    }   
+                                    }else{
+                                        echo "<br>";
+                                        echo "<span style='color:red;font-size:15px'>No record found in report</span>";
+                                    }  
                                 }
                             }
-                        }
-                    }catch (\GuzzleHttp\Exception\ClientException $e) {
                         
+                    }catch (\GuzzleHttp\Exception\ClientException $e) {
+                        echo $e->getMessage();
                     }
                 }//endforeach
             }
@@ -343,7 +360,7 @@ class EbayController extends Controller {
             }
         }else{
             //product not exists
-            $warnmessage   = "Warning: No quantities for ".$sku." in ".$channel->country." of channel ".$channel->shortname;
+            $warnmessage   = "Warning: No product for ".$sku." in ".$channel->country." of channel ".$channel->shortname;
             echo $warnmessage.'</br>'; 
             DB::table('tbl_open_activities')->insertGetId(['dateTime'=>date('Y-m-d H:i:s'),'issues'=>$warnmessage]);
         }
