@@ -307,6 +307,8 @@ class EbayController extends Controller {
                         }
                     }
                 }
+            }else{
+                $cost = $product->price;
             }
 
             $priceRow = Price::where(['channel_id'=>$channel->idchannel, 'country'=> $country, 'sku'=>$sku])->first();
