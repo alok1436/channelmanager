@@ -19,7 +19,7 @@
     
     //.' and prices.channel_id=5' //channel.idchannel = 17 AND 
     if($productId != "") {
-        $sql    = "SELECT prices.*, channel.*, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE channel.idchannel = 6 AND  prices.product_id=".$productId;
+        $sql    = "SELECT prices.*, channel.*, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE  prices.product_id=".$productId;
         $result = mysqli_query($conn, $sql); 
 
        // echo $result->num_rows; exit();
@@ -141,7 +141,7 @@
                     
                 } else if($price->devid != NULL || $price->appid != NULL || $price->certid != NULL || $price->refresh_token != NULL) {
 
-                    print_r($price); exit();
+                  
                     $devID              = $price->devid;
                     $appID              = $price->appid;
                     $certID             = $price->certid;
@@ -191,23 +191,20 @@
                     
                     $newquantity = $price->can_sell_online;
                     $fields['itemId'] = $price->itemId;
-                    $fields['price'] = $price->price;
-                    $fields_string = http_build_query($fields); 
-                    $ch = curl_init();
-                    $url = $siteUrl."/ebayUpdateStoreDataPrice/".$price->channel_id.'?'.$fields_string;
-                    
-                    $ch = curl_init();
-                    curl_setopt($ch,CURLOPT_URL, $url);
-                    //curl_setopt($ch,CURLOPT_POST, 1);
-                    //curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-                    $res = curl_exec($ch);
-                    curl_close($ch);
-exit();
                     if($price->online_price != $price->price) {
                         echo 'Updating Price: '.$price->shortname."45454545".$price->itemId."--------".$price->sku."--------".$price->price."<br>";
-
+                        
+                        $fields['price'] = $price->price;
+                        $fields_string = http_build_query($fields); 
+                        $ch = curl_init();
+                        $url = $siteUrl."/ebay/updatePrice/".$price->channel_id.'?'.$fields_string;
+                        $ch = curl_init();
+                        curl_setopt($ch,CURLOPT_URL, $url);
+                        $res = curl_exec($ch);
+                        curl_close($ch);
+                        
                         mysqli_query($conn, "UPDATE prices SET online_price=".$price->price." WHERE price_id = ".$price->price_id);
-                        print_r($array_data);
+                        
                         echo "<br>";
                     }
                    
@@ -215,33 +212,21 @@ exit();
                    
                     if($newquantity > 0 && $newquantity !='') {
                         echo 'Updating quantity: '.$price->shortname."45454545".$price->itemId."--------".$price->sku."--------".$newquantity."<br>";
-                        $xml2 = '<?xml version="1.0" encoding="utf-8"?>
-                            <ReviseItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
-                                <RequesterCredentials>
-                                    <eBayAuthToken>'.$userToken.'</eBayAuthToken>
-                                </RequesterCredentials>
-                                <Item ComplexType="ItemType">
-                                    <ItemID>'.$price->itemId.'</ItemID>
-                                    <Quantity>'.$newquantity.'</Quantity>
-                                </Item>
-                                <MessageID>1</MessageID>
-                                <WarningLevel>High</WarningLevel>
-                                <Version>837</Version>
-                            </ReviseItemRequest>';
-                        echo "<br>";
+                        
+                        $fields = array();
+                        $fields['itemId'] = $price->itemId;
+                        $fields['quantity'] = $newquantity;
+                        $fields_string = http_build_query($fields); 
                         $ch = curl_init();
-                        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                        curl_setopt($ch, CURLOPT_URL, $endpoint);
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlRequest=" . $xml2);
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
-                        $data = curl_exec($ch);
+                        $url = $siteUrl."/ebay/updateQuantity/".$price->channel_id.'?'.$fields_string;
+                        $ch = curl_init();
+                        curl_setopt($ch,CURLOPT_URL, $url);
+                        $res = curl_exec($ch);
                         curl_close($ch);
+                        
                         //convert the XML result into array
                         $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
                         mysqli_query($conn, "UPDATE prices online_quentity=".$newquantity." WHERE price_id = ".$price->price_id);
-                        print_r($array_data);
-                        echo "<br>";
                     }
                      
                 } else if($price->channel_id == 5) {

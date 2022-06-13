@@ -230,7 +230,9 @@ Route::get('otto/get/orders',                	'OttoController@getOrders')->name(
 Route::get('otto/get/{type}',                	'OttoController@downloadAssets')->name('otto.assets');
 Route::get('ottoUpdateStoreData/{channelId}',  'OttoController@updatePriceAndQuantity')->name('updatePriceAndQuantity');
 Route::get('fba/quantity',                		'FBAController@getQuantity');
- 
+
 Route::get('ebay/connect/{id}',                	'EbayController@connect')->name('ebay.connect');
 Route::get('ebay/callback',                		'EbayController@callback')->name('ebay.callback');
 Route::get('ebay/downloadReport',   			'EbayController@downloadReport')->name('ebay.downloadReport');
+Route::get('ebay/updatePrice/{channelId}',      'EbayController@updatePrice')->name('ebay.updatePrice');
+Route::get('ebay/updateQuantity/{channelId}',   'EbayController@updateQuantity')->name('ebay.updateQuantity');
