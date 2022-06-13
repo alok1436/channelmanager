@@ -10,7 +10,7 @@
     $productId = "";
     if(isset($_GET['productId']) && $_GET['productId'] != "") {
         $productId = $_GET['productId'];
-        $sql    = "SELECT * FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE prices.product_id=".$productId;
+        $sql    = "SELECT * FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE  prices.product_id=".$productId;
         $result = mysqli_query($conn, $sql);
     } else {
         $sql    = "SELECT * FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE prices.product_id=".$productId;
@@ -19,11 +19,13 @@
     
     //.' and prices.channel_id=5'
     if($productId != "") {
-        $sql    = "SELECT prices.*, channel.*, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE prices.product_id=".$productId;
-        $result = mysqli_query($conn, $sql);
+        $sql    = "SELECT prices.*, channel.*, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE channel.idchannel = 17 AND prices.product_id=".$productId;
+        $result = mysqli_query($conn, $sql); 
+
+       // echo $result->num_rows; exit();
         if($result->num_rows > 0) {
             while($price  = mysqli_fetch_object($result)) {
-                //echo '<pre>'; print_r($price); echo '</pre>'; exit();
+               // echo '<pre>'; print_r($price); echo '</pre>'; continue;
                 $price->indicated_quantity = 0;
                 $price->warehouse_quantity = 0;
                 $price->can_sell_online = 0;
@@ -420,6 +422,58 @@
                     $res = curl_exec($ch);
                     curl_close($ch);
                     
+                    //update the table data
+                    if(count($online) > 0){
+                        update_data(array('price_id'=>$price->price_id), $online, 'prices',  $conn);
+                    }
+                }else if($price->channel_id == 17) {
+                    $warehouseQnt = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM lagerstand WHERE productid=".$productId." AND idwarehouse=".$price->warehouse));
+                    
+                    if($price->quantity_strategy == 1) {
+                        $buffer = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM product WHERE productid=".$productId));
+                        if(!empty($buffer) && $buffer->min_sell != null) {
+                            $price->indicated_quantity = $buffer->min_sell;
+                        }
+                        $price->can_sell_online = $price->indicated_quantity;
+                        if(!empty($warehouseQnt)) {
+                            if($warehouseQnt->quantity >= $price->indicated_quantity){
+                                $price->can_sell_online = $price->indicated_quantity;
+                            }else{
+                                $price->can_sell_online = $warehouseQnt->quantity;
+                            }
+                        }
+                    }else if($price->quantity_strategy == 3) {
+                        if(!empty($warehouseQnt)) {
+                            $price->can_sell_online = $warehouseQnt->quantity;
+                        }
+                    }
+                    
+                    $newquantity = $price->can_sell_online;
+                    
+                    $fields = [];
+                    $online = [];
+                    $fields['item_id'] = $price->itemId; 
+                    if($price->online_price != $price->price) {
+                       $online['price'] = $fields['price'] = $price->price;
+                    }
+
+                    $online['sku'] = $price->sku;
+                    $online['quantity'] = $fields['stock_quantity'] = $newquantity;
+                    
+                    echo 'otto-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'<br>';
+                        
+                    $ch = curl_init();
+                    echo $url = $siteUrl."/ottoUpdateStoreData/".$price->channel_id;
+
+                    echo $fields_string = http_build_query($fields); 
+                    $ch = curl_init();
+                    curl_setopt($ch,CURLOPT_URL, $url);
+                    //curl_setopt($ch,CURLOPT_POST, 1);
+                    curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+                    $res = curl_exec($ch);
+                    curl_close($ch);
+                    
+                    print_r($res); exit();
                     //update the table data
                     if(count($online) > 0){
                         update_data(array('price_id'=>$price->price_id), $online, 'prices',  $conn);

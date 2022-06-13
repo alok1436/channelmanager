@@ -545,4 +545,84 @@ class OttoController extends Controller {
             }
         }
     }
+
+    public function updatePriceAndQuantity(Request $request, $channel_id)
+    {print_r($request->all()); exit();
+        $channel = Channel::find($channel_id);
+        if($channel){
+            $token = $this->getAccessToken( $order->channel );
+            $this->updatePrice($request, $token);
+            $this->updateQuantity($request, $token);
+        }
+    }
+
+
+    public function updatePrice($request, $token)
+    {
+        try {
+            $client = new \GuzzleHttp\Client();
+            $body = '[
+                  {
+                    "sku": "'.$request->sku.'",
+                    "standardPrice": {
+                      "amount": '.$request->price.',
+                      "currency": "EUR"
+                    },
+                    "sale": {
+                      "salePrice": {
+                        "amount": '.$request->price.',
+                        "currency": "EUR"
+                      },
+                      "startDate": "'.date("Y-m-d\TH:i:s.000\Z").'",
+                      "endDate": "'.date("Y-m-d\TH:i:s.000\Z").'"
+                    }
+                  }
+                ]';
+
+            $response = $client->post('https://api.otto.market/v2/products/prices', [
+              'body' => $body,
+              'headers' => [
+                'Content-Type' => 'application/json', 
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' .$token,
+              ]
+            ]);
+            $response = json_decode($response->getBody()->getContents());
+            return $response;
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $result =  json_decode($response->getBody()->getContents());
+            return $result;
+        }
+    }
+
+
+    public function updateQuantity($request, $token)
+    { 
+        try {
+            $client = new \GuzzleHttp\Client();
+            $body = '[
+                  {
+                    "lastModified": "'.date("Y-m-d\TH:i:s.000\Z").'"
+                    "quantity": '.$request->quantity.',
+                    "sku": "'.$request->sku.'",
+                  }
+                ]';
+
+            $response = $client->post('https://api.otto.market/v2/quantities', [
+              'body' => $body,
+              'headers' => [
+                'Content-Type' => 'application/json', 
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' .$token,
+              ]
+            ]);
+            $response = json_decode($response->getBody()->getContents());
+            return $response;
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $result =  json_decode($response->getBody()->getContents());
+            return $result;
+        }
+    }
 }

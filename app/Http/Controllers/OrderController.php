@@ -190,9 +190,9 @@ class OrderController extends Controller
         if(isset($_GET['integrate'])) {
             $collection->whereNull('address1')->whereBetween('referencechannel', [1, 4]);
         }
-        //$collection->where('idorder','25');
+
         $collection->where('multiorder','0');
-       // $collection->where('platformname',"Otto");
+
         $orders = $collection->orderBy('idorder','desc')->groupBy('referenceorder')->paginate(100);
        // dd($orders);
         $modalWares = DB::table('orderitem')
