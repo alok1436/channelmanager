@@ -17,9 +17,9 @@
         $result = mysqli_query($conn, $sql);
     }
     
-    //.' and prices.channel_id=5'
+    //.' and prices.channel_id=5' //channel.idchannel = 17 AND 
     if($productId != "") {
-        $sql    = "SELECT prices.*, channel.*, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE channel.idchannel = 17 AND prices.product_id=".$productId;
+        $sql    = "SELECT prices.*, channel.*, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE prices.product_id=".$productId;
         $result = mysqli_query($conn, $sql); 
 
        // echo $result->num_rows; exit();
@@ -472,8 +472,7 @@
                     //curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
                     $res = curl_exec($ch);
                     curl_close($ch);
-                    
-                    print_r($res); exit();
+
                     //update the table data
                     if(count($online) > 0){
                         update_data(array('price_id'=>$price->price_id), $online, 'prices',  $conn);
