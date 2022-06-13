@@ -228,7 +228,7 @@ Route::get('/inventoryView2',                   'InventoryController@inventoryVi
 Route::get('ajax/invertory/get',                'InventoryController@ajaxInventory')->name('ajax.inventory');
 Route::get('otto/get/orders',                	'OttoController@getOrders')->name('otto.orders');
 Route::get('otto/get/{type}',                	'OttoController@downloadAssets')->name('otto.assets');
-Route::get('ottoUpdateStoreData/{channelId}',  'OttoController@updatePriceAndQuantity')->name('updatePriceAndQuantity');
+Route::post('ottoUpdateStoreData/{channelId}',  'OttoController@updatePriceAndQuantity')->name('updatePriceAndQuantity');
 Route::get('fba/quantity',                		'FBAController@getQuantity');
 
 Route::get('ebay/connect/{id}',                	'EbayController@connect')->name('ebay.connect');

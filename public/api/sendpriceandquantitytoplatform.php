@@ -463,12 +463,12 @@
                     echo 'otto-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'<br>';
                         
                     $ch = curl_init();
-                    echo $url = $siteUrl."/ottoUpdateStoreData/".$price->channel_id;
+                    $url = $siteUrl."/ottoUpdateStoreData/".$price->channel_id;
 
-                    echo $fields_string = http_build_query($fields); 
+                    $fields_string = http_build_query($fields); 
                     $ch = curl_init();
                     curl_setopt($ch,CURLOPT_URL, $url);
-                    //curl_setopt($ch,CURLOPT_POST, 1);
+                    curl_setopt($ch,CURLOPT_POST, 1);
                     curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
                     $res = curl_exec($ch);
                     curl_close($ch);
