@@ -547,12 +547,21 @@ class OttoController extends Controller {
     }
 
     public function updatePriceAndQuantity(Request $request, $channel_id)
-    {print_r($request->all()); exit();
+    {
         $channel = Channel::find($channel_id);
         if($channel){
             $token = $this->getAccessToken( $order->channel );
-            $this->updatePrice($request, $token);
-            $this->updateQuantity($request, $token);
+            if($request->filled('price') && $request->price > 0){
+                $this->updatePrice($request, $token);
+            }else{
+                echo "Invalid price";
+            }
+
+            if($request->filled('quantity') && $request->quantity > 0){
+                $this->updateQuantity($request, $token);
+            }else{
+                echo "Invalid quantity";
+            }
         }
     }
 

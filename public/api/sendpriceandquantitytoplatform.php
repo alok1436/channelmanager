@@ -458,18 +458,18 @@
                     }
 
                     $online['sku'] = $price->sku;
-                    $online['quantity'] = $fields['stock_quantity'] = $newquantity;
+                    $online['quantity'] = $fields['quantity'] = $newquantity;
                     
                     echo 'otto-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'<br>';
-                        
-                    $ch = curl_init();
-                    $url = $siteUrl."/ottoUpdateStoreData/".$price->channel_id;
-
+                    
                     $fields_string = http_build_query($fields); 
                     $ch = curl_init();
+                    $url = $siteUrl."/ottoUpdateStoreData/".$price->channel_id.'?'.$fields_string;
+                    
+                    $ch = curl_init();
                     curl_setopt($ch,CURLOPT_URL, $url);
-                    curl_setopt($ch,CURLOPT_POST, 1);
-                    curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+                    //curl_setopt($ch,CURLOPT_POST, 1);
+                    //curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
                     $res = curl_exec($ch);
                     curl_close($ch);
                     
