@@ -225,7 +225,7 @@
                         curl_close($ch);
                         
                         //convert the XML result into array
-                        $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
+                        //$array_data = json_decode(json_encode(simplexml_load_string($data)), true);
                         mysqli_query($conn, "UPDATE prices online_quentity=".$newquantity." WHERE price_id = ".$price->price_id);
                     }
                      
