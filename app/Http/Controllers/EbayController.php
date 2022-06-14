@@ -425,43 +425,44 @@ class EbayController extends Controller {
         
         $channel = Channel::find($idchannel);
         $response = $this->getAccessTokenByRefreshtoken($channel);
-        
-        $endpoint  = 'https://api.ebay.com/ws/api.dll'; // URL to call
-        $headers = array(
-            'Content-Type: text/xml',
-            'X-EBAY-API-COMPATIBILITY-LEVEL:837',
-            'X-EBAY-API-DEV-NAME:'.$channel->devid,
-            'X-EBAY-API-APP-NAME:'.$channel->appid,
-            'X-EBAY-API-CERT-NAME:'.$channel->certid,
-            'X-EBAY-API-SITEID:0',
-            'X-EBAY-API-CALL-NAME:ReviseItem'
-        );
-        
-        $xml = '<?xml version="1.0" encoding="utf-8"?>
-            <ReviseItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
-                <RequesterCredentials>
-                    <eBayAuthToken>'.$response->access_token.'</eBayAuthToken>
-                </RequesterCredentials>
-                <Item ComplexType="ItemType">
-                    <ItemID>'.$request->itemId.'</ItemID>
-                    <StartPrice>'.$request->price.'</StartPrice>
-                </Item>
-                <MessageID>1</MessageID>
-                <WarningLevel>High</WarningLevel>
-                <Version>837</Version>
-            </ReviseItemRequest>';
-        echo "<br>";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_URL, $endpoint);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlRequest=" . $xml);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        //convert the XML result into array
-        $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
-        return $array_data;
+        if(!empty($response)){
+            $endpoint  = 'https://api.ebay.com/ws/api.dll'; // URL to call
+            $headers = array(
+                'Content-Type: text/xml',
+                'X-EBAY-API-COMPATIBILITY-LEVEL:837',
+                'X-EBAY-API-DEV-NAME:'.$channel->devid,
+                'X-EBAY-API-APP-NAME:'.$channel->appid,
+                'X-EBAY-API-CERT-NAME:'.$channel->certid,
+                'X-EBAY-API-SITEID:0',
+                'X-EBAY-API-CALL-NAME:ReviseItem'
+            );
+            
+            $xml = '<?xml version="1.0" encoding="utf-8"?>
+                <ReviseItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+                    <RequesterCredentials>
+                        <eBayAuthToken>'.$response->access_token.'</eBayAuthToken>
+                    </RequesterCredentials>
+                    <Item ComplexType="ItemType">
+                        <ItemID>'.$request->itemId.'</ItemID>
+                        <StartPrice>'.$request->price.'</StartPrice>
+                    </Item>
+                    <MessageID>1</MessageID>
+                    <WarningLevel>High</WarningLevel>
+                    <Version>837</Version>
+                </ReviseItemRequest>';
+            echo "<br>";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_URL, $endpoint);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlRequest=" . $xml);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
+            $data = curl_exec($ch);
+            curl_close($ch);
+            //convert the XML result into array
+            $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
+            return $array_data;
+        }
     }
 
     public function updateQuantity( Request $request, $idchannel ){
@@ -470,43 +471,44 @@ class EbayController extends Controller {
         
         $channel = Channel::find($idchannel);
         $response = $this->getAccessTokenByRefreshtoken($channel);
-        
-        $endpoint  = 'https://api.ebay.com/ws/api.dll'; // URL to call
-        $headers = array(
-            'Content-Type: text/xml',
-            'X-EBAY-API-COMPATIBILITY-LEVEL:837',
-            'X-EBAY-API-DEV-NAME:'.$channel->devid,
-            'X-EBAY-API-APP-NAME:'.$channel->appid,
-            'X-EBAY-API-CERT-NAME:'.$channel->certid,
-            'X-EBAY-API-SITEID:0',
-            'X-EBAY-API-CALL-NAME:ReviseItem'
-        );
-        
-        $xml = '<?xml version="1.0" encoding="utf-8"?>
-            <ReviseItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
-                <RequesterCredentials>
-                    <eBayAuthToken>'.$response->access_token.'</eBayAuthToken>
-                </RequesterCredentials>
-                <Item ComplexType="ItemType">
-                    <ItemID>'.$request->itemId.'</ItemID>
-                    <Quantity>'.$request->quantity.'</Quantity>
-                </Item>
-                <MessageID>1</MessageID>
-                <WarningLevel>High</WarningLevel>
-                <Version>837</Version>
-            </ReviseItemRequest>';
-        echo "<br>";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_URL, $endpoint);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlRequest=" . $xml);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        //convert the XML result into array
-        $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
-        return $array_data;
+        if(!empty($response)){
+            $endpoint  = 'https://api.ebay.com/ws/api.dll'; // URL to call
+            $headers = array(
+                'Content-Type: text/xml',
+                'X-EBAY-API-COMPATIBILITY-LEVEL:837',
+                'X-EBAY-API-DEV-NAME:'.$channel->devid,
+                'X-EBAY-API-APP-NAME:'.$channel->appid,
+                'X-EBAY-API-CERT-NAME:'.$channel->certid,
+                'X-EBAY-API-SITEID:0',
+                'X-EBAY-API-CALL-NAME:ReviseItem'
+            );
+            
+            $xml = '<?xml version="1.0" encoding="utf-8"?>
+                <ReviseItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+                    <RequesterCredentials>
+                        <eBayAuthToken>'.$response->access_token.'</eBayAuthToken>
+                    </RequesterCredentials>
+                    <Item ComplexType="ItemType">
+                        <ItemID>'.$request->itemId.'</ItemID>
+                        <Quantity>'.$request->quantity.'</Quantity>
+                    </Item>
+                    <MessageID>1</MessageID>
+                    <WarningLevel>High</WarningLevel>
+                    <Version>837</Version>
+                </ReviseItemRequest>';
+            echo "<br>";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_URL, $endpoint);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlRequest=" . $xml);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
+            $data = curl_exec($ch);
+            curl_close($ch);
+            //convert the XML result into array
+            $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
+            return $array_data;
+        }
     }
 
     public function saveAttachment($data)
