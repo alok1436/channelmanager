@@ -126,6 +126,9 @@
             // }
 
         if($channel_data->aws_acc_key_id!='' && $channel_data->aws_secret_key_id!='' && $channel_data->merchant_id!='' && $channel_data->market_place_id!='' && $channel_data->mws_auth_token!=''){
+
+            mysqli_query($conn, "UPDATE prices SET ebayActive=0 WHERE channel_id=".$channel_data->idchannel."");
+
             $marketplaceIds = ['APJ6JRA9NG5V4','A13V1IB3VIYZZH', 'A1F83G8C2ARO7P', 'A1PA6795UKMFR9', 'A1RKKUPIHCS9HS'];
             $countryArr     = ['IT', 'FR', 'UK', 'DE', 'ES'];
             $existingProductFlag = 0;
@@ -202,8 +205,9 @@
                                                         if($quantity == "") {
                                                             $quantity = 0;
                                                         }
-                                                        $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
-                                                        echo $sql."<br>";
+                                                        
+                                                        $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."',price ='".$price."', online_price='".$price."',last_update_date='".date('Y-m-d H:i:s')."', ebayActive=1,updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
+                                                         
                                                         $result = mysqli_query($conn, $sql);
                                                     } else {
                                                         // $warning    = "Warning: No price for ".$sku." in ".$country." of channel ".$channel_data->shortname;

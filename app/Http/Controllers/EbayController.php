@@ -197,6 +197,11 @@ class EbayController extends Controller {
             abort(404);
         }
         $channel = Channel::find($idchannel);
+        
+        if(!$channel) return;
+
+        Price::where('channel_id',$idchannel)->update(['ebayActive'=>0]);
+
         ini_set('memory_limit', -1);
         ini_set('max_execution_time', 300);
         if($channel){
@@ -332,6 +337,7 @@ class EbayController extends Controller {
                     'asin'=>$product->asin,
                     'price'=>$online_price,
                     'cost'=>$cost,
+                    'ebayActive'=> 1,
                     'created_date'=> date('Y-m-d H:i:s'),
                     'updated_date'=> date('Y-m-d H:i:s'),
                 ]);
