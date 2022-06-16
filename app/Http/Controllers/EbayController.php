@@ -306,7 +306,7 @@ class EbayController extends Controller {
                     $itemProductId  = "productid".$i;
                     $productid      = $product->$itemProductId;
                     if($product->$item != null && $product->$item > 0 && $product->$item != "" && $productid != "" && $productid != null) {
-                        $itemProduct = $product = Product::where(['modelcode'=>$productid])->first();
+                        $itemProduct = Product::where(['modelcode'=>$productid])->first();
                         if($itemProduct){
                             $cost += $itemProduct->price*$product->$item;
                         }
