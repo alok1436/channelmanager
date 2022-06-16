@@ -68,14 +68,22 @@ class InventoryController extends Controller
                 $qty    = DB::table('lagerstand')
                         ->where('productid',    '=', $product->productid)
                         ->where('idwarehouse',  '=', $warehouse->idwarehouse)
+                        ->select('hall','area','rack')
                         ->selectRaw(DB::raw("COALESCE(sum(quantity),0) as total_qty"))
                         ->first();
                 $total_qty += intval($qty->total_qty); 
                 $product->{$warehouse->idwarehouse} = intval($qty->total_qty);
+                $hall = $warehouse->idwarehouse.'_hall';
+                $area = $warehouse->idwarehouse.'_area';
+                $rack = $warehouse->idwarehouse.'_rack';
+                $product->$hall =  $qty->hall;
+                $product->$area =  $qty->area;
+                $product->$rack =  $qty->rack;
+ 
             }
             $product->total_qty = $total_qty;
         }
-
+ 
         foreach($kitProducts as $kitProduct) {
             $total_qty = 0;
             foreach($warehouses as $warehouse) {                
@@ -138,7 +146,8 @@ class InventoryController extends Controller
             });
 
             $datatable->addColumn( 'hall_'.$house->shortname, function($row) use ($house){
-                $record = $row->hall;
+                $hall = $house->idwarehouse.'_hall';
+                $record = $row->{$hall} ;
                 return '<span  class="field-value">'.$record.'</span>
                 <div class="field-edit">
                     <input type="text" name="warehouse" class="form-control" value="'.$record.'" data-action="update_hac" data-id="'.$row->productid.'" data-old="'.$house->idwarehouse.'" data-field="hall">
@@ -148,7 +157,8 @@ class InventoryController extends Controller
 
             $datatable->addColumn( 'area_'.$house->shortname, function($row) use ($house){
                 
-                $record = $row->area;
+                $area = $house->idwarehouse.'_area';
+                $record = $row->{$area} ;
                 return '<span  class="field-value">'.$record.'</span>
                 <div class="field-edit">
                     <input type="text" name="warehouse" class="form-control" value="'.$record.'" data-action="update_hac" data-id="'.$row->productid.'" data-old="'.$house->idwarehouse.'" data-field="area">
@@ -157,7 +167,8 @@ class InventoryController extends Controller
             });
 
             $datatable->addColumn( 'rack_'.$house->shortname, function($row) use ($house){
-                $record = $row->rack;
+                $rack = $house->idwarehouse.'_rack';
+                $record = $row->{$rack} ;
                 return '<span  class="field-value">'.$record.'</span>
                 <div class="field-edit">
                     <input type="text" name="warehouse" class="form-control" value="'.$record.'" data-action="update_hac" data-id="'.$row->productid.'" data-old="'.$house->idwarehouse.'" data-field="rack">

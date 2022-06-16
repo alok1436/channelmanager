@@ -442,6 +442,8 @@ class SettingController extends Controller
                 $ls->$fieldName = $request->value;
                 $ls->save();
             }
+
+            return 'success';
         }else{
             $idpayment      = $_GET["id"];
             $fieldName      = $_GET["field"];
