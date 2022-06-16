@@ -450,6 +450,8 @@ class OttoController extends Controller {
                                 'last_update_qty_date'=> date('Y-m-d H:i:s', strtotime($row->lastModified)),
                                 'online_quentity'=> $row->quantity,
                                 'updated_date'=> date('Y-m-d H:i:s'),
+                                'online_shipping'=>$channel->flat_shipping_costs,
+                                'last_update_shipping'=> date('Y-m-d H:i:s'),
                             ]);
                         }
                     }else{
@@ -520,6 +522,8 @@ class OttoController extends Controller {
                                 'online_price'=> $row->standardPrice->amount,
                                 'price'=> $row->standardPrice->amount,
                                 'updated_date'=> date('Y-m-d H:i:s'),
+                                'online_shipping'=>$channel->flat_shipping_costs,
+                                'last_update_shipping'=> date('Y-m-d H:i:s'),
                             ]);
                         }
                     }else{
