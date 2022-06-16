@@ -503,6 +503,10 @@
 
                                                         @if($row->pl_shortname == "Woocommerce")
                                                         <a href="channelEditView?channel=woocommerce&idchannel=<?php echo $row->idchannel;?>" class="btn btn-success">Flat Shipping costs</a> 
+
+                                                        @elseif($row->pl_shortname == "Otto")
+                                                        <a href="channelEditView?channel=otto&idchannel=<?php echo $row->idchannel;?>" class="btn btn-success">Flat Shipping costs</a> 
+
                                                         @endif
 
                                                         

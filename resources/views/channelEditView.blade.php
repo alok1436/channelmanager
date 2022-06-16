@@ -235,6 +235,18 @@
                                                     <input type="submit" name="submit" id="submit" class="btn btn-info pull-right" value="Save channel">
                                                 </div>
                                             </div>
+                                            <div class="col-md-5 col-sm-12" style="@if($channelType != 'otto') display:none; @endif ">
+                                                <div class="form-group">
+                                                    <label>Flat Shipping costs</label>
+                                                    <input type="text" id="flat_shipping_cost" name="flat_shipping_cost" class="form-control" value="{{$channel->flat_shipping_costs}}" />
+                                                </div>
+                                                <div class="form-group">
+                                                    
+                                                    <input type="submit" name="submit" id="submit" class="btn btn-info pull-right" value="Save channel">
+
+                                                    <a href="{{ url('channelView') }}" class="mr-3 btn btn-info pull-right" value="Save channel">Back</a>
+                                                </div>
+                                            </div>
                                             <!-- End Amazon --> 
                                         </div>
                                     </form>

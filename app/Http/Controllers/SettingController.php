@@ -391,7 +391,8 @@ class SettingController extends Controller
                     'devid'     => $devID,
                     'appid'     => $appID,
                     'certid'    => $certID,
-                    'usertoken' => $userToken
+                    'usertoken' => $userToken,
+                    'flat_shipping_costs'   => $flat_shipping_cost
                 ]);
         }
         
