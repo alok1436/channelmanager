@@ -27,6 +27,9 @@
         $countryname        = $row->country;
         $warehouse          = $row->warehouse;
         
+        $sql = "UPDATE prices SET ebayActive=0 WHERE channel_id = ".$row->idchannel;
+        mysqli_query($conn, $sql);
+
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, 'https://oauth2.cdiscount.com/auth/realms/maas-international-sellers/protocol/openid-connect/token');
@@ -118,11 +121,11 @@
                         $cost = $current_product->price;
                     }
                     if ($result->num_rows == 0) {
-                        $sql    = "INSERT INTO prices SET cost=".$cost.", country='FR', product_id='".$current_product->productid."', online_price = ".$price.", online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."', online_shipping= ".$online_shipping.", shipping=".$online_shipping.", last_update_date='".date('Y-m-d H:i:s')."', last_update_shipping='".date('Y-m-d H:i:s')."', channel_id ='".$idchannel."',warehouse_id ='".$idwarehouse."',platform_id='".$platformid."' ,sku ='".$sku."',ean ='".$ean."',asin ='".$current_product->asin."', price='".$price."' ,created_date='".date('Y-m-d H:i:s')."',updated_date='".date('Y-m-d H:i:s')."'"; 
+                        $sql    = "INSERT INTO prices SET cost=".$cost.", country='FR', product_id='".$current_product->productid."', online_price = ".$price.", online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."', online_shipping= ".$online_shipping.", shipping=".$online_shipping.", last_update_date='".date('Y-m-d H:i:s')."', last_update_shipping='".date('Y-m-d H:i:s')."', channel_id ='".$idchannel."',warehouse_id ='".$idwarehouse."',platform_id='".$platformid."' ,sku ='".$sku."',ean ='".$ean."',asin ='".$current_product->asin."', price='".$price."' ,created_date='".date('Y-m-d H:i:s')."',updated_date='".date('Y-m-d H:i:s')."', ebayActive=1"; 
                         echo $sql."--------2<br>";
                         $result = mysqli_query($conn, $sql);
                     } else {
-                        $sql    = "UPDATE prices SET online_price = ".$price.", country='FR', online_shipping= ".$online_shipping.", price='".$price."', online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."', shipping=".$online_shipping.", last_update_date='".date('Y-m-d H:i:s')."', last_update_shipping='".date('Y-m-d H:i:s')."', updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$idchannel." AND ean='".$ean."'";
+                        $sql    = "UPDATE prices SET online_price = ".$price.", country='FR', online_shipping= ".$online_shipping.", price='".$price."', online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."', shipping=".$online_shipping.", last_update_date='".date('Y-m-d H:i:s')."', last_update_shipping='".date('Y-m-d H:i:s')."', updated_date='".date('Y-m-d H:i:s')."', ebayActive=1 WHERE channel_id=".$idchannel." AND ean='".$ean."'";
                         echo $sql."--------3<br>";
                         $result = mysqli_query($conn, $sql);
                     }
