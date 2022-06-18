@@ -555,13 +555,13 @@ class OttoController extends Controller {
         if($channel){
             $token = $this->getAccessToken( $order->channel );
             if($request->filled('price') && $request->price > 0){
-                $this->updatePrice($request, $token);
+                $this->updatePrice($request, $token->access_token);
             }else{
                 echo "Invalid price";
             }
 
             if($request->filled('quantity') && $request->quantity > 0){
-                $this->updateQuantity($request, $token);
+                $this->updateQuantity($request, $token->access_token);
             }else{
                 echo "Invalid quantity";
             }
@@ -627,6 +627,38 @@ class OttoController extends Controller {
                 'Content-Type' => 'application/json', 
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' .$token,
+              ]
+            ]);
+            $response = json_decode($response->getBody()->getContents());
+            return $response;
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $result =  json_decode($response->getBody()->getContents());
+            return $result;
+        }
+    }
+
+    public function updateQuantityUsingCron($sku, $quantity, $channel)
+    { 
+        $token = $this->getAccessToken( $channel );
+        if(!$token) return;
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $body = '[
+                  {
+                    "lastModified": "'.date("Y-m-d\TH:i:s.000\Z").'"
+                    "quantity": '.$quantity.',
+                    "sku": "'.$sku.'",
+                  }
+                ]';
+
+            $response = $client->post('https://api.otto.market/v2/quantities', [
+              'body' => $body,
+              'headers' => [
+                'Content-Type' => 'application/json', 
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' .$token->access_token,
               ]
             ]);
             $response = json_decode($response->getBody()->getContents());

@@ -554,6 +554,9 @@
 
                         @endif
                         <a class="btn btn-warning getInvoiceForm1" target="_blank" href="{{ route('orderInvoiceCreate',['id'=>$row->idorder]) }}" data-id="{{$row->idorder}}" style="width: 100%; word-wrap: break-word; margin-top: 10px;">Edit invoice</a>
+                        @if(request()->filled('showcron') && request()->showcron == 1)
+                        <a class="btn btn-warning" target="_blank" href="{{ url('order/sync?orderId='.$row->idorder) }}"  style="width: 100%; word-wrap: break-word; margin-top: 10px;">Update quantity cron</a>
+                        @endif
                     </td>
                 </tr>
                 <?php $sps++; }?>

@@ -512,7 +512,7 @@ class EbayController extends Controller {
             $data = curl_exec($ch);
             curl_close($ch);
             //convert the XML result into array
-            $array_data = json_decode(json_encode(simplexml_load_string($data)), true); dd($array_data);
+            $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
             return $array_data;
         }
     }

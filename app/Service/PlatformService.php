@@ -4,9 +4,18 @@ namespace App\Service;
 use App\Models\Channel;
 use App\Models\OrderItem;
 use App\Models\LagerStand;
+use App\Http\Controllers\OttoController;
+use Codexshaper\WooCommerce\Facades\Product as WooProduct;
 
 class PlatformService
 {
+    private $otto;
+    
+    public function __construct()
+    {
+        $this->otto = new OttoController;
+    }
+
     public function getMarketPlaceId($countyCode)
     {
         $array = [
@@ -19,9 +28,10 @@ class PlatformService
         return isset($array[$countyCode]) ? $array[$countyCode] : [];
     }
 
-    public function amazonUpdate(OrderItem $order, Channel $channel)
+    public function amazonUpdateQuantity(OrderItem $order, Channel $channel, $quantity)
     {
-        if(!$order->product) return;
+        if(!$order->product) return; //check if product is available
+
         $client = new \MCS\MWSClient([
             'Marketplace_Id'    => $this->getMarketPlaceId($channel->country),
             'Seller_Id'         => $channel->merchant_id,
@@ -31,29 +41,73 @@ class PlatformService
         ]);
       
         try { 
-            $status = $client->updateStock([$order->product->sku => $order->quantity]);  
+            $status = $client->updateStock([$order->product->sku => $quantity]);  
             if(isset($status['FeedProcessingStatus']) && $status['FeedProcessingStatus'] == "_SUBMITTED_") {
                return true;
             }
-        } 
-        catch (\Exception $e) { 
+        }catch (\Exception $e) { 
             echo 'Message: ' .$e->getMessage(); 
             return false;
         }  
     }
 
-    public function eBayUpdateQuantity(OrderItem $order, Channel $channel)
+    public function eBayUpdateQuantity(OrderItem $order, Channel $channel, $quantity)
     {
-        $fields = array();
-        $fields['itemId'] = 124878402545;
-        $fields['quantity'] = 2;
-        $fields_string = http_build_query($fields); 
-         
-        $ch = curl_init();
-        $url = url("/ebay/updateQuantity/".$channel->idchannel.'?'.$fields_string);
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL, $url);
-        $res = curl_exec($ch);
-        curl_close($ch);
+        if($order->order_item_id != ''){
+            $fields = array();
+            $fields['itemId'] = $order->order_item_id;
+            $fields['quantity'] = $quantity;
+            $fields_string = http_build_query($fields); 
+            $ch = curl_init();
+            $url = url("ebay/updateQuantity/".$channel->idchannel.'?'.$fields_string);
+            $ch = curl_init();
+            curl_setopt($ch,CURLOPT_URL, $url);
+            $res = curl_exec($ch);
+            curl_close($ch);
+        }
+    }
+
+
+    public function OttoQuantityUpdate(OrderItem $order, Channel $channel, $quantity)
+    {   
+        if($order->product){
+            $response = $this->otto->updateQuantityUsingCron($order->product->sku, $quantity, $channel);
+        }
+    }
+
+    public function wooQuantityUpdate(OrderItem $order, Channel $channel, $quantity)
+    {   
+
+        Session::put("WOOCOMMERCE_STORE_URL",       $channel->woo_store_url);
+        Session::put("WOOCOMMERCE_CONSUMER_KEY",    $channel->woo_consumer_key);
+        Session::put("WOOCOMMERCE_CONSUMER_SECRET", $channel->woo_consumer_secret);
+        config([
+            'woocommerce.store_url' => $channel->woo_store_url,
+            'woocommerce.consumer_key' => $channel->woo_consumer_key,
+            'woocommerce.consumer_secret' => $channel->woo_consumer_secret
+        ]);
+        if($order->order_item_id > 0){
+            try{
+                $product = WooProduct::find($request->order_item_id)->toArray();
+                if($product){
+                    $data = [];
+                    if(!$product['manage_stock']){
+                        $data['manage_stock'] = true;
+                    }
+                    $data['stock_quantity'] =   $quantity;
+                    
+                    if(count($data) > 0){
+                        $isupdated = WooProduct::update($order->order_item_id, $data);
+                    }
+                    
+                }else{
+                    return response()->json(['error'=>'Item not found']);
+                }
+            }catch (\Exception $e) { 
+                    echo 'Message: ' .$e->getMessage(); 
+            } 
+        }else{
+            return response()->json(['error'=>'Item Id not found']);
+        }
     }
 }
