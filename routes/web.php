@@ -236,3 +236,4 @@ Route::get('ebay/callback',                		'EbayController@callback')->name('e
 Route::get('ebay/downloadReport',   			'EbayController@downloadReport')->name('ebay.downloadReport');
 Route::get('ebay/updatePrice/{channelId}',      'EbayController@updatePrice')->name('ebay.updatePrice');
 Route::get('ebay/updateQuantity/{channelId}',   'EbayController@updateQuantity')->name('ebay.updateQuantity');
+Route::get('order/sync',   						'CronController@test');

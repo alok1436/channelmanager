@@ -306,7 +306,7 @@ class EbayController extends Controller {
                     $itemProductId  = "productid".$i;
                     $productid      = $product->$itemProductId;
                     if($product->$item != null && $product->$item > 0 && $product->$item != "" && $productid != "" && $productid != null) {
-                        $itemProduct = Product::where(['modelcode'=>$productid])->first();
+                        $itemProduct = $product = Product::where(['modelcode'=>$productid])->first();
                         if($itemProduct){
                             $cost += $itemProduct->price*$product->$item;
                         }
@@ -512,7 +512,7 @@ class EbayController extends Controller {
             $data = curl_exec($ch);
             curl_close($ch);
             //convert the XML result into array
-            $array_data = json_decode(json_encode(simplexml_load_string($data)), true);
+            $array_data = json_decode(json_encode(simplexml_load_string($data)), true); dd($array_data);
             return $array_data;
         }
     }
