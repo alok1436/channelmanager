@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use DB;
 use App\Models\Product;
 use App\Models\Channel;
 use App\Models\OrderItem;
