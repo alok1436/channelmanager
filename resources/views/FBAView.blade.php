@@ -321,6 +321,8 @@
                                             <a href="{{ url('api/fbaQuantityNew.php') }}" target="_blank" class="btn btn-info">CHECK VIA API ACTUAL QUANTITY</a>
 
                                             <a href="" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModalNew">CHECK VIA EXCEL QUANTITY</a>
+
+                                            <a href="https://sellercentral.amazon.de/reportcentral/FBA_MYI_ALL_INVENTORY/1" target="_blank" class="btn btn-info">Link for download file</a>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -336,7 +338,7 @@
                                                 <!-- Modal content-->
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title">IMPORT FBA</h4>
+                                                        <h4 class="modal-title">IMPORT FBA <a href="https://sellercentral.amazon.de/reportcentral/FBA_MYI_ALL_INVENTORY/1" target="_blank" class="btn btn-info">Link for download file</a></h4>
                                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                                                     </div>
                                                     <div class="modal-body">
