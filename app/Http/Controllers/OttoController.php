@@ -221,6 +221,9 @@ class OttoController extends Controller {
             $orders = $orders->resources;
             if(!empty($orders)){
                 foreach($orders as $index => $row){
+
+                    //echo '<pre>'; print_r($row); continue;
+
                     $multiorder = 0;
                     set_time_limit(0);
                     echo 'OrderId: <a href="'.url('orderView?is_search=1&keyword='.$row->orderNumber).'" target="_blank">'.$row->orderNumber.'</a></br>';
@@ -237,6 +240,9 @@ class OttoController extends Controller {
                     }
                     
                     foreach($row->positionItems as $k=>$item){
+
+                        if($row->fulfillmentStatus == 'ANNOUNCED') continue;
+
                         $sku = $item->product->sku;
                         $modelcode      = explode(" ", $sku)[0];
                         $product = Product::where(['modelcode'=>$modelcode])->first();
