@@ -241,7 +241,7 @@ class OttoController extends Controller {
                     
                     foreach($row->positionItems as $k=>$item){
 
-                        if($row->fulfillmentStatus == 'ANNOUNCED') continue;
+                        if($item->fulfillmentStatus == 'ANNOUNCED') continue;
 
                         $sku = $item->product->sku;
                         $modelcode      = explode(" ", $sku)[0];
