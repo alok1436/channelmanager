@@ -190,35 +190,37 @@
                                                 $country    = $countryArr[$k];
                                                 $asinorean  = $report['product-id'];
                                                 $sku        = $report['seller-sku'];
-                                                $result     = mysqli_query($conn, "SELECT * FROM product WHERE ean='".$asinorean."' OR ASIN='".$asinorean."';");
-                                                
-                                                echo $sku."----'.$country.'-----".$asinorean."---------".$price."-----------".$quantity."<br>";
-                                                if($result->num_rows > 0) {
-                                                    $current_product    = mysqli_fetch_object($result);
-                                                    $productid          = $current_product->productid;
-                                                    $ean                = $current_product->ean;
-                                                    $sql                = "SELECT * FROM prices WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
-    
-                                                    $result             = mysqli_query($conn, $sql);
+                                                if($sku == '10225 MM2'){
+                                                    $result     = mysqli_query($conn, "SELECT * FROM product WHERE ean='".$asinorean."' OR ASIN='".$asinorean."';");
                                                     
-                                                    if ($result->num_rows > 0) {
-                                                        if($quantity == "") {
-                                                            $quantity = 0;
+                                                    echo $sku."----'.$country.'-----".$asinorean."---------".$price."-----------".$quantity."<br>";
+                                                    if($result->num_rows > 0) {
+                                                        $current_product    = mysqli_fetch_object($result);
+                                                        $productid          = $current_product->productid;
+                                                        $ean                = $current_product->ean;
+                                                        $sql                = "SELECT * FROM prices WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
+        
+                                                        $result             = mysqli_query($conn, $sql);
+                                                        
+                                                        if ($result->num_rows > 0) {
+                                                            if($quantity == "") {
+                                                                $quantity = 0;
+                                                            }
+                                                            
+                                                            $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."',price ='".$price."', online_price='".$price."',last_update_date='".date('Y-m-d H:i:s')."', ebayActive=1 ,updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
+                                                            
+                                                            $result = mysqli_query($conn, $sql);
+                                                          //  echo $sql.'<br>';
+                                                        } else {
+                                                            // $warning    = "Warning: No price for ".$sku." in ".$country." of channel ".$channel_data->shortname;
+                                                            // $sql        = "SELECT * FROM tbl_open_activities WHERE issues='".$warning."'";
+                                                            // $result             = mysqli_query($conn, $sql);
+                                                            // if ($result->num_rows == 0) {
+                                                            //     $sql = "INSERT INTO tbl_open_activities SET dateTime ='".date('Y-m-d H:i:s')."', issues='".$warning."'";
+                                                            //     echo $sql."<br>";
+                                                            //     mysqli_query($conn, $sql);
+                                                            // }
                                                         }
-                                                        
-                                                        $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."',price ='".$price."', online_price='".$price."',last_update_date='".date('Y-m-d H:i:s')."', ebayActive=1 ,updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
-                                                        
-                                                        $result = mysqli_query($conn, $sql);
-                                                        echo $sql.'<br>';
-                                                    } else {
-                                                        // $warning    = "Warning: No price for ".$sku." in ".$country." of channel ".$channel_data->shortname;
-                                                        // $sql        = "SELECT * FROM tbl_open_activities WHERE issues='".$warning."'";
-                                                        // $result             = mysqli_query($conn, $sql);
-                                                        // if ($result->num_rows == 0) {
-                                                        //     $sql = "INSERT INTO tbl_open_activities SET dateTime ='".date('Y-m-d H:i:s')."', issues='".$warning."'";
-                                                        //     echo $sql."<br>";
-                                                        //     mysqli_query($conn, $sql);
-                                                        // }
                                                     }
                                                 } 
                                             }
