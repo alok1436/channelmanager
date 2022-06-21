@@ -805,7 +805,9 @@
                     window.open('otto/get/price?channelId='+channelforcheckprice, '_blank');
                 }else if(platform == 'Automatic Synch with: eBay') {
                     window.open('ebay/downloadReport?channelId='+channelforcheckprice, '_blank');
-                } else {
+                }else if(platform == 'Automatic Synch with: Woocommerce') {
+                    window.open('woo/downloadReport?channelId='+channelforcheckprice, '_blank');
+                }else{
                     window.open('api/price.php?channelforcheckprice='+channelforcheckprice, '_blank');
                 }
             }
@@ -816,10 +818,16 @@
 
             function getOnlineQuantity() {
                 var channelforcheckprice = document.getElementById("channelforcheckprice").value;
+                var option = $('#channelforcheckprice option:selected', this).attr('platform');
+                var element = $("#channelforcheckprice").find('option:selected'); 
+                var platform = element.attr("platform"); 
+                
                 if(channelforcheckprice == 5) {
                     window.open('api/cdiscountprice.php', '_blank');
                 }else if(channelforcheckprice == 17) {
                     window.open('otto/get/quantity?channelId='+channelforcheckprice, '_blank');
+                }else if(platform == 'Automatic Synch with: Woocommerce') {
+                    window.open('woo/downloadReport?channelId='+channelforcheckprice, '_blank');
                 }else {
                     window.open('api/quantity.php?channelforcheckprice='+channelforcheckprice, '_blank');
                 }

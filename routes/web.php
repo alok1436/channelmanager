@@ -237,3 +237,8 @@ Route::get('ebay/downloadReport',   			'EbayController@downloadReport')->name('e
 Route::get('ebay/updatePrice/{channelId}',      'EbayController@updatePrice')->name('ebay.updatePrice');
 Route::get('ebay/updateQuantity/{channelId}',   'EbayController@updateQuantity')->name('ebay.updateQuantity');
 Route::get('order/sync',   						'CronController@test');
+
+
+Route::get('woo/downloadReport',   			   'WooController@downloadReport')->name('woo.downloadReport');
+Route::get('woo/updatePrice/{channelId}',      'WooController@updatePrice')->name('woo.updatePrice');
+Route::get('woo/updateQuantity/{channelId}',   'WooController@updateQuantity')->name('woo.updateQuantity');
