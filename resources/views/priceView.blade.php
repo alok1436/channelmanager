@@ -283,18 +283,18 @@
                                 
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-9">
-                                            <select id="channelforcheckprice">
+                                        <div class="col-md-9" style="padding: 0;">
+                                            <select id="channelforcheckprice" class="form-control">
                                                 <option value="">Select a channel</option>
                                                 @foreach($channels as $channel)
                                                 <option value="{{$channel->idchannel}}" platform="{{ $channel->sync }}">{{$channel->shortname}}</option>
                                                 @endforeach
                                             </select>
-                                            <a onclick="getOnlinePrice()" class="btn btn-info">Automatic check price</a>
-                                            <a onclick="getOnlineQuantity()" class="btn btn-info">Automatic check quantity</a>
-                                            <a onclick="getWoocommercePriceandQuantity()" class="btn btn-info">Automatic check woocommerce</a>
-                                            <button data-toggle="modal" data-target="#myModalNew" class="btn btn-info">Download Prices/Quantity From Platform</button>  
-                                             <a href="createUploadFiles" class="btn btn-info">Generate prices/Quantity to Upload</a>
+                                            <a onclick="getOnlinePrice()" class="btn btn-info">Check price</a>
+                                            <a onclick="getOnlineQuantity()" class="btn btn-info">Check quantity</a>
+                                            <a onclick="getWoocommercePriceandQuantity()" class="btn btn-info">Check woocommerce</a>
+                                            <button data-toggle="modal" data-target="#myModalNew" class="btn btn-info">Download Prices/Quantity</button>  
+                                             <a href="createUploadFiles" class="btn btn-info">Gen. prices/Quantity to Upload</a>
                                             <button data-toggle="modal" data-target="#uploadShippingCosts" class="btn btn-info">Upload shipping costs</button>
                                              <a href="noneexistingproducts" class="btn btn-info">New products to align</a>
                                         </div>
