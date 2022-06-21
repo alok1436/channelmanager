@@ -206,9 +206,10 @@
                                                             $quantity = 0;
                                                         }
                                                         
-                                                        $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."',price ='".$price."', online_price='".$price."',last_update_date='".date('Y-m-d H:i:s')."', ebayActive=1,updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
-                                                         
+                                                        $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."',price ='".$price."', online_price='".$price."',last_update_date='".date('Y-m-d H:i:s')."', ebayActive=1 ,updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
+                                                        
                                                         $result = mysqli_query($conn, $sql);
+                                                        echo $sql.'<br>';
                                                     } else {
                                                         // $warning    = "Warning: No price for ".$sku." in ".$country." of channel ".$channel_data->shortname;
                                                         // $sql        = "SELECT * FROM tbl_open_activities WHERE issues='".$warning."'";
