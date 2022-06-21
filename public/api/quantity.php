@@ -181,7 +181,7 @@
                                           //     echo '<pre>'; print_r($reportId); echo '</pre>'; exit();    
                                 try { 
                                     $reports = $client->GetReport($reportId, $ItemCondition = null);
-                                    //echo '<pre>'; print_r($reports); echo '</pre>';
+                                    echo '<pre>'; print_r($reports); echo '</pre>';
                                     if(!empty($reports)) {
                                         foreach($reports as $report) {
                                             if(isset($report['seller-sku'])) {
@@ -190,7 +190,7 @@
                                                 $country    = $countryArr[$k];
                                                 $asinorean  = $report['product-id'];
                                                 $sku        = $report['seller-sku'];
-                                                if($sku == '10225 MM2'){
+                                                //if($sku == '10225 MM2'){
                                                     $result     = mysqli_query($conn, "SELECT * FROM product WHERE ean='".$asinorean."' OR ASIN='".$asinorean."';");
                                                     
                                                     echo $sku."----'.$country.'-----".$asinorean."---------".$price."-----------".$quantity."<br>";
@@ -222,7 +222,7 @@
                                                             // }
                                                         }
                                                     }
-                                                } 
+                                                //} 
                                             }
                                         }  
                                     }
