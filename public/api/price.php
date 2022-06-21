@@ -117,7 +117,7 @@
                             sleep(1);
                             try { 
                                 $prices = $client->GetMyPriceForASIN($asinArr, $ItemCondition = null);
-                                echo '<pre>'; print_r(implode(',',$asinArr)); echo '</pre>';
+                                echo '<pre>'; print_r($prices); echo '</pre>'; ///exit();
                                 for($i=0; $i<count($asinArr); $i++) {     
                                     $asin       = $asinArr[$i];
                                     $ean        = $productEANArr[$i];
