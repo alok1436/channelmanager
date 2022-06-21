@@ -732,7 +732,7 @@
             $(document).ready(function() {
                 $("#priceTable").DataTable({
                     fixedHeader: true,
-                    scrollY: "750px",
+                    scrollY: "900px",
                     scrollX: true,
                     scrollCollapse: true,
                     aaSorting: [],
