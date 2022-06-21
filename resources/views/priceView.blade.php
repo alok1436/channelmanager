@@ -282,16 +282,27 @@
                             <div class="card">
                                 
                                 <div class="card-body">
-                                    <select id="channelforcheckprice">
-                                        <option value="">Select a channel</option>
-                                        @foreach($channels as $channel)
-                                        <option value="{{$channel->idchannel}}" platform="{{ $channel->sync }}">{{$channel->shortname}}</option>
-                                        @endforeach
-                                    </select>
-                                    <a onclick="getOnlinePrice()" class="btn btn-info">Automatic check price</a>
-                                    <a onclick="getOnlineQuantity()" class="btn btn-info">Automatic check quantity</a>
-                                    <a onclick="getWoocommercePriceandQuantity()" class="btn btn-info">Automatic check woocommerce</a>
-                                    <button data-toggle="modal" data-target="#myModalNew" class="btn btn-info">Download Prices/Quantity From Platform</button>                  
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <select id="channelforcheckprice">
+                                                <option value="">Select a channel</option>
+                                                @foreach($channels as $channel)
+                                                <option value="{{$channel->idchannel}}" platform="{{ $channel->sync }}">{{$channel->shortname}}</option>
+                                                @endforeach
+                                            </select>
+                                            <a onclick="getOnlinePrice()" class="btn btn-info">Automatic check price</a>
+                                            <a onclick="getOnlineQuantity()" class="btn btn-info">Automatic check quantity</a>
+                                            <a onclick="getWoocommercePriceandQuantity()" class="btn btn-info">Automatic check woocommerce</a>
+                                            <button data-toggle="modal" data-target="#myModalNew" class="btn btn-info">Download Prices/Quantity From Platform</button>  
+                                             <a href="createUploadFiles" class="btn btn-info">Generate prices/Quantity to Upload</a>
+                                            <button data-toggle="modal" data-target="#uploadShippingCosts" class="btn btn-info">Upload shipping costs</button>
+                                             <a href="noneexistingproducts" class="btn btn-info">New products to align</a>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" name="searchKeyword" id="id_searchKeyword" value="<?php if(isset($_GET['keyword'])) echo $_GET['keyword']; ?>" class="form-control w-50">
+                                            <input type="button" value="Search" class="btn btn-danger" onclick="searchPrice()">
+                                        </div>
+                                    </div>
 
                                     <div class="modal fade" id="myModalNew" role="dialog">
                                         <div class="modal-dialog modal-lg">
@@ -334,8 +345,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="createUploadFiles" class="btn btn-info">Generate prices/Quantity to Upload</a>
-                                    <button data-toggle="modal" data-target="#uploadShippingCosts" class="btn btn-info">Upload shipping costs</button>
+                                   
                                     <div class="modal fade" id="uploadShippingCosts" role="dialog">
                                         <div class="modal-dialog modal-lg">
                                             <!-- Modal content-->
@@ -377,13 +387,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="noneexistingproducts" class="btn btn-info">New products to align</a>
+                                   
 
                                     <div class="row">
-                                        <div class="col-md-12" style="text-align: center; padding: 50px;">
-                                            <input type="text" name="searchKeyword" id="id_searchKeyword" value="<?php if(isset($_GET['keyword'])) echo $_GET['keyword']; ?>" class="form-control w-50">
-                                            <input type="button" value="Search" class="btn btn-danger" onclick="searchPrice()">
-                                        </div>
+                                        
                                         <div class="col-md-12 table-responsive">
                                             <style>
                                                 th {
