@@ -190,6 +190,9 @@
                                                 $country    = $countryArr[$k];
                                                 $asinorean  = $report['product-id'];
                                                 $sku        = $report['seller-sku'];
+
+                                                if($report['fulfillment-channel'] == 'AMAZON') continue;
+
                                                 //if($sku == '10225 MM2'){
                                                     $result     = mysqli_query($conn, "SELECT * FROM product WHERE ean='".$asinorean."' OR ASIN='".$asinorean."';");
                                                     
@@ -207,7 +210,7 @@
                                                                 $quantity = 0;
                                                             }
                                                             
-                                                            $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."',price ='".$price."', online_price='".$price."',last_update_date='".date('Y-m-d H:i:s')."', ebayActive=1 ,updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
+                                                            $sql    = "UPDATE prices SET online_quentity= ".$quantity.", last_update_qty_date='".date('Y-m-d H:i:s')."', ebayActive=1 ,updated_date='".date('Y-m-d H:i:s')."' WHERE channel_id=".$channel_data->idchannel." AND country='".$country."' AND sku='".$sku."'";
                                                             
                                                             $result = mysqli_query($conn, $sql);
                                                           //  echo $sql.'<br>';
