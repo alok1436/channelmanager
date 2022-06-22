@@ -132,7 +132,18 @@
                                         $online_shipping            = $prices[$asin]['BuyingPrice']['Shipping']['Amount'];
                                         $online_shipping_curr       = $prices[$asin]['BuyingPrice']['Shipping']['CurrencyCode'];
                                         $online_quantity            = $prices[$asin]['BuyingPrice']['Shipping']['CurrencyCode'];
-                                        
+                                        $FulfillmentChannel            = $prices[$asin]['FulfillmentChannel'];
+                                        //echo "SELECT * FROM tbl_fba WHERE sku='".$sku."'' AND channel_id=".$channel_data->idchannel;
+                                       
+                                        $sql    = "SELECT * FROM tbl_fba WHERE sku='".$sku."' AND channel='".$channel_data->idchannel."'";
+                                        $result = mysqli_query($conn, $sql);
+
+                                        if ($result->num_rows == 0 && $FulfillmentChannel=='AMAZON') {
+                                            $sql  ="INSERT INTO tbl_fba SET channel='".$channel_data->idchannel."', productid=".$productid.",sku ='".$sku."', asin ='".$asin."'"; 
+                                            mysqli_query($conn, $sql);
+                                        }
+
+
                                         $sql    = "SELECT * FROM prices WHERE channel_id=".$channel_data->idchannel." AND country='".$countryArr[$k]."' AND asin='".$asin."'";
                                         $result = mysqli_query($conn, $sql);
                                         $existingProductFlagArr[$i] = 1;
