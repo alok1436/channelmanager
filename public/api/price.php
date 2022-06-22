@@ -69,7 +69,9 @@
         $lastAsin               = "";
     
         $test = 0;
-    
+        
+        mysqli_query($conn, "UPDATE prices SET ebayActive=0 WHERE channel_id=".$channels[0]->idchannel."");
+        
         foreach($products as $product_data) {
             $count++;        
             if(count($asinArr) < 10) {
@@ -98,8 +100,7 @@
                     }
                 
                     if($channel_data->aws_acc_key_id!='' && $channel_data->aws_secret_key_id!='' && $channel_data->merchant_id!='' && $channel_data->market_place_id!='' && $channel_data->mws_auth_token!=''){
-
-                        mysqli_query($conn, "UPDATE prices SET ebayActive=0 WHERE channel_id=".$channel_data->idchannel."");
+ 
 
                         $marketplaceIds = ['A13V1IB3VIYZZH', 'A1F83G8C2ARO7P', 'A1PA6795UKMFR9', 'A1RKKUPIHCS9HS', 'APJ6JRA9NG5V4'];
                         $countryArr     = ['FR', 'UK', 'DE', 'ES', 'IT'];
