@@ -64,6 +64,9 @@
             }
            echo 'Getting orders for '.$row->shortname.'</br>';
             foreach ($orders as $order) {
+                
+                if($order['OrderStatus'] == 'Pending') continue; 
+
                 echo 'order id:'. $order['AmazonOrderId'].'</br>';
                 echo '<pre>'; print_r($orders); echo '</pre>'; 
                 set_time_limit(0);
@@ -330,7 +333,10 @@
                     $nextToken = '';
                     $nextTokenFlag = false;
                 }
-                foreach ($orders as $order) {                    
+                foreach ($orders as $order) {       
+
+                    if($order['OrderStatus'] == 'Pending') continue; 
+
                     if(isset($order['BuyerEmail'])) {
                         $BuyerEmail                  = $order['BuyerEmail'];
                     } else {
