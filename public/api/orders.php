@@ -65,7 +65,7 @@
            echo 'Getting orders for '.$row->shortname.'</br>';
             foreach ($orders as $order) {
                 echo 'order id:'. $order['AmazonOrderId'].'</br>';
-                // echo '<pre>'; print_r($orders); echo '</pre>';
+                echo '<pre>'; print_r($orders); echo '</pre>';
                 set_time_limit(0);
                 if(isset($order['BuyerEmail'])) {
                     $BuyerEmail                  = $order['BuyerEmail'];
