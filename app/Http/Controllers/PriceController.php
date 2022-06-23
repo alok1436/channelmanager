@@ -66,8 +66,8 @@ class PriceController extends Controller {
                     ->orwhere("product.namelong",       "like", '%'.$keyword.'%');
         }
         
-        $prices     = $query->paginate(400);
-
+        $prices     = $query->paginate(1);
+ 
         $none_products  = DB::table("tbl_none_product")
                         ->leftjoin("product", 'product.modelcode'   , '=', 'tbl_none_product.related_modelcode')
                         ->where('tbl_none_product.related_modelcode', "!=", "")

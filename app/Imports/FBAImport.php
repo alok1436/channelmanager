@@ -40,12 +40,16 @@ class FBAImport implements ToCollection
                             ->first();
 
         foreach ($rows as $key => $row) {
+
+
            // if(strtolower($row[4]) == "sellable") {
                 $existingFBA = DB::table('tbl_fba')
                         ->where('asin'      , '=', $row[2])
                         ->where('channel'   , '=', $channelId)
                         ->first();
- 
+                // if($row[2] == 'B07FW3TCFH'){
+                //     dd($existingFBA);
+                // }
                         
                 if(empty($existingFBA) && $row[8] == 'Yes') {
                     $this->nonExistingProducts[] = $row[2];

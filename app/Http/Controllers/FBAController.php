@@ -34,7 +34,7 @@ class FBAController extends Controller {
             }
         }
         $query->leftjoin('channel', 'channel.idchannel', '=', 'tbl_fba.channel');
-        $query->join('product', 'product.sku', '=', 'tbl_fba.productid');
+       // $query->join('product', 'product.sku', '=', 'tbl_fba.productid');
         $query->select('tbl_fba.*','channel.*');
         if(isset($_GET['keyword'])) {
             $keyword = $_GET['keyword'];
@@ -42,7 +42,7 @@ class FBAController extends Controller {
             $params['keyword']   = $keyword;
         }
         $rows = $query->get();
-
+ 
         foreach($rows as $row) {
             $warehouseQnt = DB::table('lagerstand')
                             ->leftjoin('product', 'lagerstand.productid', '=', 'product.productid')
@@ -119,7 +119,7 @@ class FBAController extends Controller {
                 $row->qnt = 0;
                 $row->quantitytosend = 0;
             }
-        }
+        } 
         $params['rows'] = $rows;
 
         $platformsShort  = DB::table('platform')

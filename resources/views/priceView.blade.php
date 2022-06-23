@@ -736,7 +736,8 @@
                     scrollX: true,
                     scrollCollapse: true,
                     aaSorting: [],
-                    pageLength: 500
+                    pageLength: 500,
+                     
                 });
 
                 $(document).on("click",".td-field,.dtr-data",function(event) {
