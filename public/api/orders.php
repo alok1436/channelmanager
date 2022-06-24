@@ -63,12 +63,13 @@
                 $nextTokenFlag = false;
             }
            echo 'Getting orders for '.$row->shortname.'</br>';
+            echo '<pre>'; print_r($orders); echo '</pre>'; 
             foreach ($orders as $order) {
                 
                 if($order['OrderStatus'] == 'Pending') continue; 
 
                 echo 'order id:'. $order['AmazonOrderId'].'</br>';
-                echo '<pre>'; print_r($orders); echo '</pre>'; 
+               
                 set_time_limit(0);
                 if(isset($order['BuyerEmail'])) {
                     $BuyerEmail                  = $order['BuyerEmail'];
@@ -333,6 +334,9 @@
                     $nextToken = '';
                     $nextTokenFlag = false;
                 }
+
+                 echo '<pre>'; print_r($orders); echo '</pre>'; 
+                 
                 foreach ($orders as $order) {       
 
                     if($order['OrderStatus'] == 'Pending') continue; 

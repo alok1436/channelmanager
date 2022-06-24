@@ -24,6 +24,7 @@ use App\SimpleXLSX;
 use GuzzleHttp\Client;
 use DateTime;
 use App\Models\Channel;
+use App\Models\FBA;
 use App\Models\Price;
 use App\Models\Product;
 use App\Models\NoneProduct;
@@ -55,6 +56,7 @@ class PriceServiceController extends Controller {
                     try{
                         
                         $product = ProductStore::find($request->item_id)->toArray();
+
                         if($product){
                             $data = [];
                             if($request->price > 0){
@@ -68,13 +70,17 @@ class PriceServiceController extends Controller {
                             if(!$product['manage_stock']){
                                 $data['manage_stock'] = true;
                             }
-                            $data['stock_quantity'] = $request->stock_quantity;
+
+                            $isFba = FBA::where(['sku'=>$request->sku, 'channel'=>$idchannel])->count();
                             
+                            if($isFba == 0){
+                                $data['stock_quantity'] = $request->stock_quantity;
+                            }
+
                             if(count($data) > 0){
                                 $isupdated = ProductStore::update($request->item_id, $data);
                                 return response()->json(['woocommerce update'=>$data,'count'=>count($isupdated)]);
-                            }
-                            
+                            }         
                         }else{
                             return response()->json(['error'=>'Item not found']);
                         }

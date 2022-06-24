@@ -24,6 +24,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use App\SimpleXLSX;
 use GuzzleHttp\Client;
 use DateTime;
+use App\Models\FBA;
 use App\Models\Price;
 use App\Models\Country;
 use App\Models\Channel;
@@ -475,6 +476,9 @@ class EbayController extends Controller {
         
         if($request->quantity <= 0) return;
         
+        $isFba = FBA::where(['sku'=>$request->sku, 'channel'=>$idchannel])->count();
+        if($isFba > 0) return; 
+
         $channel = Channel::find($idchannel);
         $response = $this->getAccessTokenByRefreshtoken($channel);
         if(!empty($response)){

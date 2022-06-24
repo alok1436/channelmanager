@@ -18,3 +18,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/wcUpdateStoreData/{channelId}',    'PriceServiceController@wcUpdateStoreData')->name('wcUpdateStoreData');
+Route::get('/wcUpdateStoreData/{channelId}',    'PriceServiceController@wcUpdateStoreData')->name('wcUpdateStoreData');

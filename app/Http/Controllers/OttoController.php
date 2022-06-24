@@ -24,6 +24,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use App\SimpleXLSX;
 use GuzzleHttp\Client;
 use DateTime;
+use App\Models\FBA;
 use App\Models\Price;
 use App\Models\Channel;
 use App\Models\Product;
@@ -566,7 +567,9 @@ class OttoController extends Controller {
                 echo "Invalid price";
             }
 
-            if($request->filled('quantity') && $request->quantity > 0){
+            $isFba = FBA::where(['sku'=>$request->sku, 'channel'=>$channel_id])->count();
+
+            if($request->filled('quantity') && $request->quantity > 0 && $isFba == 0){
                 $this->updateQuantity($request, $token->access_token);
             }else{
                 echo "Invalid quantity";
