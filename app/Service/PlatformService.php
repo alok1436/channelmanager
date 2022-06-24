@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Service;
+use App\Models\FBA;
 use App\Models\Channel;
 use App\Models\OrderItem;
 use App\Models\LagerStand;
@@ -32,6 +33,9 @@ class PlatformService
     {
         if(!$order->product) return; //check if product is available
 
+        $isFba = FBA::where(['sku'=>$order->product->sku, 'channel'=>$channel->idchannel])->count();
+        if($isFba > 0) return;
+
         $client = new \MCS\MWSClient([
             'Marketplace_Id'    => $this->getMarketPlaceId($channel->country),
             'Seller_Id'         => $channel->merchant_id,
@@ -55,6 +59,7 @@ class PlatformService
     {
         if($order->order_item_id != ''){
             $fields = array();
+            $fields['sku']  = $order->product->sku;
             $fields['itemId'] = $order->order_item_id;
             $fields['quantity'] = $quantity;
             $fields_string = http_build_query($fields); 
@@ -71,7 +76,10 @@ class PlatformService
     public function OttoQuantityUpdate(OrderItem $order, Channel $channel, $quantity)
     {   
         if($order->product){
-            $response = $this->otto->updateQuantityUsingCron($order->product->sku, $quantity, $channel);
+            $isFba = FBA::where(['sku'=>$order->product->sku, 'channel'=>$channel->idchannel])->count();
+            if($isFba == 0){
+                $response = $this->otto->updateQuantityUsingCron($order->product->sku, $quantity, $channel);
+            }
         }
     }
 
@@ -94,8 +102,13 @@ class PlatformService
                     if(!$product['manage_stock']){
                         $data['manage_stock'] = true;
                     }
-                    $data['stock_quantity'] =   $quantity;
+
+                    $isFba = FBA::where(['sku'=>$order->product->sku, 'channel'=>$channel->idchannel])->count();
                     
+                    if($isFba == 0){
+                        $data['stock_quantity'] =   $quantity;
+                    }
+
                     if(count($data) > 0){
                         $isupdated = WooProduct::update($order->order_item_id, $data);
                     }

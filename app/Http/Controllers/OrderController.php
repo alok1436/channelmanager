@@ -193,7 +193,9 @@ class OrderController extends Controller
 
         $collection->where('multiorder','0');
 
-        $orders = $collection->orderBy('idorder','desc')->groupBy('referenceorder')->paginate(100);
+        $orders = $collection->orderBy('idorder','desc')->groupBy('referenceorder')->paginate(200);
+
+        $orders->appends($request->all());
        // dd($orders);
         $modalWares = DB::table('orderitem')
                     ->leftjoin('warehouse', 'warehouse.idwarehouse', '=', 'orderitem.idwarehouse')

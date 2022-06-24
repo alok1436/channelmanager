@@ -109,7 +109,10 @@
                     
                     $newquantity = $price->can_sell_online;
 
-                    if($price->online_quentity != $newquantity && $newquantity >= 0) {
+
+                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku=".$price->sku." AND channel=".$idchannel);
+
+                    if($price->online_quentity != $newquantity && $newquantity >= 0 && $checkfba->num_rows == 0) {
                         $newquantity = [$price->sku => $newquantity];
                         array_push($amazonquantities, $newquantity);
                         $client = new MCS\MWSClient([
@@ -208,12 +211,13 @@
                         echo "<br>";
                     }
                    
-                    
+                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku=".$price->sku." AND channel=".$idchannel);
                    
-                    if($newquantity > 0 && $newquantity !='') {
+                    if($newquantity > 0 && $newquantity !='' && $checkfba->num_rows == 0) {
                         echo 'Updating quantity: '.$price->shortname."45454545".$price->itemId."--------".$price->sku."--------".$newquantity."<br>";
                         
                         $fields = array();
+                        $fields['sku'] = $price->sku;
                         $fields['itemId'] = $price->itemId;
                         $fields['quantity'] = $newquantity;
                         $fields_string = http_build_query($fields); 
@@ -260,7 +264,9 @@
                         $str .= 'Price="'.$price->price.'"';
                     }
                     $newquantity  = 1;
-                    if($newquantity >= 0){
+
+                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku=".$price->sku." AND channel=".$idchannel);
+                    if($newquantity >= 0 && $checkfba->num_rows == 0){
                         $str .= ' Stock="'.$newquantity.'"';
                         $online['online_quentity'] = $newquantity;
                     }
@@ -385,6 +391,7 @@
                        $online['online_price'] = $fields['price'] = $price->price;
                     }
                     
+
                     $online['online_quentity'] = $fields['stock_quantity'] = $newquantity;
                     echo 'woocommerce-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'<br>';
                     $ch = curl_init();
