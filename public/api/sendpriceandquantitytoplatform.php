@@ -110,8 +110,7 @@
                     $newquantity = $price->can_sell_online;
 
 
-                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku=".$price->sku." AND channel=".$idchannel);
-
+                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku='".$price->sku."' AND channel=".$idchannel);
                     if($price->online_quentity != $newquantity && $newquantity >= 0 && $checkfba->num_rows == 0) {
                         $newquantity = [$price->sku => $newquantity];
                         array_push($amazonquantities, $newquantity);
@@ -210,10 +209,8 @@
                         
                         echo "<br>";
                     }
-                   
-                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku=".$price->sku." AND channel=".$idchannel);
-                   
-                    if($newquantity > 0 && $newquantity !='' && $checkfba->num_rows == 0) {
+
+                    if($newquantity > 0 && $newquantity !='') {
                         echo 'Updating quantity: '.$price->shortname."45454545".$price->itemId."--------".$price->sku."--------".$newquantity."<br>";
                         
                         $fields = array();
@@ -265,7 +262,7 @@
                     }
                     $newquantity  = 1;
 
-                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku=".$price->sku." AND channel=".$idchannel);
+                    $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku='".$price->sku."' AND channel=".$idchannel);
                     if($newquantity >= 0 && $checkfba->num_rows == 0){
                         $str .= ' Stock="'.$newquantity.'"';
                         $online['online_quentity'] = $newquantity;

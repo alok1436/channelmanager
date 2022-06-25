@@ -596,8 +596,16 @@
                                                         <td></td>
                                                         @endif
 
-                                                        <td>{{$prices_data->warehouseQnt}}</td>
-                                                        <td>{{$prices_data->can_sell_online}}</td>
+                                                        <td>
+                                                            @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                                {{$prices_data->warehouseQnt}}
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                                {{$prices_data->can_sell_online}}
+                                                            @endif
+                                                        </td>
                                                         @if($prices_data->idfba == null || $prices_data->idfba == "")
                                                             @if($prices_data->warehouseQnt >= $prices_data->quantity_strategy)
                                                                 @if($prices_data->online_quentity == $prices_data->quantity_strategy)
