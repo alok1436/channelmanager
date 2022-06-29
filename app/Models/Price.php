@@ -37,4 +37,8 @@ class Price extends Model
     public function product(){
         return $this->hasOne('App\Models\Product', 'productid', 'product_id');
     }
+
+    public function channel(){
+        return $this->hasOne('App\Models\Channel', 'idchannel', 'channel_id');
+    }
 }

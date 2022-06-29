@@ -44,7 +44,7 @@ class PlatformService
             'MWSAuthToken'      => $channel->mws_auth_token // Optional. Only use this key if you are a third party user/developer
         ]);
       
-        try { 
+        try {
             $status = $client->updateStock([$order->product->sku => $quantity]);  
             if(isset($status['FeedProcessingStatus']) && $status['FeedProcessingStatus'] == "_SUBMITTED_") {
                return true;
@@ -69,7 +69,10 @@ class PlatformService
             curl_setopt($ch,CURLOPT_URL, $url);
             $res = curl_exec($ch);
             curl_close($ch);
+
+            return true;
         }
+        return false;
     }
 
 
@@ -79,8 +82,10 @@ class PlatformService
             $isFba = FBA::where(['sku'=>$order->product->sku, 'channel'=>$channel->idchannel])->count();
             if($isFba == 0){
                 $response = $this->otto->updateQuantityUsingCron($order->product->sku, $quantity, $channel);
+                return true;
             }
         }
+        return false;
     }
 
     public function wooQuantityUpdate(OrderItem $order, Channel $channel, $quantity)
@@ -111,16 +116,16 @@ class PlatformService
 
                     if(count($data) > 0){
                         $isupdated = WooProduct::update($order->order_item_id, $data);
+                        return true;
                     }
                     
-                }else{
-                    return response()->json(['error'=>'Item not found']);
                 }
             }catch (\Exception $e) { 
-                    echo 'Message: ' .$e->getMessage(); 
+                    echo 'Message: ' .$e->getMessage();
+                    return false;
             } 
-        }else{
-            return response()->json(['error'=>'Item Id not found']);
         }
+
+        return false;
     }
 }

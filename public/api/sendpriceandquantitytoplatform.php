@@ -409,7 +409,7 @@
                     }
                 }else if($price->platformname == 'Otto') {
                     $warehouseQnt = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM lagerstand WHERE productid=".$productId." AND idwarehouse=".$price->warehouse));
-                    
+                    //price quantity
                     if($price->quantity_strategy == 1) {
                         $buffer = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM product WHERE productid=".$productId));
                         if(!empty($buffer) && $buffer->min_sell != null) {
@@ -439,7 +439,7 @@
                     }
 
                     $online['sku'] = $price->sku;
-                    $online['quantity'] = $fields['quantity'] = $newquantity;
+                    $online['online_quentity'] = $fields['quantity'] = $newquantity;
                     
                     echo 'otto-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'<br>';
                     
