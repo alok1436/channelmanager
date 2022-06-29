@@ -166,7 +166,9 @@
                                                 mysqli_query($conn, $sql);
                                             }
     
-                                            $sql    = "SELECT * FROM prices WHERE channel_id=".$channel_data->idchannel." AND country='".$countryArr[$k]."' AND asin='".$asin."' AND isFba='".$FulfillmentChannel."'";
+                                            echo $sql    = "SELECT * FROM prices WHERE channel_id=".$channel_data->idchannel." AND country='".$countryArr[$k]."' AND asin='".$asin."' AND (isFba='".$FulfillmentChannel."' OR isFba IS NULL)";
+                                            
+                                            echo "<br>";
                                             
                                             $result = mysqli_query($conn, $sql);
                                             $existingProductFlagArr[$i] = 1;
