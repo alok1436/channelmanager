@@ -57,29 +57,30 @@ class CronController extends Controller
     
             $price = Price::where(['product_id'=>$order->productid])->first();
             if($price){
- 
+                $can_sell_online = 0;
+                
                 if($price->channel && $price->channel->quantity_strategy == 1) {
                     $buffer =  Product::where(['productid'=>$order->productid])->first();
- 
+                    $indicated_quantity = 0;
                     if(!empty($buffer) && $buffer->min_sell != null) {
-                        $price->indicated_quantity = $buffer->min_sell;
+                        $indicated_quantity = $buffer->min_sell;
                     }
-                    $price->can_sell_online = $price->indicated_quantity;
+                    $can_sell_online = $indicated_quantity;
 
                     if(!empty($warehouseQnt)) {
-                        if($warehouseQnt->quantity >= $price->indicated_quantity){
-                            $price->can_sell_online = $price->indicated_quantity;
+                        if($warehouseQnt->quantity >= $indicated_quantity){
+                            $can_sell_online = $indicated_quantity;
                         }else{
-                            $price->can_sell_online = $warehouseQnt->quantity;
+                            $can_sell_online = $warehouseQnt->quantity;
                         }
                     }
                 }else if($price->channel->quantity_strategy == 3) {
                     if(!empty($warehouseQnt)) {
-                        $price->can_sell_online = $warehouseQnt->quantity;
+                        $can_sell_online = $warehouseQnt->quantity;
                     }
                 }
       
-                $quantity =  $price->can_sell_online;
+                $quantity =  $can_sell_online;
  
                 if(isset($channel) && isset($channel->platform)){
  

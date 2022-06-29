@@ -5664,7 +5664,8 @@ $options = [
                 $warehouse          = $channel->warehouse;
 
                 foreach($orders as $order) {
-                    $referenceorder         = $order->id; 
+                    echo $referenceorder         = $order->id; 
+                    echo "<br>";
                     $platformname           = 'Woocommerce';
                     $sum                    = $order->total;
                     $currency               = $order->currency;
@@ -5709,13 +5710,12 @@ $options = [
                     }
 
                     $items                  = $order->line_items;
-
+                    if($order->id == '29479'){
+                        dd($items);
+                    }
                     foreach($items as $item) {
                         $sku            = $item->sku;
-                        if($sku == "10452 S27kit") {
-                            print_r($order);
-                        }
-
+                        
                         $orderItemId    = $item->id;
                         $quantity       = $item->quantity;
                         $modelcode      = explode(" ", $sku)[0];
