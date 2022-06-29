@@ -71,12 +71,12 @@ class PriceServiceController extends Controller {
                                 $data['manage_stock'] = true;
                             }
 
-                            $isFba = FBA::where(['sku'=>$request->sku, 'channel'=>$idchannel])->count();
+                            $isFba = FBA::where(['sku'=>$request->sku, 'channel'=>$channel->idchannel])->count();
                             
                             if($isFba == 0){
                                 $data['stock_quantity'] = $request->stock_quantity;
                             }
-
+            
                             if(count($data) > 0){
                                 $isupdated = ProductStore::update($request->item_id, $data);
                                 return response()->json(['woocommerce update'=>$data,'count'=>count($isupdated)]);

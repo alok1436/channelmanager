@@ -492,7 +492,7 @@
                                                         <td></td>
                                                         <td></td>
                                                         <td>
-                                                            @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                            @if($prices_data->isFba == "MERCHANT")
                                                             <select name="shipping_model" id="shipping_model_{{$prices_data->product_id}}" class="form-control shipping_model" data-id="{{$prices_data->product_id}}" data-fba="0">
                                                             @else
                                                             <select name="shipping_model" id="shipping_model_{{$prices_data->product_id}}" class="form-control shipping_model" data-id="{{$prices_data->product_id}}" data-fba="1">
@@ -569,7 +569,7 @@
                                                                 </select>
                                                             </div>
                                                         </td>
-                                                        @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                        @if($prices_data->isFba == "MERCHANT")
                                                         <td>No</td>
                                                         @else
                                                         <td>Yes</td>
@@ -580,33 +580,33 @@
                                                         <td id="tdstatusprice_{{$prices_data->product_id.$prices_data->channel_id.$prices_data->country}}" style="background-color: #ffcccb;">No</td>
                                                         @endif
                                                         <td>{{$prices_data->shipping_status}}</td>
-                                                        @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                        @if($prices_data->isFba == "MERCHANT")
                                                         <td>{{$prices_data->online_quentity > 0 ? $prices_data->online_quentity : 0}}</td>
                                                         @else
                                                         <td></td>
                                                         @endif
-                                                        @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                        @if($prices_data->isFba == "MERCHANT")
                                                         <td>{{$prices_data->last_update_qty_date}}</td>
                                                         @else
                                                         <td></td>
                                                         @endif
-                                                        @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                        @if($prices_data->isFba == "MERCHANT")
                                                         <td>{{$prices_data->indicated_quantity}}</td>
                                                         @else
                                                         <td></td>
                                                         @endif
 
                                                         <td>
-                                                            @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                            @if($prices_data->isFba == "MERCHANT")
                                                                 {{$prices_data->warehouseQnt}}
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                            @if($prices_data->isFba == "MERCHANT")
                                                                 {{$prices_data->can_sell_online}}
                                                             @endif
                                                         </td>
-                                                        @if($prices_data->idfba == null || $prices_data->idfba == "")
+                                                        @if($prices_data->isFba == "MERCHANT")
                                                             @if($prices_data->warehouseQnt >= $prices_data->quantity_strategy)
                                                                 @if($prices_data->online_quentity == $prices_data->quantity_strategy)
                                                                 <td style="background-color: lightgreen;">Yes</td>
@@ -727,7 +727,7 @@
         <script>
             function deletePrice(priceId, isactive){
                 if(isactive == 0){
-                    if(confirm('are you sure, you want to delete?')){
+                    if(confirm('Do you want to delete this line?')){
                         location.href= "{{ url('price/delete') }}/"+priceId;   
                     }
                 }

@@ -19,13 +19,13 @@
     
     //.' and prices.channel_id=5' //channel.idchannel = 17 AND 
     if($productId != "") {
-        $sql    = "SELECT prices.*, channel.*, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel WHERE  prices.product_id=".$productId;
+         $sql    = "SELECT prices.*, channel.*, platform.shortname as platformname, prices.country AS marketplaceCountry FROM prices INNER JOIN channel ON prices.channel_id=channel.idchannel INNER JOIN platform ON channel.platformid=platform.platformid WHERE prices.product_id=".$productId;
         $result = mysqli_query($conn, $sql); 
 
-       // echo $result->num_rows; exit();
+        
         if($result->num_rows > 0) {
             while($price  = mysqli_fetch_object($result)) {
-               // echo '<pre>'; print_r($price); echo '</pre>'; continue;
+                //echo '<pre>'; print_r($price); echo '</pre>'; continue;
                 $price->indicated_quantity = 0;
                 $price->warehouse_quantity = 0;
                 $price->can_sell_online = 0;
@@ -33,7 +33,7 @@
                 $amazonprices       = [];
                 $amazonquantities   = [];
                 //echo '<pre>'; print_r($price);echo '</pre>';
-                if($price->aws_acc_key_id != NULL || $price->aws_secret_key_id != NULL || $price->merchant_id != NULL || $price->market_place_id != NULL || $price->mws_auth_token != NULL) {  
+                if($price->platformname == 'Amazon') {  
                     $aws_acc_key_id     = $price->aws_acc_key_id;  // these prod keys are different from sandbox keys
                     $aws_secret_key_id  = $price->aws_secret_key_id;  // these prod keys are different from sandbox keys
                     $merchant_id        = $price->merchant_id;
@@ -113,7 +113,9 @@
                     $checkfba = mysqli_query($conn, "SELECT * FROM tbl_fba WHERE sku='".$price->sku."' AND channel=".$idchannel);
                     if($price->online_quentity != $newquantity && $newquantity >= 0 && $checkfba->num_rows == 0) {
                         $newquantity = [$price->sku => $newquantity];
+                        
                         array_push($amazonquantities, $newquantity);
+                        
                         $client = new MCS\MWSClient([
                             'Marketplace_Id'    => $market_place_id,
                             'Seller_Id'         => $merchant_id,
@@ -141,7 +143,7 @@
                         }    
                     }
                     
-                } else if($price->devid != NULL || $price->appid != NULL || $price->certid != NULL || $price->refresh_token != NULL) {
+                } else if($price->platformname == 'Ebay') {
 
                   
                     $devID              = $price->devid;
@@ -230,7 +232,7 @@
                         mysqli_query($conn, "UPDATE prices online_quentity=".$newquantity." WHERE price_id = ".$price->price_id);
                     }
                      
-                } else if($price->channel_id == 5) {
+                } else if($price->platformname == 'cDiscount') {
                     $warehouseQnt = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM lagerstand WHERE productid=".$productId." AND idwarehouse=".$price->warehouse));
        
                     if($price->quantity_strategy == 1) {
@@ -357,7 +359,7 @@
                             update_data(array('price_id'=>$price->price_id), $online, 'prices',  $conn);
                         }
                     }
-                } else if($price->channel_id == 14) {
+                } else if($price->platformname == 'Woocommerce') {
                     $warehouseQnt = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM lagerstand WHERE productid=".$productId." AND idwarehouse=".$price->warehouse));
                     
                     if($price->quantity_strategy == 1) {
@@ -405,7 +407,7 @@
                     if(count($online) > 0){
                         update_data(array('price_id'=>$price->price_id), $online, 'prices',  $conn);
                     }
-                }else if($price->channel_id == 17) {
+                }else if($price->platformname == 'Otto') {
                     $warehouseQnt = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM lagerstand WHERE productid=".$productId." AND idwarehouse=".$price->warehouse));
                     
                     if($price->quantity_strategy == 1) {
