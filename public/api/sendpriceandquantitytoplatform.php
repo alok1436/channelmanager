@@ -392,7 +392,7 @@
                     
 
                     $online['online_quentity'] = $fields['stock_quantity'] = $newquantity;
-                    echo 'woocommerce-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'<br>';
+                    echo 'woocommerce-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'</br>';
                     $ch = curl_init();
                     $url = $siteUrl."/api/wcUpdateStoreData/".$price->channel_id;
                     $fields_string = http_build_query($fields);

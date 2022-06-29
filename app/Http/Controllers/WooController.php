@@ -99,7 +99,8 @@ class WooController extends Controller {
                                         'created_date'=> date('Y-m-d H:i:s'),
                                         'updated_date'=> date('Y-m-d H:i:s'),
                                         'last_update_qty_date'=> date('Y-m-d H:i:s'),
-                                        'ebayActive'=>1
+                                        'ebayActive'=>1,
+                                        'itemId'=> $row->id,
                                     ]);
                                 }else{
                                     $updated = Price::where('price_id', $priceRow->price_id)->update([
@@ -109,7 +110,8 @@ class WooController extends Controller {
                                         'updated_date'=> date('Y-m-d H:i:s'),
                                         'online_quentity'=> $row->stock_quantity,
                                         'last_update_qty_date'=> date('Y-m-d H:i:s'),
-                                        'ebayActive'=>1
+                                        'ebayActive'=>1,
+                                        'itemId'=> $row->id,
                                     ]);
                                 }
                             }else{
