@@ -5626,15 +5626,16 @@ $options = [
         }
     }
     public function getWoocommerceOrders() {
-
+ 
         $options = [
-
             'per_page' => 100, // Or your desire number
-
-            'page' => 1
-
+            'page'  => 1,
+            //'after' =>date('Y-m-d',strtotime("last week monday")).'T00:00:00',
+            //'before'=>date('Y-m-d',strtotime("last week sunday")).'T23:59:59'
+            'after' =>date('Y-m-d',strtotime("- 7 days")).'T00:00:00',
+            'before'=>date('Y-m-d').'T23:59:59'
         ];
-
+  
         $channels = DB::table("channel")
                         ->leftjoin("platform", "channel.platformid", "=", "platform.platformid")
                         ->where("platform.platformtype", "=", "Woocommerce")
@@ -5664,8 +5665,8 @@ $options = [
                 $warehouse          = $channel->warehouse;
 
                 foreach($orders as $order) {
-                    echo $referenceorder         = $order->id; 
-                    echo "<br>";
+                    $referenceorder         = $order->id; 
+                   // echo "<br>";
                     $platformname           = 'Woocommerce';
                     $sum                    = $order->total;
                     $currency               = $order->currency;
