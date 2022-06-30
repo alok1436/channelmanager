@@ -100,13 +100,13 @@ class CronController extends Controller
 
                         $status = $this->platformService->wooQuantityUpdate($order, $channel, $quantity); 
                     }
-                }
 
-                if($status == true){
-                    $price->online_quentity = $quantity;
-                    $price->save();
-                }
+                    if($status == true){
+                        $price->online_quentity = $quantity;
+                        $price->save();
+                    }
 
+                }
                 $order->is_cron_sync = 1;
                 $order->save();
             }

@@ -5710,9 +5710,7 @@ $options = [
                     }
 
                     $items                  = $order->line_items;
-                    if($order->id == '29479'){
-                        dd($items);
-                    }
+                    $multiorder = 0;
                     foreach($items as $item) {
                         $sku            = $item->sku;
                         
@@ -5764,6 +5762,7 @@ $options = [
                                         'sync'                  => 'Synch with Woocommerce',
                                         'productid'             => $productId,
                                         //'carriername'           => $carref, 
+                                        'multiorder'            => $multiorder == 0 ? "0" : $id,
                                         'tracking'              => $tracking,
                                         'customer'              => $customer,
                                         'address1'              => $address_1,
@@ -5814,7 +5813,7 @@ $options = [
                                     ->insert([
                                         'idorderplatform'           => $id,
                                         'registeredtolagerstandok'  => $registeredtolagerstandok, 
-                                        'multiorder'                => $id,
+                                        'multiorder'                => $multiorder == 0 ? "0" : $id,
                                         'referenceorder'            => $id,
                                         'sync'                      => 'Synch with Woocommerce', 
                                         'idcompany'                 => $idcompany,
@@ -5860,6 +5859,7 @@ $options = [
                             DB::table(($idpayment !='' ? "orderitem" : "order_to_pay"))
                                 ->insert([
                                     'idorderplatform'           => $id,
+                                    'multiorder'                => $multiorder == 0 ? "0" : $id,
                                     'registeredtolagerstandok'  => $registeredtolagerstandok, 
                                     'referenceorder'            => $id,
                                     'sync'                      => 'Synch with Woocommerce',
@@ -5908,7 +5908,9 @@ $options = [
                                     'trackinguploadedok'        => $trackinguploadedok, 
                                     'printedshippingok'         => $print_shipping
                                 ]);
-                        }             
+                        }  
+
+                        $multiorder++;           
                     }
                 }
                 if(count($noneProducts) > 0) {
