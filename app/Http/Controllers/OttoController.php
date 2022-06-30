@@ -588,14 +588,6 @@ class OttoController extends Controller {
                     "standardPrice": {
                       "amount": '.$request->price.',
                       "currency": "EUR"
-                    },
-                    "sale": {
-                      "salePrice": {
-                        "amount": '.$request->price.',
-                        "currency": "EUR"
-                      },
-                      "startDate": "'.date("Y-m-d\TH:i:s.000\Z").'",
-                      "endDate": "'.date("Y-m-d\TH:i:s.000\Z").'"
                     }
                   }
                 ]';
@@ -609,6 +601,19 @@ class OttoController extends Controller {
               ]
             ]);
             $response = json_decode($response->getBody()->getContents());
+            if(!empty($response->links)){
+                foreach ($response->links as $key => $link) {
+                    if($link->rel == 'succeeded'){
+                        $res = $client->get('https://api.otto.market'.$link->href,
+                        [
+                            'headers' => [
+                                'Authorization' => 'Bearer ' . $response->access_token,
+                            ],
+                        ]);
+                        $results = json_decode($res->getBody()->getContents());
+                    }
+                }
+            }
             return $response;
         }catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
