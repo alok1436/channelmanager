@@ -557,10 +557,10 @@ class OttoController extends Controller {
     }
 
     public function updatePriceAndQuantity(Request $request, $channel_id)
-    {
+    {    //dd($request->all());
         $channel = Channel::find($channel_id);
         if($channel){
-            $token = $this->getAccessToken( $order->channel );
+            $token = $this->getAccessToken( $channel );
             if($request->filled('price') && $request->price > 0){
                 $this->updatePrice($request, $token->access_token);
             }else{
@@ -568,7 +568,7 @@ class OttoController extends Controller {
             }
 
             $isFba = FBA::where(['sku'=>$request->sku, 'channel'=>$channel_id])->count();
-
+ 
             if($request->filled('quantity') && $request->quantity > 0 && $isFba == 0){
                 $this->updateQuantity($request, $token->access_token);
             }else{
@@ -591,7 +591,7 @@ class OttoController extends Controller {
                     }
                   }
                 ]';
-
+ 
             $response = $client->post('https://api.otto.market/v2/products/prices', [
               'body' => $body,
               'headers' => [
@@ -607,7 +607,7 @@ class OttoController extends Controller {
                         $res = $client->get('https://api.otto.market'.$link->href,
                         [
                             'headers' => [
-                                'Authorization' => 'Bearer ' . $response->access_token,
+                                'Authorization' => 'Bearer ' . $token,
                             ],
                         ]);
                         $results = json_decode($res->getBody()->getContents());
@@ -627,19 +627,19 @@ class OttoController extends Controller {
     { 
         try {
             $client = new \GuzzleHttp\Client();
+            $date = date('Y-m-d');
             $body = '[
                   {
-                    "lastModified": "'.date("Y-m-d\TH:i:s.000\Z").'"
+                    "lastModified": "'.$date.'T13:34:02.513+0000",
                     "quantity": '.$request->quantity.',
-                    "sku": "'.$request->sku.'",
+                    "sku": "'.$request->sku.'"
                   }
                 ]';
-
+ 
             $response = $client->post('https://api.otto.market/v2/quantities', [
               'body' => $body,
               'headers' => [
                 'Content-Type' => 'application/json', 
-                'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' .$token,
               ]
             ]);

@@ -71,7 +71,7 @@
         $test = 0;
         
         mysqli_query($conn, "UPDATE prices SET ebayActive=0 WHERE channel_id=".$channels[0]->idchannel."");
-        mysqli_query($conn, "DELETE FROM prices WHERE channel_id=".$channels[0]->idchannel."");
+        //mysqli_query($conn, "DELETE FROM prices WHERE channel_id=".$channels[0]->idchannel."");
         
         foreach($products as $product_data) {
             $count++;        
@@ -120,7 +120,7 @@
                            // $asinArr = ['B00BLGO0FS'];
                             try { 
                                 $pricesList = $client->GetMyPriceForASIN($asinArr , $ItemCondition = null);
-                                
+                                echo "<pre>"; print_r($pricesList); echo "</pre>";
                                 for($i=0; $i<count($asinArr); $i++) {     
                                     $asin       = $asinArr[$i];
                                     $ean        = $productEANArr[$i];
@@ -138,7 +138,7 @@
                                     }
                                     
                                    
-                                    // echo "<pre>"; print_r($priceArray); echo "</pre>";
+                                   //echo "<pre>"; print_r($priceArray); echo "</pre>";
                                     // continue;
 
                                     foreach($priceArray as $prices){       
@@ -151,13 +151,13 @@
                                             $online_quantity            = $prices['BuyingPrice']['Shipping']['CurrencyCode'];
                                             $FulfillmentChannel         = $prices['FulfillmentChannel'];
                                             
-                                            echo '<pre>'; print_r($prices); echo '</pre>';
+                                            //echo '<pre>'; print_r($prices); echo '</pre>';
     
                                             $sql    = "SELECT * FROM tbl_fba WHERE sku='".$sku."' AND channel='".$channel_data->idchannel."'";
                                             $result = mysqli_query($conn, $sql);
     
                                             if ($result->num_rows == 0 && $FulfillmentChannel=='AMAZON') {
-                                                echo $sql  ="INSERT INTO tbl_fba SET channel='".$channel_data->idchannel."', productid=".$productid.",sku ='".$sku."', asin ='".$asin."'"; 
+                                                 $sql  ="INSERT INTO tbl_fba SET channel='".$channel_data->idchannel."', productid=".$productid.",sku ='".$sku."', asin ='".$asin."'"; 
                                                 mysqli_query($conn, $sql);
                                             }
     
@@ -166,11 +166,14 @@
                                                 mysqli_query($conn, $sql);
                                             }
     
-                                            echo $sql    = "SELECT * FROM prices WHERE channel_id=".$channel_data->idchannel." AND country='".$countryArr[$k]."' AND asin='".$asin."' AND (isFba='".$FulfillmentChannel."' OR isFba IS NULL)";
+                                             $sql    = "SELECT * FROM prices WHERE channel_id=".$channel_data->idchannel." AND country='".$countryArr[$k]."' AND asin='".$asin."' AND sku ='".$sku."' AND (isFba='".$FulfillmentChannel."' OR isFba IS NULL)";
                                             
-                                            echo "<br>";
+                                         //   echo "<br>";
                                             
                                             $result = mysqli_query($conn, $sql);
+                                            $priceRow = $result->fetch_assoc();
+
+
                                             $existingProductFlagArr[$i] = 1;
                                             $current_product = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM product WHERE productid=".$productid));
                                             if ($result->num_rows == 0) {
@@ -195,12 +198,12 @@
                                                 }
                                                 $result = mysqli_query($conn, $sql);
                                             } else {
-                                                $sql    = "UPDATE prices SET online_price = ".$online_price.", online_shipping= ".$online_shipping.", price='".$online_price."', shipping=".$online_shipping.", last_update_date='".date('Y-m-d H:i:s')."', last_update_shipping='".date('Y-m-d H:i:s')."', updated_date='".date('Y-m-d H:i:s')."', ebayActive=1, isFba='".$FulfillmentChannel."' WHERE channel_id=".$channel_data->idchannel." AND country='".$countryArr[$k]."' AND asin='".$asin."' AND isFba='".$FulfillmentChannel."'";
+                                                $sql    = "UPDATE prices SET online_price = ".$online_price.", online_shipping= ".$online_shipping.", price='".$online_price."', shipping=".$online_shipping.", last_update_date='".date('Y-m-d H:i:s')."', last_update_shipping='".date('Y-m-d H:i:s')."', updated_date='".date('Y-m-d H:i:s')."', ebayActive=1, isFba='".$FulfillmentChannel."' WHERE price_id=".$priceRow['price_id']."";
                                                 echo $sql."--------3<br>";
                                                 $result = mysqli_query($conn, $sql);
                                             }
         
-                                            echo "Get price for product $sku.<br>";
+                                            echo "Get price for product {$sku} --".$countryArr[$k].".<br>";
                                         }
                                        
                                     }

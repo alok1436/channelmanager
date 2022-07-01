@@ -195,6 +195,7 @@
                     
                     $newquantity = $price->can_sell_online;
                     $fields['itemId'] = $price->itemId;
+                    
                     if($price->online_price != $price->price) {
                         echo 'Updating Price: '.$price->shortname."45454545".$price->itemId."--------".$price->sku."--------".$price->price."<br>";
                         
@@ -438,7 +439,7 @@
                        $online['price'] = $fields['price'] = $price->price;
                     }
 
-                    $online['sku'] = $price->sku;
+                    $online['sku']= $fields['sku'] = $price->sku;
                     $online['online_quentity'] = $fields['quantity'] = $newquantity;
                     
                     echo 'otto-'.$newquantity.'--'.$price->price.'--'.$price->itemId.'--'.$price->sku.'<br>';
